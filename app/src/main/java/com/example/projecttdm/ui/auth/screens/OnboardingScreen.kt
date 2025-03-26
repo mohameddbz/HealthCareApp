@@ -26,7 +26,7 @@ import androidx.navigation.NavHostController
 @Composable
 fun OnboardingScreen(
     navController: NavHostController,
-    nextPage: String, // Page de destination en paramètre
+    nextPage: String,
     doctorImage: Int,
     titleText: String,
     indicatorColor1: Color,
@@ -46,7 +46,7 @@ fun OnboardingScreen(
             modifier = Modifier.fillMaxWidth(),
             horizontalArrangement = Arrangement.End
         ) {
-            TextButton(onClick = { }) {
+            TextButton(onClick = { navController.navigate("welcomScreen")  }) {
                 Text("Skip", color = colorResource(id = R.color.gray))
             }
         }

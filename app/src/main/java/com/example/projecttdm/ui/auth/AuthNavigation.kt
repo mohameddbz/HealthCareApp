@@ -9,6 +9,7 @@ import androidx.navigation.compose.rememberNavController
 import com.example.projecttdm.ui.auth.screens.OnboardingScreen
 import com.example.projecttdm.ui.auth.screens.SplashScreen
 import com.example.projecttdm.R
+import com.example.projecttdm.ui.auth.screens.WelcomeScreen
 
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController()) {
@@ -41,12 +42,17 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
         composable("onboarding3") {
             OnboardingScreen(
                 navController = navController,
-                nextPage = "onboarding2",
+                nextPage = "welcomScreen",
                 doctorImage = R.drawable.doctor_image3,
                 titleText = "Get connect our Online Consultation",
                 indicatorColor1 = colorResource(id = R.color.bleu_200),
                 indicatorColor2 = colorResource(id = R.color.bleu_200),
                 indicatorColor3 = colorResource(id = R.color.bleu)
+            )
+        }
+        composable("welcomScreen") {
+            WelcomeScreen(
+                navController = navController
             )
         }
     }
