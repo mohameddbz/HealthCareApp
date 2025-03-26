@@ -13,14 +13,14 @@ import com.example.projecttdm.ui.auth.screens.WelcomeScreen
 
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController()) {
-    NavHost(navController, startDestination = "splash") {
-        composable("splash") {
-            SplashScreen(onFinish = { navController.navigate("onboarding") })
+    NavHost(navController, startDestination = AuthRoutes.splash.route) {
+        composable(AuthRoutes.splash.route) {
+            SplashScreen(onFinish = { navController.navigate(AuthRoutes.onboarding.route) })
         }
-        composable("onboarding") {
+        composable(AuthRoutes.onboarding.route) {
             OnboardingScreen(
                 navController = navController,
-                nextPage = "onboarding2", // Définis ici la page de destination
+                nextPage = AuthRoutes.onboarding2.route, // Définis ici la page de destination
                 doctorImage = R.drawable.doctor_image,
                 titleText = "Consult only with a doctor you trust",
                 indicatorColor1 = colorResource(id = R.color.bleu),
@@ -28,10 +28,10 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
                 indicatorColor3 = colorResource(id = R.color.bleu_200)
             )
         }
-        composable("onboarding2") {
+        composable(AuthRoutes.onboarding2.route) {
             OnboardingScreen(
                 navController = navController,
-                nextPage = "onboarding3",
+                nextPage = AuthRoutes.onboarding3.route,
                 doctorImage = R.drawable.doctor_image2,
                 titleText = "Find a lot of specialist doctors in one place",
                 indicatorColor1 = colorResource(id = R.color.bleu_200),
@@ -39,10 +39,10 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
                 indicatorColor3 = colorResource(id = R.color.bleu_200)
             )
         }
-        composable("onboarding3") {
+        composable(AuthRoutes.onboarding3.route) {
             OnboardingScreen(
                 navController = navController,
-                nextPage = "welcomScreen",
+                nextPage = AuthRoutes.welcomScreen.route,
                 doctorImage = R.drawable.doctor_image3,
                 titleText = "Get connect our Online Consultation",
                 indicatorColor1 = colorResource(id = R.color.bleu_200),
@@ -50,7 +50,7 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
                 indicatorColor3 = colorResource(id = R.color.bleu)
             )
         }
-        composable("welcomScreen") {
+        composable(AuthRoutes.welcomScreen.route) {
             WelcomeScreen(
                 navController = navController
             )
