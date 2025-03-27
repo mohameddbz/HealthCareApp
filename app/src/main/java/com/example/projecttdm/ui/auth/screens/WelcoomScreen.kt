@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.auth.screens
 
+import NotificationsScreen
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Column
@@ -21,6 +22,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.components.LoginButton
 import com.example.projecttdm.ui.auth.components.SignUpButton
 
@@ -64,7 +66,7 @@ fun WelcomeScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(32.dp))
 
         // Bouton "Login"
-        LoginButton(onClick = { TODO()} )
+        LoginButton(onClick = { navController.navigate(AuthRoutes.notificationScreen.route)} )
 
         Spacer(modifier = Modifier.height(16.dp))
 

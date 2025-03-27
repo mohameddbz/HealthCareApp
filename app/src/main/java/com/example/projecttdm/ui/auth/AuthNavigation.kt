@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.auth
 
+import NotificationsScreen
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.res.colorResource
 import androidx.navigation.NavHostController
@@ -10,6 +11,7 @@ import com.example.projecttdm.ui.auth.screens.OnboardingScreen
 import com.example.projecttdm.ui.auth.screens.SplashScreen
 import com.example.projecttdm.R
 import com.example.projecttdm.ui.auth.screens.WelcomeScreen
+import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController()) {
@@ -55,5 +57,14 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
                 navController = navController
             )
         }
+
+
+        composable(AuthRoutes.notificationScreen.route) {
+            val notificationViewModel : NotificationViewModel = NotificationViewModel()
+            notificationViewModel.getNotifications()
+          NotificationsScreen(notificationViewModel)
+        }
+
+
     }
 }
