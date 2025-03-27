@@ -13,3 +13,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable("appointment") {  }
     }
 }
+
+
+
+
