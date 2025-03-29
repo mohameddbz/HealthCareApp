@@ -20,6 +20,10 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.projecttdm.theme.Gray02
+import com.example.projecttdm.theme.Gray01
+import com.example.projecttdm.theme.Blue01
+import com.example.projecttdm.theme.Blue02
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.YearMonth
@@ -28,15 +32,12 @@ import java.time.format.TextStyle
 import java.util.*
 
 // Your custom colors
-val Blue01 = Color(0xFF3E69FE)
-val Gray01 = Color(0xFF9CA3AF)
-val Gray02 = Color(0xFF1C2A3A)
-val Blue02 = Color(0xFFDEE9FB)
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookAppointmentScreen() {
+fun BookAppointmentScreen( onNextClicked: () -> Unit) {
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
     val currentMonth = remember { YearMonth.now() }
@@ -113,7 +114,7 @@ fun BookAppointmentScreen() {
 
         // Next Button
         Button(
-            onClick = { /* Handle booking */ },
+            onClick = onNextClicked,
             enabled = selectedDate != null && selectedTime != null,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Blue01,

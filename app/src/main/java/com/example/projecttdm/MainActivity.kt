@@ -16,6 +16,8 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 import com.example.projecttdm.theme.ProjectTDMTheme
 import com.example.projecttdm.ui.patient.BookAppointmentScreen
+import com.example.projecttdm.ui.patient.PatientDetailsScreen
+import com.example.projecttdm.ui.patient.PatientNavigation
 
 
 class MainActivity : ComponentActivity() {
@@ -24,23 +26,7 @@ class MainActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BookAppointmentScreen()
+            PatientNavigation()
         }
-    }
-}
-
-@Composable
-fun Greeting(name: String, modifier: Modifier = Modifier) {
-    Text(
-        text = "Hello $name!",
-        modifier = modifier
-    )
-}
-
-@Preview(showBackground = true)
-@Composable
-fun GreetingPreview() {
-    ProjectTDMTheme {
-        Greeting("Android")
     }
 }

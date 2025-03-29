@@ -15,7 +15,7 @@ class PatientActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            BookAppointmentScreen()
+            PatientNavigation()
         }
     }
 }
