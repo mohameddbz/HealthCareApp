@@ -23,9 +23,9 @@ fun CategoryChip(
 ) {
     Box(
         modifier = Modifier
-            .clip(RoundedCornerShape(20.dp))
+            .clip(RoundedCornerShape(16.dp))
             .background(
-                if (isSelected) Color(0xFF4285F4) else Color(0xFFE7F0FF)
+                color = if (isSelected) Color(0xFF2196F3) else Color(0xFFF5F5F5)
             )
             .clickable { onCategorySelected() }
             .padding(horizontal = 16.dp, vertical = 8.dp),
@@ -33,8 +33,8 @@ fun CategoryChip(
     ) {
         Text(
             text = category,
-            color = if (isSelected) Color.White else Color(0xFF4285F4),
-            fontWeight = FontWeight.Medium,
+            color = if (isSelected) Color.White else Color.Black,
+            fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontSize = 14.sp
         )
     }

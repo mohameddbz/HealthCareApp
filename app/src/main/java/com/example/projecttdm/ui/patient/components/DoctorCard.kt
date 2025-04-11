@@ -110,7 +110,7 @@ fun DoctorCard(
                 Spacer(modifier = Modifier.height(4.dp))
 
                 Text(
-                    text = "${doctor.specialty} | ${doctor.hospital}",
+                    text = "${doctor.specialty.name} | ${doctor.hospital}",
                     color = Color.Gray,
                     fontSize = 14.sp
                 )

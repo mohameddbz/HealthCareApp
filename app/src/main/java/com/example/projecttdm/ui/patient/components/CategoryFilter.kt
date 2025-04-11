@@ -15,12 +15,13 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.projecttdm.data.model.Specialty
 
 @Composable
 fun CategoryFilter(
-    categories: List<String>,
-    selectedCategory: String,
-    onCategorySelected: (String) -> Unit
+    specialties: List<Specialty>,
+    selectedSpecialty: Specialty?,
+    onSpecialtySelected: (Specialty) -> Unit
 ) {
     LazyRow(
         modifier = Modifier
@@ -29,11 +30,11 @@ fun CategoryFilter(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(categories) { category ->
+        items(specialties) { specialty ->
             CategoryChip (
-                category = category,
-                isSelected = category == selectedCategory,
-                onCategorySelected = { onCategorySelected(category) }
+                category = specialty.name,
+                isSelected = specialty == selectedSpecialty,
+                onCategorySelected = { onSpecialtySelected(specialty) }
             )
         }
     }

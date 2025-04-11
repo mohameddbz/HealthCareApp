@@ -28,7 +28,8 @@ fun TopDoctorScreen(
     viewModel: DoctorViewModel = viewModel()
 ) {
     val doctors by viewModel.doctors.collectAsState()
-    val selectedCategory by viewModel.selectedCategory.collectAsState()
+    val selectedSpecialty by viewModel.selectedSpecialty.collectAsState()
+    val specialties by viewModel.specialties.collectAsState()
 
     Scaffold(
         topBar = {
@@ -72,11 +73,11 @@ fun TopDoctorScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Category Filter
+            // Category Filter using specialties from ViewModel (already includes "All")
             CategoryFilter(
-                categories = listOf("All", "General", "Dentist", "Nutritionist"),
-                selectedCategory = selectedCategory,
-                onCategorySelected = { viewModel.setCategory(it) }
+                specialties = specialties,
+                selectedSpecialty = selectedSpecialty,
+                onSpecialtySelected = { viewModel.setSpecialty(it) }
             )
 
             // Doctor List

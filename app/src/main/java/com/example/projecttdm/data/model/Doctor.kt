@@ -1,11 +1,10 @@
 package com.example.projecttdm.data.model
 
-import androidx.annotation.DrawableRes
 
 data class Doctor(
     val id: String,
     val name: String,
-    val specialty: String,
+    val specialty: Specialty, // Changed from String to Specialty data class
     val hospital: String,
     val rating: Float,
     val reviewCount: Int,
