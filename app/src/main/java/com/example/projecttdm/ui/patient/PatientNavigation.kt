@@ -3,20 +3,26 @@ package com.example.projecttdm.ui.patient
 import NotificationsScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PatientNavigation(navController: NavHostController = rememberNavController()) {
+fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
     NavHost(
         navController = navController,
-        startDestination = PatientRoutes.BookAppointment.route
+        startDestination = PatientRoutes.HomeScreen.route,
+        modifier = modifier
     ) {
         composable(PatientRoutes.BookAppointment.route) {
             BookAppointmentScreen(
@@ -25,6 +31,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 }
             )
         }
+
+        composable(PatientRoutes.HomeScreen.route) {
+            MedicalAppScreen()
+                }
 
         composable(PatientRoutes.PatientDetails.route) {
             PatientDetailsScreen(
@@ -83,3 +93,40 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
     }
 }
+
+
+
+data class NavigationItem(
+    val title: String,
+    val icon: ImageVector,
+    val route: String
+)
+
+val navigationItems = listOf(
+    NavigationItem(
+        title = "Home",
+        icon = Icons.Default.Home,
+        route = PatientRoutes.HomeScreen.route
+    ),
+    NavigationItem(
+        title = "Appointment",
+        icon = Icons.Default.Person,
+        route = PatientRoutes.BookAppointment.route
+    ),
+    NavigationItem(
+        title = "History",
+        icon = Icons.Default.ShoppingCart,
+        route = PatientRoutes.HomeScreen.route
+    ),
+    NavigationItem(
+        title = "Articles",
+        icon = Icons.Default.ShoppingCart,
+        route = PatientRoutes.HomeScreen.route
+    ),
+    NavigationItem(
+        title = "Profile",
+        icon = Icons.Default.ShoppingCart,
+        route = PatientRoutes.BookAppointment.route
+    ),
+)
+
