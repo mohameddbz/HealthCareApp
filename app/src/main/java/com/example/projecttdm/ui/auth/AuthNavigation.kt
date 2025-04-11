@@ -59,11 +59,7 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
         }
 
 
-        composable(AuthRoutes.notificationScreen.route) {
-            val notificationViewModel : NotificationViewModel = NotificationViewModel()
-            notificationViewModel.getNotifications()
-          NotificationsScreen(notificationViewModel)
-        }
+
 
 
     }
