@@ -56,18 +56,11 @@ fun AuthNavigation(navController: NavHostController = rememberNavController(),
         composable(AuthRoutes.welcomScreen.route) {
             WelcomeScreen(
                 navController = navController,
-                onStartAppClick = {
-                    onLoginSuccess()
-                }
             )
         }
 
 
-        composable(AuthRoutes.notificationScreen.route) {
-            val notificationViewModel : NotificationViewModel = NotificationViewModel()
-            notificationViewModel.getNotifications()
-          NotificationsScreen(notificationViewModel)
-        }
+
 
 
     }

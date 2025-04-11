@@ -1,4 +1,4 @@
-package com.example.projecttdm.ui.doctor.components
+package com.example.projecttdm.ui.patient.components
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,7 +21,6 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberImagePainter
-import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Doctor
 
 @Composable

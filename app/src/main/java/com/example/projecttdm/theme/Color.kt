@@ -21,3 +21,8 @@ val succesNotification = Color(0xFFEEF4FF)
 val yellowNotification  = Color(0xFFFFF7EB)
 
 val textNotification = Color(0xFF616161)
+
+val Blue01 = Color(0xFF3E69FE)
+val Gray01 = Color(0xFF9CA3AF)
+val Gray02 = Color(0xFF1C2A3A)
+val Blue02 = Color(0xFFDEE9FB)
