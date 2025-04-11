@@ -25,9 +25,11 @@ import com.example.projecttdm.R
 import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.components.LoginButton
 import com.example.projecttdm.ui.auth.components.SignUpButton
+import com.example.projecttdm.ui.doctor.DoctorRoutes
 
 @Composable
-fun WelcomeScreen(navController: NavHostController) {
+fun WelcomeScreen(navController: NavHostController,
+                  onStartAppClick: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
@@ -71,7 +73,7 @@ fun WelcomeScreen(navController: NavHostController) {
         Spacer(modifier = Modifier.height(16.dp))
 
         // Bouton "Sign Up"
-        SignUpButton (onClick = { TODO() })
+        SignUpButton (onClick = { onStartAppClick()  })
     }
 }
 
