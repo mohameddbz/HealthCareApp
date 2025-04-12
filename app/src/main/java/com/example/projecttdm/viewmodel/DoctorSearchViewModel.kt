@@ -25,6 +25,9 @@ class DoctorSearchViewModel : ViewModel() {
     private val _selectedSpecialty = MutableStateFlow(Specialty(id = "all", name = "All"))
     val selectedSpecialty = _selectedSpecialty.asStateFlow()
 
+    private val _selectedRating = MutableStateFlow("All")
+    val selectedRating = _selectedRating.asStateFlow()
+
     private val _searchQuery = MutableStateFlow("")
     val searchQuery = _searchQuery.asStateFlow()
 
@@ -55,25 +58,32 @@ class DoctorSearchViewModel : ViewModel() {
         _selectedSpecialty.value = specialty
     }
 
+    fun setRating(rating: String) {
+        _selectedRating.value = rating
+    }
+
     fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
 
     private fun observeFiltering() {
         viewModelScope.launch {
-            combine(_selectedSpecialty, _searchQuery, _allDoctors) { specialty, query, doctors ->
-                filterDoctors(specialty.id, query, doctors)
+            combine(_selectedSpecialty, _searchQuery, _selectedRating, _allDoctors) { specialty, query, rating, doctors ->
+                filterDoctors(specialty.id, query, rating, doctors)
             }.collect { filtered ->
                 _filteredDoctors.value = filtered
             }
         }
     }
 
-    private fun filterDoctors(specialtyId: String, query: String, doctors: List<Doctor>): List<Doctor> {
+
+    private fun filterDoctors(specialtyId: String, query: String, rating: String, doctors: List<Doctor>): List<Doctor> {
         return doctors.filter { doctor ->
             val matchesSpecialty = specialtyId == "all" || doctor.specialty.id == specialtyId
             val matchesQuery = doctor.name.contains(query, ignoreCase = true)
-            matchesSpecialty && matchesQuery
+            val matchesRating = rating == "All" || doctor.rating.toInt() >= rating.toInt()
+            matchesSpecialty && matchesQuery && matchesRating
         }
     }
+
 }

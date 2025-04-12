@@ -28,7 +28,7 @@ fun CategoryFilter(
             .fillMaxWidth()
             .padding(vertical = 8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        contentPadding = PaddingValues(horizontal = 16.dp)
+        contentPadding = PaddingValues(horizontal = 10.dp)
     ) {
         items(specialties, key = { it.id }) { specialty ->  // Using 'id' as a unique key
             CategoryChip(

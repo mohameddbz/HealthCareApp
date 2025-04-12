@@ -41,6 +41,7 @@ android {
 
 dependencies {
     implementation("androidx.navigation:navigation-compose:2.7.4")
+    implementation ("androidx.compose.material:material-icons-extended:<version>")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
     implementation("androidx.compose.material3:material3:1.1.2")
