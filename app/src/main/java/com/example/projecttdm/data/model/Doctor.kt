@@ -1,6 +1,5 @@
 package com.example.projecttdm.data.model
 
-
 data class Doctor(
     val id: String,
     val name: String,

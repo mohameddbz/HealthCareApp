@@ -8,6 +8,7 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
@@ -85,7 +86,14 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable(PatientRoutes.topDoctors.route) {
             TopDoctorScreen(
                 onBackClick = {  },
-                onDoctorClick = {  }
+                onDoctorClick = {  },
+                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) }
+            )
+        }
+
+        composable(PatientRoutes.searchDoctor.route) {
+            SearchScreen(
+                onBackClick = { navController.popBackStack() }
             )
         }
     }

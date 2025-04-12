@@ -7,36 +7,42 @@ import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.collectAsState
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.DoctorCard
-import com.example.projecttdm.viewmodel.DoctorViewModel
+import com.example.projecttdm.viewmodel.DoctorListViewModel
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopDoctorScreen(
     onBackClick: () -> Unit,
     onDoctorClick: (String) -> Unit,
-    viewModel: DoctorViewModel = viewModel()
+    onSearchClick: () -> Unit,
+    doctorSearchViewModel: DoctorSearchViewModel = viewModel(), // No need to pass as argument, use default ViewModel
+    doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
+        initializer { DoctorListViewModel(doctorSearchViewModel) }
+    })
 ) {
-    val doctors by viewModel.doctors.collectAsState()
-    val selectedSpecialty by viewModel.selectedSpecialty.collectAsState()
-    val specialties by viewModel.specialties.collectAsState()
+    val doctors by doctorListViewModel.doctors.collectAsState()
+    val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
+    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
 
     Scaffold(
         topBar = {
             TopAppBar(
                 title = {
                     Text(
-                        text = "Top Doctor",
+                        text = "Top Doctors",
                         fontWeight = FontWeight.Bold
                     )
                 },
@@ -49,7 +55,7 @@ fun TopDoctorScreen(
                     }
                 },
                 actions = {
-                    IconButton(onClick = { /* TODO: Implement search */ }) {
+                    IconButton(onClick = onSearchClick) {
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search"
@@ -73,27 +79,36 @@ fun TopDoctorScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Category Filter using specialties from ViewModel (already includes "All")
+            // Category Filter
             CategoryFilter(
                 specialties = specialties,
                 selectedSpecialty = selectedSpecialty,
-                onSpecialtySelected = { viewModel.setSpecialty(it) }
+                onSpecialtySelected = { doctorSearchViewModel.setSpecialty(it) }
             )
 
             // Doctor List
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                items(doctors) { doctor ->
-                    DoctorCard(
-                        doctor = doctor,
-                        isFavorite = false, // You'd track this in your ViewModel
-                        onFavoriteClick = { viewModel.toggleFavorite(doctor.id) },
-                        onDoctorClick = { onDoctorClick(doctor.id) }
-                    )
+            if (doctors.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No doctors found.")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(doctors) { doctor ->
+                        DoctorCard(
+                            doctor = doctor,
+                            isFavorite = false, // Could be managed via favorites list
+                            onFavoriteClick = { doctorListViewModel.toggleFavorite(doctor.id) },
+                            onDoctorClick = { onDoctorClick(doctor.id) }
+                        )
+                    }
                 }
             }
         }

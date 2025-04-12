@@ -30,8 +30,8 @@ fun CategoryFilter(
         horizontalArrangement = Arrangement.spacedBy(8.dp),
         contentPadding = PaddingValues(horizontal = 16.dp)
     ) {
-        items(specialties) { specialty ->
-            CategoryChip (
+        items(specialties, key = { it.id }) { specialty ->  // Using 'id' as a unique key
+            CategoryChip(
                 category = specialty.name,
                 isSelected = specialty == selectedSpecialty,
                 onCategorySelected = { onSpecialtySelected(specialty) }
@@ -39,3 +39,4 @@ fun CategoryFilter(
         }
     }
 }
+

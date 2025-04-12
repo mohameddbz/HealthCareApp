@@ -8,4 +8,5 @@ sealed class PatientRoutes(val route: String) {
     object Failure : PatientRoutes("failure")
     object NotificationScreen : PatientRoutes("notifications")
     object topDoctors : PatientRoutes("doctor_top_doctors")
+    object searchDoctor : PatientRoutes("search_doctor")
 }
