@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.patient
 
+import AppointmentReviewScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -7,7 +8,6 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
-import androidx.navigation.navOptions
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -19,42 +19,61 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable("bookAppointment") {
             BookAppointmentScreen(
                 onNextClicked = {
-                    navController.navigate("pinVerification")
+                    navController.navigate("patientDetails")
                 }
             )
         }
 
         composable("patientDetails") {
             PatientDetailsScreen(
-                onNextClicked = { /* Handle next action */ }
+                onNextClicked = {
+                    navController.navigate("reviewSummary")
+                },
+                onBackClicked = {
+                    navController.popBackStack()
+                }
+            )
+        }
+
+        composable("reviewSummary") {
+            AppointmentReviewScreen(
+                onBackPressed = {
+                    navController.popBackStack()
+                },
+                onNextPressed = {
+                    navController.navigate("pinVerification")
+                }
             )
         }
 
         composable("pinVerification") {
-            PinVerificationFlow { isSuccess ->
-                if (isSuccess) {
+            PinVerificationFlow(
+                onBackClicked = { navController.popBackStack() },
+                onSuccess = {
                     navController.navigate("success") {
                         popUpTo("pinVerification") { inclusive = true }
                     }
-                } else {
+                },
+                onFailure = {
                     navController.navigate("failure") {
                         popUpTo("pinVerification") { inclusive = true }
                     }
                 }
-            }
+            )
         }
 
         composable("success") {
-            SuccessPopup (
+            SuccessDialog(
                 onViewAppointment = {
-                    navController.navigate("patientDetails") {
-                        // Clear entire back stack
-                        popUpTo(0)
+                    // Change this to navigate back to the appointment review screen
+                    // without creating another success dialog
+                    navController.navigate("reviewSummary") {
+                        // Clear backstack all the way to the beginning
+                        popUpTo("bookAppointment")
                     }
                 },
                 onCancel = {
                     navController.navigate("bookAppointment") {
-                        // Clear entire back stack
                         popUpTo(0)
                     }
                 }
@@ -62,16 +81,14 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable("failure") {
-            FailurePopup(
+            FailureDialog(
                 onTryAgain = {
                     navController.navigate("pinVerification") {
-                        // Clear back stack to avoid multiple failure screens
                         popUpTo("failure") { inclusive = true }
                     }
                 },
                 onCancel = {
                     navController.navigate("bookAppointment") {
-                        // Clear back stack
                         popUpTo(0)
                     }
                 }

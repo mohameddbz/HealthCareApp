@@ -4,11 +4,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
@@ -17,6 +19,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
@@ -31,13 +34,10 @@ import java.time.format.DateTimeFormatter
 import java.time.format.TextStyle
 import java.util.*
 
-// Your custom colors
-
-
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookAppointmentScreen( onNextClicked: () -> Unit) {
+fun BookAppointmentScreen(onNextClicked: () -> Unit) {
     var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
     var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
     val currentMonth = remember { YearMonth.now() }
@@ -45,29 +45,30 @@ fun BookAppointmentScreen( onNextClicked: () -> Unit) {
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .background(Color.White)
+            .padding(horizontal = 20.dp, vertical = 16.dp),
+        horizontalAlignment = Alignment.Start
     ) {
         Spacer(modifier = Modifier.height(16.dp))
         Text(
             text = "Book Appointment",
             style = MaterialTheme.typography.titleLarge.copy(
-                color = Gray02,
-                fontSize = 20.sp
+                color = Color.Black,
+                fontSize = 24.sp,
+                fontWeight = FontWeight.SemiBold
             ),
-            modifier = Modifier.padding(bottom = 12.dp)
+            modifier = Modifier.padding(bottom = 24.dp)
         )
 
         // Calendar Section
         Text(
             text = "Select Date",
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Gray02,
-                fontSize = 16.sp
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
             ),
-            modifier = Modifier
-                .padding(bottom = 4.dp)
-                .align(Alignment.Start)
+            modifier = Modifier.padding(bottom = 12.dp)
         )
 
         DatePicker(
@@ -84,33 +85,30 @@ fun BookAppointmentScreen( onNextClicked: () -> Unit) {
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Blue02, MaterialTheme.shapes.medium)
-                .padding(12.dp)
+                .background(Blue02, RoundedCornerShape(16.dp))
+                .padding(16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
         // Time Slots Section
-        selectedDate?.let {
-            Text(
-                text = "Select Hour",
-                style = MaterialTheme.typography.titleMedium.copy(
-                    color = Gray02,
-                    fontSize = 16.sp
-                ),
-                modifier = Modifier
-                    .align(Alignment.Start)
-                    .padding(bottom = 4.dp)
-            )
+        Text(
+            text = "Select Hour",
+            style = MaterialTheme.typography.titleMedium.copy(
+                color = Color.Black,
+                fontSize = 16.sp,
+                fontWeight = FontWeight.Medium
+            ),
+            modifier = Modifier.padding(bottom = 12.dp)
+        )
 
-            TimeSlotGrid(
-                selectedTime = selectedTime,
-                onTimeSelected = { time -> selectedTime = time },
-                modifier = Modifier.padding(vertical = 4.dp)
-            )
-        }
+        TimeSlotGrid(
+            selectedTime = selectedTime,
+            onTimeSelected = { time -> selectedTime = time },
+            modifier = Modifier.fillMaxWidth()
+        )
 
-        Spacer(modifier = Modifier.height(20.dp))
+        Spacer(modifier = Modifier.weight(1f))
 
         // Next Button
         Button(
@@ -118,18 +116,19 @@ fun BookAppointmentScreen( onNextClicked: () -> Unit) {
             enabled = selectedDate != null && selectedTime != null,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Blue01,
-                disabledContainerColor = Gray01,
+                disabledContainerColor = Color(0xFFBBCBF1),
                 contentColor = Color.White
             ),
             modifier = Modifier
                 .fillMaxWidth()
-                .height(44.dp),
-            shape = MaterialTheme.shapes.medium
+                .height(56.dp),
+            shape = RoundedCornerShape(16.dp)
         ) {
             Text(
                 "Next",
                 style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 15.sp
+                    fontSize = 16.sp,
+                    fontWeight = FontWeight.Medium
                 )
             )
         }
@@ -150,90 +149,109 @@ fun DatePicker(
     val firstDayOfWeek = firstDayOfMonth.dayOfWeek.value % 7
 
     Column(modifier = modifier) {
-        // Month header with arrows on right
+        // Month header with arrows
         Row(
             modifier = Modifier.fillMaxWidth(),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Month title left-aligned
+            // Month title centered
             Text(
-                text = currentMonth.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH) +
-                        " " + currentMonth.year,
-                style = MaterialTheme.typography.titleLarge.copy(color = Gray02),
-                modifier = Modifier.weight(1f)
+                text = currentMonth.month.getDisplayName(TextStyle.FULL, Locale.ENGLISH) + " " + currentMonth.year,
+                style = MaterialTheme.typography.titleMedium.copy(
+                    color = Color.Black,
+                    fontWeight = FontWeight.Medium,
+                    fontSize = 16.sp
+                ),
+                modifier = Modifier.weight(1f),
+                textAlign = TextAlign.Center
             )
 
-            // Arrows on right
+            // Arrows on sides
             Row {
                 IconButton(
                     onClick = { currentMonth = currentMonth.minusMonths(1) },
+                    modifier = Modifier.size(24.dp),
                     colors = IconButtonDefaults.iconButtonColors(contentColor = Blue01)
                 ) {
-                    Icon(Icons.Default.ArrowBack, contentDescription = "Previous month")
+                    Icon(Icons.Default.ArrowBack, contentDescription = "Previous month", modifier = Modifier.size(16.dp))
                 }
+                Spacer(modifier = Modifier.width(16.dp))
                 IconButton(
                     onClick = { currentMonth = currentMonth.plusMonths(1) },
+                    modifier = Modifier.size(24.dp),
                     colors = IconButtonDefaults.iconButtonColors(contentColor = Blue01)
                 ) {
-                    Icon(Icons.Default.ArrowForward, contentDescription = "Next month")
+                    Icon(Icons.Default.ArrowForward, contentDescription = "Next month", modifier = Modifier.size(16.dp))
                 }
             }
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Day headers (Me, Tu, We...)
+        // Day headers (Mo, Tu, We...)
         Row(modifier = Modifier.fillMaxWidth()) {
-            listOf("Me", "Tu", "We", "Th", "Fr", "Se", "Su").forEach { day ->
+            listOf("Mo", "Tu", "We", "Th", "Fr", "Sa", "Su").forEach { day ->
                 Text(
                     text = day,
-                    style = MaterialTheme.typography.bodyMedium.copy(color = Gray02),
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        color = Color.DarkGray,
+                        fontSize = 12.sp,
+                        fontWeight = FontWeight.Medium
+                    ),
                     modifier = Modifier.weight(1f),
                     textAlign = TextAlign.Center
                 )
             }
         }
 
-        Spacer(modifier = Modifier.height(8.dp))
+        Spacer(modifier = Modifier.height(12.dp))
 
         // Calendar grid
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(7),
-            modifier = Modifier.height(200.dp)
-        ) {
-            items(firstDayOfWeek) {
-                Box(modifier = Modifier.aspectRatio(1f))
-            }
+        val totalCells = firstDayOfWeek + daysInMonth
+        val rows = (totalCells + 6) / 7 // Calculate number of rows needed
 
-            items(daysInMonth) { day ->
-                val date = currentMonth.atDay(day + 1)
-                val isSelected = date == selectedDate
-                val isCurrentMonth = date.month == currentMonth.month
-
-                Box(
-                    modifier = Modifier
-                        .aspectRatio(1f)
-                        .padding(4.dp)
+        Column(modifier = Modifier.fillMaxWidth()) {
+            for (row in 0 until rows) {
+                Row(
+                    modifier = Modifier.fillMaxWidth(),
+                    horizontalArrangement = Arrangement.SpaceBetween
                 ) {
-                    Surface(
-                        shape = CircleShape,
-                        color = if (isSelected) Blue01 else Color.Transparent,
-                        border = BorderStroke(
-                            1.dp,
-                            if (isSelected) Blue01 else Color.Transparent
-                        ),
-                        onClick = { if (isCurrentMonth) onDateSelected(date) },
-                        modifier = Modifier.fillMaxSize()
-                    ) {
-                        Box(contentAlignment = Alignment.Center) {
-                            Text(
-                                text = (day + 1).toString(),
-                                color = when {
-                                    isSelected -> Color.White
-                                    !isCurrentMonth -> Gray01.copy(alpha = 0.5f)
-                                    else -> Gray02
+                    for (col in 0 until 7) {
+                        val index = row * 7 + col
+                        val day = index - firstDayOfWeek + 1
+
+                        if (day in 1..daysInMonth) {
+                            val date = currentMonth.atDay(day)
+                            val isSelected = date == selectedDate
+
+                            Box(
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .aspectRatio(1f)
+                                    .padding(4.dp),
+                                contentAlignment = Alignment.Center
+                            ) {
+                                Box(
+                                    modifier = Modifier
+                                        .size(36.dp)
+                                        .background(
+                                            color = if (isSelected) Blue01 else Color.Transparent,
+                                            shape = CircleShape
+                                        )
+                                        .clickable { onDateSelected(date) },
+                                    contentAlignment = Alignment.Center
+                                ) {
+                                    Text(
+                                        text = day.toString(),
+                                        color = if (isSelected) Color.White else Color.Black,
+                                        fontSize = 14.sp,
+                                        fontWeight = if (isSelected) FontWeight.Medium else FontWeight.Normal
+                                    )
                                 }
-                            )
+                            }
+                        } else {
+                            // Empty cell
+                            Spacer(modifier = Modifier.weight(1f))
                         }
                     }
                 }
@@ -260,29 +278,42 @@ fun TimeSlotGrid(
         )
     }
 
-    val timeFormatter = remember { DateTimeFormatter.ofPattern("hh:mm a") }
-
     LazyVerticalGrid(
         columns = GridCells.Fixed(3),
-        verticalArrangement = Arrangement.spacedBy(8.dp),
-        horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
+        verticalArrangement = Arrangement.spacedBy(12.dp),
+        horizontalArrangement = Arrangement.spacedBy(12.dp),
+        modifier = modifier.height(220.dp)
     ) {
         items(timeSlots) { time ->
             val isSelected = time == selectedTime
+            val formattedTime = if (time.hour < 12) {
+                String.format("%02d.%02d AM", time.hour, time.minute)
+            } else if (time.hour == 12) {
+                String.format("%02d.%02d PM", time.hour, time.minute)
+            } else {
+                String.format("%02d.%02d PM", time.hour - 12, time.minute)
+            }
 
             Surface(
-                shape = MaterialTheme.shapes.small,
-                color = if (isSelected) Blue02 else Color.Transparent,
+                shape = RoundedCornerShape(24.dp),
+                color = Color.Transparent,
                 border = BorderStroke(1.dp, Blue01),
                 onClick = { onTimeSelected(time) },
-                modifier = Modifier.height(48.dp)
+                modifier = Modifier.height(44.dp)
             ) {
-                Box(contentAlignment = Alignment.Center) {
+                Box(
+                    contentAlignment = Alignment.Center,
+                    modifier = Modifier.background(
+                        if (isSelected) Blue02 else Color.Transparent
+                    )
+                ) {
                     Text(
-                        text = time.format(timeFormatter),
+                        text = formattedTime,
                         color = Blue01,
-                        style = MaterialTheme.typography.bodyMedium
+                        style = MaterialTheme.typography.bodyMedium.copy(
+                            fontSize = 14.sp,
+                            fontWeight = FontWeight.Medium
+                        )
                     )
                 }
             }

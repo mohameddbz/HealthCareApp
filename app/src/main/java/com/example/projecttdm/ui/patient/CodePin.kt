@@ -1,15 +1,13 @@
 package com.example.projecttdm.ui.patient
 
-import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.foundation.text.BasicTextField
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Close
 import androidx.compose.material.icons.filled.Delete
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -17,27 +15,18 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.input.KeyboardType
+import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.window.Dialog
-import androidx.compose.material3.Text
-import androidx.compose.material3.Button
-import androidx.compose.material3.ButtonDefaults
-import androidx.compose.material3.TextButton
-import androidx.compose.ui.graphics.vector.ImageVector
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.window.DialogProperties
-import com.example.projecttdm.R
 import com.example.projecttdm.theme.Blue01
-import com.example.projecttdm.theme.Blue02
-import com.example.projecttdm.theme.Gray01
-import com.example.projecttdm.theme.Gray02
 
 @Composable
+
 fun PinVerificationScreen(
+    onBackClicked: () -> Unit,
     onSuccess: () -> Unit,
     onFailure: () -> Unit
 ) {
@@ -45,298 +34,339 @@ fun PinVerificationScreen(
     val pinLength = 4
     val correctPin = "0000"
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(24.dp)
-            .background(Color.White),
-        horizontalAlignment = Alignment.CenterHorizontally,
-        verticalArrangement = Arrangement.Center
-    ) {
-        Text(
-            text = "Enter Verification PIN",
-            style = MaterialTheme.typography.headlineMedium.copy(
-                color = Blue01,
-                fontWeight = FontWeight.Bold
-            ),
-            modifier = Modifier.padding(bottom = 32.dp)
-        )
+    // Remove these dialog state variables as we'll handle them through navigation
+    // var showSuccessDialog by remember { mutableStateOf(false) }
+    // var showFailureDialog by remember { mutableStateOf(false) }
 
-        Row(
-            horizontalArrangement = Arrangement.spacedBy(16.dp),
-            modifier = Modifier.padding(bottom = 40.dp)
-        ) {
-            repeat(pinLength) { index ->
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .border(
-                            width = 2.dp,
-                            color = if (pin.length > index) Blue01 else Gray01,
-                            shape = RoundedCornerShape(8.dp)
-                        )
-                        .background(
-                            color = if (pin.length > index) Blue02 else Color.Transparent,
-                            shape = RoundedCornerShape(8.dp)
-                        ),
-                    contentAlignment = Alignment.Center
-                ) {
-                    if (pin.length > index) {
-                        Text("•", style = MaterialTheme.typography.headlineLarge, color = Blue01)
-                    }
-                }
+    val verifyPin = {
+        if (pin.length == pinLength) {
+            if (pin == correctPin) {
+                // Navigate directly instead of showing dialog
+                onSuccess()
+            } else {
+                // Navigate directly instead of showing dialog
+                onFailure()
             }
         }
+    }
 
+    Box(modifier = Modifier.fillMaxSize()) {
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally,
-            verticalArrangement = Arrangement.spacedBy(12.dp)
+            modifier = Modifier
+                .fillMaxSize()
+                .background(Color.White)
+                .padding(horizontal = 24.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            // Row 1-3
-            listOf(
-                listOf("1", "2", "3"),
-                listOf("4", "5", "6"),
-                listOf("7", "8", "9")
-            ).forEach { rowNumbers ->
-                Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                    rowNumbers.forEach { number ->
-                        RectangularNumberButton(number) {
-                            if (pin.length < pinLength) pin += number
+            // Top App Bar
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(vertical = 16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                IconButton(onClick = onBackClicked) {
+                    Icon(
+                        imageVector = Icons.Default.ArrowBack,
+                        contentDescription = "Back",
+                        tint = Color.Black
+                    )
+                }
+
+                Spacer(modifier = Modifier.weight(1f))
+            }
+
+            Spacer(modifier = Modifier.height(40.dp))
+
+            Text(
+                text = "Enter Verification PIN",
+                style = MaterialTheme.typography.headlineMedium.copy(
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold,
+                    color = Color.Black
+                ),
+                modifier = Modifier.padding(bottom = 16.dp)
+            )
+
+            Text(
+                text = "Please enter the 4-digit code sent to your phone",
+                style = MaterialTheme.typography.bodyMedium.copy(
+                    color = Color.Gray,
+                    textAlign = TextAlign.Center
+                ),
+                modifier = Modifier.padding(bottom = 40.dp)
+            )
+
+            // PIN Dots
+            Row(
+                horizontalArrangement = Arrangement.spacedBy(16.dp),
+                modifier = Modifier.padding(bottom = 60.dp)
+            ) {
+                repeat(pinLength) { index ->
+                    Box(
+                        modifier = Modifier
+                            .size(64.dp)
+                            .clip(RoundedCornerShape(12.dp))
+                            .background(
+                                color = if (pin.length > index) Color(0xFFEEEEEE) else Color(0xFFF5F5F5)
+                            ),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        if (pin.length > index) {
+                            Box(
+                                modifier = Modifier
+                                    .size(24.dp)
+                                    .clip(CircleShape)
+                                    .background(Color.Black)
+                            )
                         }
                     }
                 }
             }
 
-            // Bottom row
-            Row(horizontalArrangement = Arrangement.spacedBy(12.dp)) {
-                RectangularIconButton(Icons.Default.Delete) {
-                    if (pin.isNotEmpty()) pin = pin.dropLast(1)
+            // Number Pad
+            Column(
+                horizontalAlignment = Alignment.CenterHorizontally,
+                verticalArrangement = Arrangement.spacedBy(16.dp)
+            ) {
+                // Row 1-3
+                listOf(
+                    listOf("1", "2", "3"),
+                    listOf("4", "5", "6"),
+                    listOf("7", "8", "9")
+                ).forEach { rowNumbers ->
+                    Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                        rowNumbers.forEach { number ->
+                            NumberButton(number) {
+                                if (pin.length < pinLength) {
+                                    pin += number
+                                    if (pin.length == pinLength) {
+                                        verifyPin()
+                                    }
+                                }
+                            }
+                        }
+                    }
                 }
-                RectangularNumberButton("0") {
-                    if (pin.length < pinLength) pin += "0"
+
+                // Bottom row
+                Row(horizontalArrangement = Arrangement.spacedBy(24.dp)) {
+                    // Empty space for symmetry
+                    Box(modifier = Modifier.size(64.dp))
+
+                    NumberButton("0") {
+                        if (pin.length < pinLength) {
+                            pin += "0"
+                            if (pin.length == pinLength) {
+                                verifyPin()
+                            }
+                        }
+                    }
+
+                    // Delete button
+                    IconButton(
+                        onClick = { if (pin.isNotEmpty()) pin = pin.dropLast(1) },
+                        modifier = Modifier.size(64.dp)
+                    ) {
+                        Icon(
+                            imageVector = Icons.Default.Delete,
+                            contentDescription = "Delete",
+                            tint = Color.Black,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
                 }
-                RectangularActionButton(
-                    text = "OK",
-                    onClick = { if (pin == correctPin) onSuccess() else onFailure() },
-                    enabled = pin.length == pinLength
-                )
             }
         }
+
+        // Removed internal dialogs as they're now separate screens in navigation
     }
 }
 
 @Composable
-fun RectangularNumberButton(
+fun NumberButton(
     number: String,
     onClick: () -> Unit
 ) {
-    Button(
-        onClick = onClick,
+    Box(
         modifier = Modifier
-            .width(72.dp)
-            .height(60.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Gray02
-        ),
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Gray01)
+            .size(64.dp)
+            .clip(CircleShape)
+            .background(Color(0xFFF5F5F5))
+            .clickable(onClick = onClick),
+        contentAlignment = Alignment.Center
     ) {
-        Text(number, style = MaterialTheme.typography.headlineMedium, fontSize = 24.sp)
+        Text(
+            text = number,
+            style = MaterialTheme.typography.headlineMedium.copy(
+                fontSize = 24.sp,
+                fontWeight = FontWeight.Medium,
+                color = Color.Black
+            )
+        )
     }
 }
 
 @Composable
-fun RectangularIconButton(
-    icon: ImageVector,
-    onClick: () -> Unit
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .width(72.dp)
-            .height(60.dp),
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Color.White,
-            contentColor = Gray02
-        ),
-        shape = RoundedCornerShape(8.dp),
-        border = BorderStroke(1.dp, Gray01)
-    ) {
-        Icon(icon, contentDescription = null, tint = Gray02)
-    }
-}
-
-@Composable
-fun RectangularActionButton(
-    text: String,
-    onClick: () -> Unit,
-    enabled: Boolean = true
-) {
-    Button(
-        onClick = onClick,
-        modifier = Modifier
-            .width(72.dp)
-            .height(60.dp),
-        enabled = enabled,
-        colors = ButtonDefaults.buttonColors(
-            containerColor = Blue01,
-            contentColor = Color.White,
-            disabledContainerColor = Gray01.copy(alpha = 0.5f)
-        ),
-        shape = RoundedCornerShape(8.dp)
-    ) {
-        Text(text, fontSize = 18.sp)
-    }
-}
-
-@Composable
-fun SuccessPopup(
+fun SuccessDialog(
     onViewAppointment: () -> Unit,
     onCancel: () -> Unit
 ) {
-    Dialog(onDismissRequest = onCancel,
+    Dialog(
+        onDismissRequest = onCancel,
         properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
-        )) {
-        Card(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
-        ) {
-            Column(
-                modifier = Modifier.padding(24.dp),
-                horizontalAlignment = Alignment.CenterHorizontally
-            ) {
-                Icon(
-                    painter = painterResource(R.drawable.checked),
-                    contentDescription = "Success",
-                    modifier = Modifier.size(64.dp),
-
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = "Congratulations!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Gray02,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                Column(Modifier.padding(vertical = 8.dp)) {
-                    Text("Appointment successfully booked.", textAlign = TextAlign.Center)
-                    Text("You will receive a notification and the", textAlign = TextAlign.Center)
-                    Text("doctor you selected will contact you.", textAlign = TextAlign.Center)
-                }
-
-                Spacer(Modifier.height(24.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth()
-                ) {
-                    Button(
-                        onClick = onViewAppointment,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Blue01,
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text("View Appointment")
-                    }
-
-                    OutlinedButton(
-                        onClick = onCancel,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, Gray01)
-                    ) {
-                        Text("Cancel", color = Gray02)
-                    }
-                }
-            }
-        }
-    }
-}
-
-@Composable
-fun FailurePopup(
-    onTryAgain: () -> Unit,
-    onCancel: () -> Unit
-) {
-    Dialog(onDismissRequest = onCancel,
-        properties = DialogProperties(
-            usePlatformDefaultWidth = false,
-            decorFitsSystemWindows = false
+            usePlatformDefaultWidth = false
         )
     ) {
         Card(
             modifier = Modifier
-                .fillMaxWidth()
-                .padding(16.dp),
-            shape = RoundedCornerShape(16.dp)
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
+            )
         ) {
             Column(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                Icon(
-                    painter = painterResource(R.drawable.cancel),
-                    contentDescription = "Failure",
-                    modifier = Modifier.size(64.dp),
-
-                )
-
-                Spacer(Modifier.height(16.dp))
-
-                Text(
-                    text = "Oops, Failed!",
-                    style = MaterialTheme.typography.headlineSmall,
-                    color = Gray02,
-                    fontWeight = FontWeight.Bold
-                )
-
-                Spacer(Modifier.height(8.dp))
-
-                Text(
-                    text = "Appointment failed. Please check your internet connection then try again.",
-                    textAlign = TextAlign.Center,
-                    modifier = Modifier.padding(vertical = 8.dp)
-                )
-
-                Spacer(Modifier.height(24.dp))
-
-                Row(
-                    horizontalArrangement = Arrangement.spacedBy(16.dp),
-                    modifier = Modifier.fillMaxWidth()
+                // Blue Circle with Calendar Icon
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .background(Color(0x4448A5FE), CircleShape),
+                    contentAlignment = Alignment.Center
                 ) {
-                    Button(
-                        onClick = onTryAgain,
-                        modifier = Modifier.weight(1f),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = Blue01,
-                            contentColor = Color.White
-                        ),
-                        shape = RoundedCornerShape(8.dp)
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(Color(0xFF4285F4), CircleShape),
+                        contentAlignment = Alignment.Center
                     ) {
-                        Text("Try Again")
+                        // Calendar Icon (simplified)
+                        Text(
+                            text = "📅",
+                            fontSize = 24.sp,
+                            color = Color.White
+                        )
                     }
 
-                    OutlinedButton(
-                        onClick = onCancel,
-                        modifier = Modifier.weight(1f),
-                        shape = RoundedCornerShape(8.dp),
-                        border = BorderStroke(1.dp, Gray01)
+                    // Small blue dots around the main circle
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp)
                     ) {
-                        Text("Cancel", color = Gray02)
+                        // Top dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFF4285F4), CircleShape)
+                                .align(Alignment.TopCenter)
+                        )
+
+                        // Bottom dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFF4285F4), CircleShape)
+                                .align(Alignment.BottomCenter)
+                        )
+
+                        // Left dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFF4285F4), CircleShape)
+                                .align(Alignment.CenterStart)
+                        )
+
+                        // Right dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFF4285F4), CircleShape)
+                                .align(Alignment.CenterEnd)
+                        )
+
+                        // Top-left dot
+                        Box(
+                            modifier = Modifier
+                                .size(4.dp)
+                                .background(Color(0xFF4285F4), CircleShape)
+                                .align(Alignment.TopStart)
+                                .offset(x = 16.dp, y = 16.dp)
+                        )
+
+                        // Top-right dot
+                        Box(
+                            modifier = Modifier
+                                .size(4.dp)
+                                .background(Color(0xFF4285F4), CircleShape)
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-16).dp, y = 16.dp)
+                        )
                     }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Congratulations!",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFF4285F4)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Appointment successfully booked.\nYou will receive a notification and the\ndoctor you selected will contact you.",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        color = Color.Gray
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = onViewAppointment,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4285F4)
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text(
+                        text = "View Appointment",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(
+                    onClick = onCancel,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text(
+                        text = "Cancel",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
                 }
             }
         }
@@ -344,39 +374,181 @@ fun FailurePopup(
 }
 
 @Composable
-
-fun PinVerificationFlow(
-    onVerified: (isSuccess: Boolean) -> Unit
+fun FailureDialog(
+    onTryAgain: () -> Unit,
+    onCancel: () -> Unit
 ) {
-    var showSuccess by remember { mutableStateOf(false) }
-    var showFailure by remember { mutableStateOf(false) }
-
-    Box(modifier = Modifier.fillMaxSize()) {
-        // Always show the PIN screen in the background
-        PinVerificationScreen(
-            onSuccess = {
-                showSuccess = true
-                onVerified(true)
-            },
-            onFailure = {
-                showFailure = true
-                onVerified(false)
-            }
+    Dialog(
+        onDismissRequest = onCancel,
+        properties = DialogProperties(
+            usePlatformDefaultWidth = false
         )
-
-        // Show popups on top when needed
-        if (showSuccess) {
-            SuccessPopup(
-                onViewAppointment = { showSuccess = false },
-                onCancel = { showSuccess = false }
+    ) {
+        Card(
+            modifier = Modifier
+                .fillMaxWidth(0.9f)
+                .wrapContentHeight(),
+            shape = RoundedCornerShape(24.dp),
+            colors = CardDefaults.cardColors(
+                containerColor = Color.White
             )
-        }
+        ) {
+            Column(
+                modifier = Modifier.padding(24.dp),
+                horizontalAlignment = Alignment.CenterHorizontally
+            ) {
+                // Red Circle with X Icon
+                Box(
+                    modifier = Modifier
+                        .size(80.dp)
+                        .background(Color(0x44FF6B6B), CircleShape),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Box(
+                        modifier = Modifier
+                            .size(60.dp)
+                            .background(Color(0xFFFF6B6B), CircleShape),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        // X Icon
+                        Icon(
+                            imageVector = Icons.Default.Close,
+                            contentDescription = "Failure",
+                            tint = Color.White,
+                            modifier = Modifier.size(24.dp)
+                        )
+                    }
 
-        if (showFailure) {
-            FailurePopup(
-                onTryAgain = { showFailure = false },
-                onCancel = { showFailure = false }
-            )
+                    // Small red dots around the main circle
+                    Box(
+                        modifier = Modifier
+                            .fillMaxSize()
+                            .padding(4.dp)
+                    ) {
+                        // Top dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFFFF6B6B), CircleShape)
+                                .align(Alignment.TopCenter)
+                        )
+
+                        // Bottom dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFFFF6B6B), CircleShape)
+                                .align(Alignment.BottomCenter)
+                        )
+
+                        // Left dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFFFF6B6B), CircleShape)
+                                .align(Alignment.CenterStart)
+                        )
+
+                        // Right dot
+                        Box(
+                            modifier = Modifier
+                                .size(6.dp)
+                                .background(Color(0xFFFF6B6B), CircleShape)
+                                .align(Alignment.CenterEnd)
+                        )
+
+                        // Top-left dot
+                        Box(
+                            modifier = Modifier
+                                .size(4.dp)
+                                .background(Color(0xFFFF6B6B), CircleShape)
+                                .align(Alignment.TopStart)
+                                .offset(x = 16.dp, y = 16.dp)
+                        )
+
+                        // Top-right dot
+                        Box(
+                            modifier = Modifier
+                                .size(4.dp)
+                                .background(Color(0xFFFF6B6B), CircleShape)
+                                .align(Alignment.TopEnd)
+                                .offset(x = (-16).dp, y = 16.dp)
+                        )
+                    }
+                }
+
+                Spacer(modifier = Modifier.height(20.dp))
+
+                Text(
+                    text = "Oops, Failed!",
+                    style = MaterialTheme.typography.headlineSmall.copy(
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold,
+                        color = Color(0xFFFF6B6B)
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                Text(
+                    text = "Appointment failed. Please check\nyour internet connection then try\nagain.",
+                    textAlign = TextAlign.Center,
+                    style = MaterialTheme.typography.bodyMedium.copy(
+                        fontSize = 14.sp,
+                        lineHeight = 20.sp,
+                        color = Color.Gray
+                    )
+                )
+
+                Spacer(modifier = Modifier.height(24.dp))
+
+                Button(
+                    onClick = onTryAgain,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = Color(0xFF4285F4)
+                    ),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text(
+                        text = "Try Again",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
+
+                Spacer(modifier = Modifier.height(12.dp))
+
+                TextButton(
+                    onClick = onCancel,
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(48.dp),
+                    shape = RoundedCornerShape(24.dp)
+                ) {
+                    Text(
+                        text = "Cancel",
+                        fontSize = 16.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = Color.Gray
+                    )
+                }
+            }
         }
     }
+}
+
+@Composable
+fun PinVerificationFlow(
+    onBackClicked: () -> Unit,
+    onSuccess: () -> Unit,
+    onFailure: () -> Unit
+) {
+    PinVerificationScreen(
+        onBackClicked = onBackClicked,
+        onSuccess = onSuccess,
+        onFailure = onFailure
+    )
 }
