@@ -137,12 +137,12 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Articles",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.HomeScreen.route
+        route = PatientRoutes.topDoctors.route
     ),
     NavigationItem(
         title = "Profile",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.BookAppointment.route
+        route = PatientRoutes.searchDoctor.route
     ),
 )
 
