@@ -14,7 +14,8 @@ import com.example.projecttdm.ui.auth.screens.WelcomeScreen
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @Composable
-fun AuthNavigation(navController: NavHostController = rememberNavController()) {
+fun AuthNavigation(navController: NavHostController = rememberNavController(),
+                   onLoginSuccess: () -> Unit) {
     NavHost(navController, startDestination = AuthRoutes.splash.route) {
         composable(AuthRoutes.splash.route) {
             SplashScreen(onFinish = { navController.navigate(AuthRoutes.onboarding.route) })
@@ -54,7 +55,7 @@ fun AuthNavigation(navController: NavHostController = rememberNavController()) {
         }
         composable(AuthRoutes.welcomScreen.route) {
             WelcomeScreen(
-                navController = navController
+                navController = navController,
             )
         }
 

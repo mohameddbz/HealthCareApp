@@ -7,5 +7,4 @@ sealed class AuthRoutes  (val route : String){
     object onboarding3 : AuthRoutes("onboarding3")
     object welcomScreen : AuthRoutes("welcomScreen")
 
-
 }

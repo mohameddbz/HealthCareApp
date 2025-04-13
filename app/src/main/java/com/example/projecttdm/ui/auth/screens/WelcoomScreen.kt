@@ -88,14 +88,10 @@ fun WelcomeScreen(navController: NavHostController) {
             }
         })
 
-
-
-
-
         Spacer(modifier = Modifier.height(16.dp))
 
         // Bouton "Sign Up"
-        SignUpButton (onClick = { TODO() })
+        SignUpButton (onClick = { })
     }
 }
 
