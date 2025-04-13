@@ -8,6 +8,11 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.projecttdm.ui.patient.components.FailureDialog
+import com.example.projecttdm.ui.patient.components.SuccessDialog
+import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
+
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -47,7 +52,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable("pinVerification") {
-            PinVerificationFlow(
+            PinVerificationScreen(
                 onBackClicked = { navController.popBackStack() },
                 onSuccess = {
                     navController.navigate("success") {
