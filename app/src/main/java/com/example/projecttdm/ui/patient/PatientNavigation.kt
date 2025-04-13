@@ -33,7 +33,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(PatientRoutes.HomeScreen.route) {
-            MedicalAppScreen()
+            HomeScreen(navController)
                 }
 
         composable(PatientRoutes.PatientDetails.route) {
@@ -89,7 +89,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable(PatientRoutes.NotificationScreen.route) {
             val notificationViewModel : NotificationViewModel = NotificationViewModel()
             notificationViewModel.getNotifications()
-            NotificationsScreen(notificationViewModel)
+            NotificationsScreen(notificationViewModel,navController)
         }
     }
 }
