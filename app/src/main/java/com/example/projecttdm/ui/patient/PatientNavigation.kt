@@ -10,17 +10,26 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
+import com.example.projecttdm.viewmodel.DoctorListViewModel
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
+    val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
+    val doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
+        initializer { DoctorListViewModel(doctorSearchViewModel) }
+    })
     NavHost(
         navController = navController,
         startDestination = PatientRoutes.HomeScreen.route,
@@ -35,7 +44,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(PatientRoutes.HomeScreen.route) {
-            HomeScreen(navController)
+            HomeScreen(doctorSearchViewModel,doctorListViewModel,navController)
                 }
 
         composable(PatientRoutes.PatientDetails.route) {
@@ -104,7 +113,8 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.searchDoctor.route) {
             SearchScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                doctorSearchViewModel
             )
         }
     }

@@ -1,5 +1,6 @@
-package com.example.projecttdm.ui.patient.Components
+package com.example.projecttdm.ui.patient.components
 
+import android.view.WindowInsetsController
 import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
@@ -21,6 +22,8 @@ import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.BasicTextField
+import androidx.compose.foundation.text.KeyboardActions
+import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
 import androidx.compose.material.icons.filled.Person
@@ -47,23 +50,29 @@ import androidx.compose.ui.platform.LocalFocusManager
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.TextStyle
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavHostController
 import com.example.projecttdm.R
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.theme.Blue02
 import com.example.projecttdm.theme.Gray02
+import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.WindowSize
 import com.example.projecttdm.ui.patient.WindowType
-
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 
 @Composable
-fun SearchBar(
+fun CostumSearchBar(
     windowSize: WindowSize,
     query: String,
     onQueryChange: (String) -> Unit,
-    onSearch: (String) -> Unit = {}
+    onSearch: (String) -> Unit = {},
+    onFilterClick: () -> Unit = {},
+    doctorSearchViewModel: DoctorSearchViewModel,
+    navController: NavHostController
 ) {
     val focusManager = LocalFocusManager.current
 
@@ -107,12 +116,21 @@ fun SearchBar(
                 ),
                 singleLine = true,
                 cursorBrush = SolidColor(Color.Black),
+                keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
+                keyboardActions = KeyboardActions(
+                    onSearch = {
+                        onSearch(query)
+                        focusManager.clearFocus()
+                    }
+                ),
                 modifier = Modifier
                     .weight(1f)
                     .onKeyEvent { keyEvent ->
                         if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyUp) {
                             onSearch(query)
                             focusManager.clearFocus()
+                            doctorSearchViewModel.setSearchQuery(query)
+                            navController.navigate(PatientRoutes.searchDoctor.route)
                             true
                         } else {
                             false
@@ -160,12 +178,11 @@ fun SearchBar(
                         WindowType.Compact -> 20.dp
                         else -> 24.dp
                     })
-                    .clickable { /* Action pour le filtre */ }
+                    .clickable { onFilterClick() }
             )
         }
     }
 }
-
 
 
 

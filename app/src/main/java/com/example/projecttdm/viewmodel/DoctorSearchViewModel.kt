@@ -62,7 +62,7 @@ class DoctorSearchViewModel : ViewModel() {
         _selectedRating.value = rating
     }
 
-    fun setSearchQuery(query: String) {
+   public fun setSearchQuery(query: String) {
         _searchQuery.value = query
     }
 

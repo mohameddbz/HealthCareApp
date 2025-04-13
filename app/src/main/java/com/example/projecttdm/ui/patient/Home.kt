@@ -2,16 +2,19 @@ package com.example.projecttdm.ui.patient
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
+import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.FavoriteBorder
 import androidx.compose.material.icons.outlined.Notifications
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
@@ -24,14 +27,21 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
-import com.example.projecttdm.ui.patient.Components.DoctorSpecialitySection
-import com.example.projecttdm.ui.patient.Components.MedicalCheckBanner
-import  com.example.projecttdm.ui.patient.Components.SearchBar
+import com.example.projecttdm.data.model.Specialty
+import com.example.projecttdm.ui.patient.components.CategoryFilter
+import com.example.projecttdm.ui.patient.components.CostumSearchBar
+import com.example.projecttdm.ui.patient.components.DoctorSpecialitySection
+import com.example.projecttdm.ui.patient.components.MedicalCheckBanner
+import com.example.projecttdm.ui.patient.components.DoctorCard
+import com.example.projecttdm.viewmodel.DoctorListViewModel
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 
 
 // Classe pour gérer les informations de taille d'écran
@@ -51,10 +61,14 @@ fun getWindowType(size: Int): WindowType = when {
 }
 
 @Composable
-fun HomeScreen(navController :NavHostController) {
-    var searchQuery by remember { mutableStateOf("") }
+fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel: DoctorListViewModel = viewModel() , navController :NavHostController) {
+
+    val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
 
     val windowSize: WindowSize = calculateWindowSize()
+    val doctors by doctorListViewModel.doctors.collectAsState()
+    val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
+    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
     Scaffold(
         topBar = {
             TopAppBar(onNotificationClick = {
@@ -67,18 +81,25 @@ fun HomeScreen(navController :NavHostController) {
                 .fillMaxSize()
                 .background(Color.White)
                 .padding(paddingValues)
-                .verticalScroll(rememberScrollState()).padding(horizontal = 16.dp)
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 16.dp)
         ) {
 
             // Search Bar
-            SearchBar(
+            CostumSearchBar(
                 windowSize = windowSize,
                 query = searchQuery,
-                onQueryChange = { searchQuery = it },
+                onQueryChange =  setSearchQuery  ,
                 onSearch = { query ->
                     // Action à effectuer lors de la recherche
                     println("Recherche: $query")
-                }
+                },
+                onFilterClick = {
+                    println("Filter clicked")
+                },
+                doctorSearchViewModel = doctorSearchViewModel,
+                navController = navController
+
             )
 
             Spacer(modifier = Modifier.height(16.dp))
@@ -94,9 +115,36 @@ fun HomeScreen(navController :NavHostController) {
             Spacer(modifier = Modifier.height(16.dp))
 
             // Top Doctors Section
-            TopDoctorsSection(windowSize)
+            TopDoctorsSection(navController,windowSize,specialties,selectedSpecialty, {doctorSearchViewModel.setSpecialty(it)})
 
-            Spacer(modifier = Modifier.height(80.dp)) // Space for bottom navigation
+            Spacer(modifier = Modifier.height(8.dp)) // Space for bottom navigation
+            if (doctors.isEmpty()) {
+                Box(
+                    modifier = Modifier.fillMaxSize(),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text("No doctors found.")
+                }
+            } else {
+                LazyColumn(
+                    modifier = Modifier
+                        .fillMaxSize()
+                        .heightIn(300.dp, 600.dp)
+                        .padding(horizontal = 16.dp),
+                    verticalArrangement = Arrangement.spacedBy(8.dp)
+                ) {
+                    items(doctors) { doctor ->
+                        DoctorCard(
+                            doctor = doctor,
+                            isFavorite = false, // Could be managed via favorites list
+                            onFavoriteClick = { doctorListViewModel.toggleFavorite(doctor.id) },
+                            onDoctorClick = {  }
+                        )
+                    }
+                }
+            }
+            Spacer(modifier = Modifier.height(30.dp)) // Space for bottom navigation
+
 
         }
     }
@@ -203,7 +251,7 @@ fun TopAppBar(onNotificationClick :()-> Unit) {
 
 
 @Composable
-fun TopDoctorsSection(windowSize: WindowSize) {
+fun TopDoctorsSection(navController : NavHostController,windowSize: WindowSize, specialtiess: List<Specialty>,selectedSpecialtyy: Specialty?,onSpecialtySelected: (Specialty) -> Unit) {
     Column {
         Row(
             modifier = Modifier.fillMaxWidth(),
@@ -221,6 +269,9 @@ fun TopDoctorsSection(windowSize: WindowSize) {
             )
 
             Text(
+                modifier = Modifier.clickable {
+                    navController.navigate(PatientRoutes.topDoctors.route)
+                },
                 text = "See All",
                 fontSize = when (windowSize.width) {
                     WindowType.Compact -> 16.sp
@@ -230,124 +281,8 @@ fun TopDoctorsSection(windowSize: WindowSize) {
                 color = Color.Blue
             )
         }
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Category filters - Adjusting the layout based on screen width
-        when (windowSize.width) {
-            WindowType.Compact -> {
-                // Scrollable filters for small screens
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    FilterChip(
-                        selected = true,
-                        onClick = { /* Action */ },
-                        label = { Text("All") },
-                        modifier = Modifier.height(36.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color.Blue,
-                            selectedLabelColor = Color.White
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("General") },
-                        modifier = Modifier.height(36.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("Dentist") },
-                        modifier = Modifier.height(36.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("Nutritionist") },
-                        modifier = Modifier.height(36.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-                }
-            }
-            else -> {
-                // More spaced filters for larger screens
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    horizontalArrangement = Arrangement.spacedBy(16.dp)
-                ) {
-                    FilterChip(
-                        selected = true,
-                        onClick = { /* Action */ },
-                        label = { Text("All") },
-                        modifier = Modifier.height(40.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            selectedContainerColor = Color.Blue,
-                            selectedLabelColor = Color.White
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("General") },
-                        modifier = Modifier.height(40.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("Dentist") },
-                        modifier = Modifier.height(40.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("Nutritionist") },
-                        modifier = Modifier.height(40.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-
-                    FilterChip(
-                        selected = false,
-                        onClick = { /* Action */ },
-                        label = { Text("Ophthalmologist") },
-                        modifier = Modifier.height(40.dp),
-                        colors = FilterChipDefaults.filterChipColors(
-                            containerColor = Color.White,
-                            labelColor = Color.Black
-                        )
-                    )
-                }
-            }
-        }
+        CategoryFilter(
+            specialties = specialtiess, selectedSpecialty = selectedSpecialtyy, onSpecialtySelected = onSpecialtySelected,
+        )
     }
 }
