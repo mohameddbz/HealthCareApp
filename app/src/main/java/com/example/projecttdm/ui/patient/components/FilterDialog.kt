@@ -32,11 +32,13 @@ fun FilterDialog(
 
     val selectedRatingVM by doctorSearchViewModel.selectedRating.collectAsState()
     var selectedRating by remember { mutableStateOf(selectedRatingVM) }
+
+    // Apply the custom theme to the ModalBottomSheet
     ModalBottomSheet(
         onDismissRequest = onDismiss,
         sheetState = modalBottomSheetState,
-        containerColor = Color.White,
-        shape = RoundedCornerShape(topStart =36.dp, topEnd = 36.dp),
+        containerColor = MaterialTheme.colorScheme.background, // Using theme color
+        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
     ) {
         Column(
             modifier = Modifier
@@ -52,22 +54,20 @@ fun FilterDialog(
             ) {
                 Text(
                     text = "Filter",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.Bold
+                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                 )
             }
 
             Divider(
-                color = Color(0xFFE0E0E0),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
                 thickness = 1.dp,
-                modifier = Modifier.fillMaxWidth().padding(bottom =20.dp)
+                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
             )
 
             // Specialty section
             Text(
                 text = "Speciality",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -89,8 +89,7 @@ fun FilterDialog(
             // Rating section
             Text(
                 text = "Rating",
-                style = MaterialTheme.typography.bodyLarge,
-                fontWeight = FontWeight.Bold,
+                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
                 modifier = Modifier.padding(bottom = 8.dp)
             )
 
@@ -101,7 +100,7 @@ fun FilterDialog(
             Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .padding(bottom =20.dp),
+                    .padding(bottom = 20.dp),
                 horizontalArrangement = Arrangement.spacedBy(8.dp)
             ) {
                 RatingFilter(
@@ -112,9 +111,9 @@ fun FilterDialog(
             }
 
             Divider(
-                color = Color(0xFFE0E0E0),
+                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
                 thickness = 1.dp,
-                modifier = Modifier.fillMaxWidth().padding(bottom =24.dp),
+                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
             )
 
             // Buttons
@@ -132,13 +131,13 @@ fun FilterDialog(
                         .weight(1f)
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color(0xFFEEF2FF)
+                        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
                     ),
                     shape = RoundedCornerShape(50.dp) // Fully rounded button
                 ) {
                     Text(
                         text = "Reset",
-                        color = Color.Blue
+                        color = MaterialTheme.colorScheme.primary
                     )
                 }
 
@@ -153,13 +152,13 @@ fun FilterDialog(
                         .weight(1f)
                         .height(50.dp),
                     colors = ButtonDefaults.buttonColors(
-                        containerColor = Color.Blue
+                        containerColor = MaterialTheme.colorScheme.primary
                     ),
                     shape = RoundedCornerShape(50.dp) // Fully rounded button
                 ) {
                     Text(
                         text = "Apply",
-                        color = Color.White
+                        color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
 
@@ -170,4 +169,3 @@ fun FilterDialog(
         }
     }
 }
-

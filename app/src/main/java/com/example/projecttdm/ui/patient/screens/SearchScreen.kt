@@ -45,7 +45,7 @@ fun SearchScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color(0xFFF8F8F8))
+            .background(MaterialTheme.colorScheme.background) // Using theme's background color
     ) {
         TopAppBar(
             title = {
@@ -72,8 +72,8 @@ fun SearchScreen(
                     },
                     singleLine = true,
                     colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = Color(0xFFF5F5F5),
-                        focusedContainerColor = Color(0xFFF5F5F5),
+                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant, // Background color for search
+                        focusedContainerColor = MaterialTheme.colorScheme.surface, // Background color on focus
                         unfocusedIndicatorColor = Color.Transparent,
                         focusedIndicatorColor = Color.Transparent
                     )
@@ -86,7 +86,11 @@ fun SearchScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .padding(horizontal = 12.dp)
+                .padding(horizontal = 12.dp),
+            colors = TopAppBarDefaults.mediumTopAppBarColors(
+                containerColor = MaterialTheme.colorScheme.primaryContainer, // Using theme for TopAppBar container color
+                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer // Title color from theme
+            )
         )
 
         CategoryFilter(
@@ -103,9 +107,9 @@ fun SearchScreen(
             verticalAlignment = Alignment.CenterVertically
         ) {
             Text(
-                text = "$resultsCount founds",
+                text = "$resultsCount found",
                 style = MaterialTheme.typography.bodyMedium,
-                color = Color.Blue
+                color = MaterialTheme.colorScheme.primary // Color using the theme
             )
         }
 
@@ -115,7 +119,7 @@ fun SearchScreen(
                 modifier = Modifier.fillMaxSize(),
                 contentAlignment = Alignment.Center
             ) {
-                CircularProgressIndicator(color = Color.Blue)
+                CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) // Using theme color for indicator
             }
         } else {
             if (doctors.isEmpty()) {

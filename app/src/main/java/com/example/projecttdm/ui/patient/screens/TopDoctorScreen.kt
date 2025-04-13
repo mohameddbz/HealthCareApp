@@ -43,14 +43,16 @@ fun TopDoctorScreen(
                 title = {
                     Text(
                         text = "Top Doctors",
-                        fontWeight = FontWeight.Bold
+                        fontWeight = FontWeight.Bold,
+                        style = MaterialTheme.typography.titleLarge // Apply theme typography
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
                             imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back"
+                            contentDescription = "Back",
+                            tint = MaterialTheme.colorScheme.onPrimary // Use theme color for icon
                         )
                     }
                 },
@@ -58,7 +60,8 @@ fun TopDoctorScreen(
                     IconButton(onClick = onSearchClick) {
                         Icon(
                             imageVector = Icons.Default.Search,
-                            contentDescription = "Search"
+                            contentDescription = "Search",
+                            tint = MaterialTheme.colorScheme.onPrimary // Apply theme color for icon
                         )
                     }
                     IconButton(onClick = { /* TODO: Implement more options */ }) {
@@ -66,11 +69,13 @@ fun TopDoctorScreen(
                             text = "⋯",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = Color.Black
+                            color = MaterialTheme.colorScheme.onPrimary // Apply theme color for text
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(containerColor = Color.White)
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.primary // Apply primary color from theme
+                )
             )
         }
     ) { paddingValues ->
@@ -92,7 +97,11 @@ fun TopDoctorScreen(
                     modifier = Modifier.fillMaxSize(),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text("No doctors found.")
+                    Text(
+                        text = "No doctors found.",
+                        style = MaterialTheme.typography.bodyLarge,
+                        color = MaterialTheme.colorScheme.onSurface // Apply theme color for text
+                    )
                 }
             } else {
                 LazyColumn(

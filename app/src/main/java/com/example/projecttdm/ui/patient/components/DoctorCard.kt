@@ -37,7 +37,7 @@ fun DoctorCard(
             .clickable { onDoctorClick() },
         shape = RoundedCornerShape(12.dp),
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = Color.White)
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
     ) {
         Row(
             modifier = Modifier
@@ -51,7 +51,7 @@ fun DoctorCard(
                     .height(80.dp) // Set fixed height for rectangle shape
                     .width(80.dp) // Set fixed width
                     .clip(RoundedCornerShape(8.dp)) // Rounded corners for the rectangle
-                    .background(Color(0xFFE0E0E0)) // Background color
+                    .background(MaterialTheme.colorScheme.surfaceVariant) // Background color from theme
             ) {
                 if (doctor.imageResId != null) {
                     Image(
@@ -66,8 +66,6 @@ fun DoctorCard(
                             data = doctor.imageUrl,
                             builder = {
                                 crossfade(true)
-//                                placeholder(R.drawable.doctor_placeholder)
-//                                error(R.drawable.doctor_placeholder)
                             }
                         ),
                         contentDescription = "Doctor ${doctor.name}",
@@ -90,7 +88,8 @@ fun DoctorCard(
                     Text(
                         text = "Dr. ${doctor.name}",
                         fontWeight = FontWeight.Bold,
-                        fontSize = 16.sp
+                        fontSize = 16.sp,
+                        color = MaterialTheme.colorScheme.onSurface
                     )
 
                     // Favorite Icon on the Right
@@ -102,7 +101,7 @@ fun DoctorCard(
                         Icon(
                             imageVector = if (isFavorite) Icons.Default.Favorite else Icons.Default.FavoriteBorder,
                             contentDescription = "Favorite",
-                            tint = if (isFavorite) Color(0xFFE91E63) else Color.Gray
+                            tint = if (isFavorite) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.onSurfaceVariant
                         )
                     }
                 }
@@ -111,7 +110,7 @@ fun DoctorCard(
 
                 Text(
                     text = "${doctor.specialty.name} | ${doctor.hospital}",
-                    color = Color.Gray,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant,
                     fontSize = 14.sp
                 )
 
@@ -123,13 +122,13 @@ fun DoctorCard(
                     Icon(
                         imageVector = Icons.Default.Star,
                         contentDescription = null,
-                        tint = Color(0xFFFFC107),
+                        tint = MaterialTheme.colorScheme.secondary,
                         modifier = Modifier.size(16.dp)
                     )
 
                     Text(
                         text = " ${doctor.rating} (${doctor.reviewCount} reviews)",
-                        color = Color.Gray,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
                         fontSize = 14.sp
                     )
                 }

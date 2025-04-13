@@ -6,11 +6,11 @@ import androidx.compose.animation.core.tween
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.*
 import androidx.compose.material3.CircularProgressIndicator
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
-import androidx.compose.ui.res.colorResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.projecttdm.R
@@ -24,7 +24,10 @@ fun SplashScreen(onFinish: () -> Unit) {
     LaunchedEffect(true) {
         scale.animateTo(
             targetValue = 1.2f,
-            animationSpec = tween(durationMillis = 1000, easing = { OvershootInterpolator(4f).getInterpolation(it) })
+            animationSpec = tween(
+                durationMillis = 1000,
+                easing = { OvershootInterpolator(4f).getInterpolation(it) }
+            )
         )
         delay(2000)
         isLoading = false
@@ -50,7 +53,7 @@ fun SplashScreen(onFinish: () -> Unit) {
 
             if (isLoading) {
                 CircularProgressIndicator(
-                    color = colorResource(id = R.color.bleu_clair),
+                    color = MaterialTheme.colorScheme.outline,
                     strokeWidth = 4.dp
                 )
             }

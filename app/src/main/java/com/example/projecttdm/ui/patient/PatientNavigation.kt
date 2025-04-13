@@ -1,6 +1,5 @@
 package com.example.projecttdm.ui.patient
 
-import NotificationsScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
@@ -8,6 +7,12 @@ import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import com.example.projecttdm.ui.notifications.NotificationsScreen
+import com.example.projecttdm.ui.patient.components.Appointment.FailurePopup
+import com.example.projecttdm.ui.patient.components.Appointment.SuccessPopup
+import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
+import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
+import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
 import com.example.projecttdm.viewmodel.NotificationViewModel
@@ -29,26 +34,36 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.PatientDetails.route) {
             PatientDetailsScreen(
-                onNextClicked = { navController.navigate(PatientRoutes.topDoctors.route)  }
+                onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
+                onNextClicked = { navController.navigate(PatientRoutes.topDoctors.route) }
             )
         }
 
+
         composable(PatientRoutes.PinVerification.route) {
-            PinVerificationFlow { isSuccess ->
-                if (isSuccess) {
+            PinVerificationScreen(
+                onSuccess = {
                     navController.navigate(PatientRoutes.Success.route) {
                         popUpTo(PatientRoutes.PinVerification.route) { inclusive = true }
                     }
-                } else {
+                },
+                onFailure = {
                     navController.navigate(PatientRoutes.Failure.route) {
                         popUpTo(PatientRoutes.PinVerification.route) { inclusive = true }
                     }
+                },
+                onBackClicked = {
+                    navController.navigate(PatientRoutes.Success.route) {
+                        popUpTo(PatientRoutes.PinVerification.route) { inclusive = true }
+                    }
                 }
-            }
+            )
         }
 
+
+
         composable(PatientRoutes.Success.route) {
-            SuccessPopup(
+            SuccessPopup (
                 onViewAppointment = {
                     navController.navigate(PatientRoutes.PatientDetails.route) {
                         popUpTo(0)
@@ -79,8 +94,11 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.NotificationScreen.route) {
             val notificationViewModel : NotificationViewModel = NotificationViewModel()
-            notificationViewModel.getNotifications()
-            NotificationsScreen(notificationViewModel)
+            NotificationsScreen(
+                viewModel = notificationViewModel,
+                onBackPressed = TODO(),
+                onMoreClick = TODO()
+            )
         }
 
         composable(PatientRoutes.topDoctors.route) {
