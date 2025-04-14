@@ -18,6 +18,9 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
+import com.example.projecttdm.data.local.BookAppointmentData
+import com.example.projecttdm.theme.Blue01
+import com.example.projecttdm.theme.Blue02
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -28,17 +31,7 @@ fun TimeSlotGrid(
     onTimeSelected: (LocalTime) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeSlots = remember {
-        listOf(
-            LocalTime.of(9, 0), LocalTime.of(9, 30),
-            LocalTime.of(10, 0), LocalTime.of(10, 30),
-            LocalTime.of(11, 0), LocalTime.of(11, 30),
-            LocalTime.of(15, 0), LocalTime.of(15, 30),
-            LocalTime.of(16, 0), LocalTime.of(16, 30),
-            LocalTime.of(17, 0), LocalTime.of(17, 30)
-        )
-    }
-
+    val timeSlots = remember { BookAppointmentData.availableTimeSlots }
     val timeFormatter = remember { DateTimeFormatter.ofPattern("hh:mm a") }
 
     LazyVerticalGrid(
@@ -49,21 +42,39 @@ fun TimeSlotGrid(
     ) {
         items(timeSlots) { time ->
             val isSelected = time == selectedTime
+            val isAvailable = remember { BookAppointmentData.isTimeSlotAvailable(time) }
+
+            // Determine colors based on selection and availability
+            val backgroundColor = when {
+                isSelected -> Blue01
+                isAvailable -> Color.Transparent
+                else -> Color.LightGray.copy(alpha = 0.3f)
+            }
+
+            val borderColor = when {
+                isSelected -> Blue01
+                isAvailable -> Blue02
+                else -> Color.LightGray
+            }
+
+            val textColor = when {
+                isSelected -> Color.White
+                isAvailable -> Blue01  // Changed to Blue01 as requested
+                else -> Color.Gray
+            }
 
             Surface(
                 shape = MaterialTheme.shapes.small,
-                color = if (isSelected) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
-                border = BorderStroke(
-                    1.dp,
-                    if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary
-                ),
-                onClick = { onTimeSelected(time) },
+                color = backgroundColor,
+                border = BorderStroke(1.dp, borderColor),
+                onClick = { if (isAvailable) onTimeSelected(time) },
+                enabled = isAvailable,
                 modifier = Modifier.height(48.dp)
             ) {
                 Box(contentAlignment = Alignment.Center) {
                     Text(
                         text = time.format(timeFormatter),
-                        color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.secondary,
+                        color = textColor,
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }

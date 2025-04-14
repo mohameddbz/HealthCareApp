@@ -13,24 +13,36 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.theme.Blue02
-import java.time.LocalDate
-import java.time.LocalTime
-import java.time.YearMonth
 import com.example.projecttdm.ui.patient.components.Appointment.DatePicker
 import com.example.projecttdm.ui.patient.components.Appointment.TimeSlotGrid
+import com.example.projecttdm.viewmodel.BookAppointmentViewModel
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.verticalScroll
+
 
 @RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun BookAppointmentScreen(onNextClicked: () -> Unit) {
-    // State for selected date and time
-    var selectedDate by remember { mutableStateOf<LocalDate?>(null) }
-    var selectedTime by remember { mutableStateOf<LocalTime?>(null) }
+fun BookAppointmentScreen(
+    doctorId: String,
+    patientId: String,
+    onNextClicked: () -> Unit,
+    appointmentViewModel: BookAppointmentViewModel = viewModel()
+) {
+    // Set doctor and patient IDs when the screen is composed
+    LaunchedEffect(doctorId, patientId) {
+        appointmentViewModel.setDoctorId(doctorId)
+        appointmentViewModel.setPatientId(patientId)
+    }
 
-    // Current month to initialize the date picker
-    val currentMonth = remember { YearMonth.now() }
+    // Collect state from ViewModel
+    val selectedDate by appointmentViewModel.selectedDate.collectAsState()
+    val selectedTime by appointmentViewModel.selectedTime.collectAsState()
+    val currentMonth by appointmentViewModel.currentMonth.collectAsState()
+    val reason by appointmentViewModel.reason.collectAsState()
 
     Column(
         modifier = Modifier
@@ -68,13 +80,11 @@ fun BookAppointmentScreen(onNextClicked: () -> Unit) {
             selectedDate = selectedDate,
             initialMonth = currentMonth,
             onDateSelected = { date ->
-                // Deselect date if the same one is selected again
+                // Handle date selection through the ViewModel
                 if (selectedDate == date) {
-                    selectedDate = null
-                    selectedTime = null
+                    appointmentViewModel.setSelectedDate(null)
                 } else {
-                    selectedDate = date
-                    selectedTime = null
+                    appointmentViewModel.setSelectedDate(date)
                 }
             },
             modifier = Modifier
@@ -99,15 +109,20 @@ fun BookAppointmentScreen(onNextClicked: () -> Unit) {
         // Time Slot Grid Component
         TimeSlotGrid(
             selectedTime = selectedTime,
-            onTimeSelected = { time -> selectedTime = time },
+            onTimeSelected = { time -> appointmentViewModel.setSelectedTime(time) },
             modifier = Modifier.fillMaxWidth()
         )
 
-        Spacer(modifier = Modifier.weight(1f))
+        Spacer(modifier = Modifier.height(16.dp))
+
 
         // Next Button
         Button(
-            onClick = onNextClicked,
+            onClick = {
+                if (appointmentViewModel.bookAppointment()) {
+                    onNextClicked()
+                }
+            },
             enabled = selectedDate != null && selectedTime != null,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Blue01,
@@ -120,7 +135,7 @@ fun BookAppointmentScreen(onNextClicked: () -> Unit) {
             shape = RoundedCornerShape(16.dp)
         ) {
             Text(
-                "Next",
+                "Book Appointment",
                 style = MaterialTheme.typography.bodyLarge.copy(
                     fontSize = 16.sp,
                     fontWeight = FontWeight.Medium
