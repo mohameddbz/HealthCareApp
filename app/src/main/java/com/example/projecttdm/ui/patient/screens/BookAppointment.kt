@@ -32,13 +32,13 @@ fun BookAppointmentScreen(
     onNextClicked: () -> Unit,
     appointmentViewModel: BookAppointmentViewModel = viewModel()
 ) {
-    // Set doctor and patient IDs when the screen is composed
+    val colorScheme = MaterialTheme.colorScheme
+
     LaunchedEffect(doctorId, patientId) {
         appointmentViewModel.setDoctorId(doctorId)
         appointmentViewModel.setPatientId(patientId)
     }
 
-    // Collect state from ViewModel
     val selectedDate by appointmentViewModel.selectedDate.collectAsState()
     val selectedTime by appointmentViewModel.selectedTime.collectAsState()
     val currentMonth by appointmentViewModel.currentMonth.collectAsState()
@@ -47,40 +47,36 @@ fun BookAppointmentScreen(
     Column(
         modifier = Modifier
             .fillMaxSize()
-            .background(Color.White)
+            .background(colorScheme.background)
             .padding(horizontal = 20.dp, vertical = 16.dp),
         horizontalAlignment = Alignment.Start
     ) {
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Title Section
         Text(
             text = "Book Appointment",
             style = MaterialTheme.typography.titleLarge.copy(
-                color = Color.Black,
+                color = colorScheme.onBackground,
                 fontSize = 24.sp,
                 fontWeight = FontWeight.SemiBold
             ),
             modifier = Modifier.padding(bottom = 24.dp)
         )
 
-        // Date Selection Section
         Text(
             text = "Select Date",
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.Black,
+                color = colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             ),
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        // Date Picker Component
         DatePicker(
             selectedDate = selectedDate,
             initialMonth = currentMonth,
             onDateSelected = { date ->
-                // Handle date selection through the ViewModel
                 if (selectedDate == date) {
                     appointmentViewModel.setSelectedDate(null)
                 } else {
@@ -89,24 +85,22 @@ fun BookAppointmentScreen(
             },
             modifier = Modifier
                 .fillMaxWidth()
-                .background(Blue02, RoundedCornerShape(16.dp))
+                .background(colorScheme.primaryContainer, RoundedCornerShape(16.dp))
                 .padding(16.dp)
         )
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Time Selection Section
         Text(
             text = "Select Hour",
             style = MaterialTheme.typography.titleMedium.copy(
-                color = Color.Black,
+                color = colorScheme.onBackground,
                 fontSize = 16.sp,
                 fontWeight = FontWeight.Medium
             ),
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        // Time Slot Grid Component
         TimeSlotGrid(
             selectedTime = selectedTime,
             onTimeSelected = { time -> appointmentViewModel.setSelectedTime(time) },
@@ -115,8 +109,6 @@ fun BookAppointmentScreen(
 
         Spacer(modifier = Modifier.height(16.dp))
 
-
-        // Next Button
         Button(
             onClick = {
                 if (appointmentViewModel.bookAppointment()) {
@@ -125,9 +117,9 @@ fun BookAppointmentScreen(
             },
             enabled = selectedDate != null && selectedTime != null,
             colors = ButtonDefaults.buttonColors(
-                containerColor = Blue01,
-                disabledContainerColor = Color(0xFFBBCBF1),
-                contentColor = Color.White
+                containerColor = colorScheme.primary,
+                disabledContainerColor = colorScheme.secondaryContainer,
+                contentColor = colorScheme.onPrimary
             ),
             modifier = Modifier
                 .fillMaxWidth()

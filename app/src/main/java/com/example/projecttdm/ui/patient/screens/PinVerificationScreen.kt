@@ -22,13 +22,18 @@ fun PinVerificationScreen(
     onSuccess: () -> Unit,
     onFailure: () -> Unit
 ) {
-    val correctPin = "0000" // Correct pin for verification
+    val correctPin = "0000"
+    val colorScheme = MaterialTheme.colorScheme
+    val typography = MaterialTheme.typography
 
-    Box(modifier = Modifier.fillMaxSize()) {
+    Box(
+        modifier = Modifier
+            .fillMaxSize()
+            .background(colorScheme.background)
+    ) {
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
                 .padding(horizontal = 24.dp),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
@@ -43,10 +48,9 @@ fun PinVerificationScreen(
                     Icon(
                         imageVector = Icons.Default.ArrowBack,
                         contentDescription = "Back",
-                        tint = Color.Black
+                        tint = colorScheme.onBackground
                     )
                 }
-
                 Spacer(modifier = Modifier.weight(1f))
             }
 
@@ -55,10 +59,10 @@ fun PinVerificationScreen(
             // Title
             Text(
                 text = "Enter Verification PIN",
-                style = MaterialTheme.typography.headlineMedium.copy(
+                style = typography.headlineMedium.copy(
                     fontSize = 24.sp,
                     fontWeight = FontWeight.Bold,
-                    color = Color.Black
+                    color = colorScheme.onBackground
                 ),
                 modifier = Modifier.padding(bottom = 16.dp)
             )
@@ -66,8 +70,8 @@ fun PinVerificationScreen(
             // Description
             Text(
                 text = "Please enter the 4-digit code sent to your phone",
-                style = MaterialTheme.typography.bodyMedium.copy(
-                    color = Color.Gray,
+                style = typography.bodyMedium.copy(
+                    color = colorScheme.onSurfaceVariant,
                     textAlign = TextAlign.Center
                 ),
                 modifier = Modifier.padding(bottom = 40.dp)
@@ -83,3 +87,4 @@ fun PinVerificationScreen(
         }
     }
 }
+
