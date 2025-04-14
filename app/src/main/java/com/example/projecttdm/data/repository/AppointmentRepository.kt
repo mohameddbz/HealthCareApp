@@ -39,6 +39,7 @@ class AppointmentRepository {
             time = time,
             status = AppointmentStatus.PENDING,
             reason = reason
+
         )
 
 

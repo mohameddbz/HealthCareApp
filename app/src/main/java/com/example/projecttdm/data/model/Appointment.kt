@@ -11,5 +11,5 @@ data class Appointment(
     val time: LocalTime,
     val status: AppointmentStatus = AppointmentStatus.PENDING,
     val reason: String = "",
-    val notes: String = ""
+
 )

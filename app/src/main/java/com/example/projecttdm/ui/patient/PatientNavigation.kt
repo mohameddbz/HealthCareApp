@@ -10,6 +10,8 @@ import androidx.navigation.compose.rememberNavController
 import com.example.projecttdm.ui.notifications.NotificationsScreen
 import com.example.projecttdm.ui.patient.components.Appointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.Appointment.SuccessPopup
+import com.example.projecttdm.ui.patient.screens.AppointmentReview
+import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
@@ -28,7 +30,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable(PatientRoutes.BookAppointment.route) {
             BookAppointmentScreen(
                 onNextClicked = {
-                    navController.navigate(PatientRoutes.PinVerification.route)
+                    navController.navigate(PatientRoutes.PatientDetails.route)
                 },
                 doctorId = "defaultDoctorId",
                 patientId = "defaultPatientId",
@@ -39,9 +41,19 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable(PatientRoutes.PatientDetails.route) {
             PatientDetailsScreen(
                 onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
-                onNextClicked = { navController.navigate(PatientRoutes.topDoctors.route) }
+                onNextClicked = { navController.navigate(PatientRoutes.PatientSummary.route) }
             )
         }
+        composable(PatientRoutes.PatientSummary.route) {
+            AppointmentReviewScreen(
+                navController = navController,
+                onBackPressed = { navController.popBackStack() },
+                onNextPressed = {
+                    navController.navigate(PatientRoutes.PinVerification.route)
+                }
+            )
+        }
+
 
 
         composable(PatientRoutes.PinVerification.route) {
