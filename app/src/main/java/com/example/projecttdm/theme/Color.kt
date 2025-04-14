@@ -29,3 +29,4 @@ val DarkTextPrimary = Color(0xFFFFFFFF)
 val DarkTextSecondary = Color(0xFF246BFD)
 val BorderLight = Color(0xFF246BFD)
 val BorderDark = Color(0xFFFFFFFF)
+

@@ -17,6 +17,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.components.LoginButton
 import com.example.projecttdm.ui.auth.components.SignUpButton
 import com.example.projecttdm.ui.doctor.DoctorActivity
@@ -84,7 +85,7 @@ fun WelcomeScreen(navController: NavHostController) {
 
         // Bouton "Sign Up"
         SignUpButton(onClick = {
-            navController.navigate("signup") // Replace with your real route if needed
+            navController.navigate(AuthRoutes.loginScreen.route)
         })
     }
 }

@@ -9,8 +9,10 @@ import androidx.navigation.compose.rememberNavController
 import com.example.projecttdm.ui.auth.screens.OnboardingScreen
 import com.example.projecttdm.ui.auth.screens.SplashScreen
 import com.example.projecttdm.R
+import com.example.projecttdm.ui.auth.screens.FillProfileScreen
+import com.example.projecttdm.ui.auth.screens.LoginScreen
+import com.example.projecttdm.ui.auth.screens.SignInScreen
 import com.example.projecttdm.ui.auth.screens.WelcomeScreen
-import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController(),
@@ -57,10 +59,18 @@ fun AuthNavigation(navController: NavHostController = rememberNavController(),
                 navController = navController,
             )
         }
-
-
-
-
-
+        composable(AuthRoutes.loginScreen.route) {
+            LoginScreen(navController = navController)
+        }
+        composable(AuthRoutes.registerScreen.route) {
+            SignInScreen(navController = navController)
+        }
+        composable(AuthRoutes.profileScreen.route) {
+            FillProfileScreen()
+        }
     }
+
 }
+
+
+

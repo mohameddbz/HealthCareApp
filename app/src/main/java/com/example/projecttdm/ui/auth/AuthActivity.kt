@@ -13,7 +13,7 @@ class AuthActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ProjectTDMTheme {
+            ProjectTDMTheme{
                 AuthNavigation(
                     onLoginSuccess = {
                         // Navigate to MainActivity (or another destination) and close this screen

@@ -34,7 +34,7 @@ class PatientActivity : ComponentActivity() {
         setContent {
             val navController: NavHostController = rememberNavController()
 
-            ProjectTDMTheme {
+            ProjectTDMTheme{
                 Scaffold(
                     bottomBar = {
                         BottomNavigationBar(navController)

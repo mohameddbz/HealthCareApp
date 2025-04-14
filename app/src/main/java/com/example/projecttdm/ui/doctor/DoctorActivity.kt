@@ -11,7 +11,7 @@ class DoctorActivity : ComponentActivity() {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge()
         setContent {
-            ProjectTDMTheme {
+            ProjectTDMTheme{
                 DoctorNavigation()
             }
         }
