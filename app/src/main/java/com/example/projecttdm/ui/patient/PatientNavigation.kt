@@ -2,7 +2,16 @@ package com.example.projecttdm.ui.patient
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -11,18 +20,26 @@ import com.example.projecttdm.ui.notifications.NotificationsScreen
 import com.example.projecttdm.ui.patient.components.Appointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.Appointment.SuccessPopup
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
+import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
+import com.example.projecttdm.viewmodel.DoctorListViewModel
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PatientNavigation(navController: NavHostController = rememberNavController()) {
+fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
+    val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
+    val doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
+        initializer { DoctorListViewModel(doctorSearchViewModel) }
+    })
     NavHost(
         navController = navController,
-        startDestination = PatientRoutes.BookAppointment.route
+        startDestination = PatientRoutes.HomeScreen.route,
+        modifier = modifier
     ) {
         composable(PatientRoutes.BookAppointment.route) {
             BookAppointmentScreen(
@@ -31,6 +48,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 }
             )
         }
+
+        composable(PatientRoutes.HomeScreen.route) {
+            HomeScreen(doctorSearchViewModel,doctorListViewModel,navController)
+                }
 
         composable(PatientRoutes.PatientDetails.route) {
             PatientDetailsScreen(
@@ -94,11 +115,8 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.NotificationScreen.route) {
             val notificationViewModel : NotificationViewModel = NotificationViewModel()
-            NotificationsScreen(
-                viewModel = notificationViewModel,
-                onBackPressed = TODO(),
-                onMoreClick = TODO()
-            )
+            notificationViewModel.getNotifications()
+            NotificationsScreen(notificationViewModel,navController)
         }
 
         composable(PatientRoutes.topDoctors.route) {
@@ -111,8 +129,46 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.searchDoctor.route) {
             SearchScreen(
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
+                doctorSearchViewModel
             )
         }
     }
 }
+
+
+
+data class NavigationItem(
+    val title: String,
+    val icon: ImageVector,
+    val route: String
+)
+
+val navigationItems = listOf(
+    NavigationItem(
+        title = "Home",
+        icon = Icons.Default.Home,
+        route = PatientRoutes.HomeScreen.route
+    ),
+    NavigationItem(
+        title = "Appointment",
+        icon = Icons.Default.Person,
+        route = PatientRoutes.BookAppointment.route
+    ),
+    NavigationItem(
+        title = "History",
+        icon = Icons.Default.ShoppingCart,
+        route = PatientRoutes.HomeScreen.route
+    ),
+    NavigationItem(
+        title = "Articles",
+        icon = Icons.Default.ShoppingCart,
+        route = PatientRoutes.PatientDetails.route
+    ),
+    NavigationItem(
+        title = "Profile",
+        icon = Icons.Default.ShoppingCart,
+        route = PatientRoutes.searchDoctor.route
+    ),
+)
+

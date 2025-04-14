@@ -45,7 +45,8 @@ fun TimeSlotGrid(
         columns = GridCells.Fixed(3),
         verticalArrangement = Arrangement.spacedBy(8.dp),
         horizontalArrangement = Arrangement.spacedBy(8.dp),
-        modifier = modifier
+        modifier  = Modifier
+            .height(200.dp)
     ) {
         items(timeSlots) { time ->
             val isSelected = time == selectedTime

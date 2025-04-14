@@ -24,7 +24,7 @@ import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 @Composable
 fun SearchScreen(
     onBackClick: () -> Unit = {},
-    doctorSearchViewModel: DoctorSearchViewModel = viewModel()
+    doctorSearchViewModel: DoctorSearchViewModel
 ) {
     val doctors by doctorSearchViewModel.filteredDoctors.collectAsState()
     val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
