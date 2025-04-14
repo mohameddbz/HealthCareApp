@@ -27,6 +27,7 @@ import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -45,7 +46,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             BookAppointmentScreen(
                 onNextClicked = {
                     navController.navigate(PatientRoutes.PinVerification.route)
-                }
+                },
+                doctorId = "defaultDoctorId",
+                patientId = "defaultPatientId",
+                appointmentViewModel = BookAppointmentViewModel()
             )
         }
 
