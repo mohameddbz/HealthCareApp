@@ -34,22 +34,28 @@ fun SplashScreen(onFinish: () -> Unit) {
         onFinish()
     }
 
-    Box(
-        modifier = Modifier.fillMaxSize(),
+    BoxWithConstraints(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(16.dp),
         contentAlignment = Alignment.Center
     ) {
+        val logoSize = this@BoxWithConstraints.maxWidth * 0.4f
+
         Column(
-            horizontalAlignment = Alignment.CenterHorizontally
+            horizontalAlignment = Alignment.CenterHorizontally,
+            verticalArrangement = Arrangement.Center,
+            modifier = Modifier.fillMaxSize()
         ) {
             Image(
                 painter = painterResource(id = R.drawable.logo),
                 contentDescription = "App Logo",
                 modifier = Modifier
-                    .size(150.dp)
+                    .size(logoSize)
                     .scale(scale.value)
             )
 
-            Spacer(modifier = Modifier.height(32.dp))
+            Spacer(modifier = Modifier.height(this@BoxWithConstraints.maxHeight * 0.05f))
 
             if (isLoading) {
                 CircularProgressIndicator(

@@ -48,6 +48,7 @@ fun NotificationsScreen(viewModel:NotificationViewModel,navController :NavHostCo
 
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.background)
+                .padding(paddingValues)
         ) {
             items(notificationData) { notification ->
                 NotificationItem(notification)

@@ -32,95 +32,99 @@ fun OnboardingScreen(
     indicatorColor2: Color,
     indicatorColor3: Color
 ) {
-    Column(
+    BoxWithConstraints(
         modifier = Modifier
             .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
+            .padding(horizontal = 16.dp)
     ) {
-        Spacer(modifier = Modifier.height(40.dp))
+        val screenHeight = maxHeight
+        val imageHeight = screenHeight * 0.6f
+        val cardPadding = screenHeight * 0.025f
+        val cardCornerRadius = screenHeight * 0.04f
 
-        // Bouton Skip aligné à droite
-        Row(
-            modifier = Modifier.fillMaxWidth(),
-            horizontalArrangement = Arrangement.End
+        Column(
+            modifier = Modifier.fillMaxSize(),
+            horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            TextButton(onClick = { navController.navigate("welcomScreen") }) {
-                Text("Skip", color = MaterialTheme.colorScheme.outline)
+            Spacer(modifier = Modifier.height(screenHeight * 0.05f))
+
+            // Skip Button
+            Row(
+                modifier = Modifier.fillMaxWidth(),
+                horizontalArrangement = Arrangement.End
+            ) {
+                TextButton(onClick = { navController.navigate("welcomScreen")}) {
+                    Text("Skip", color = MaterialTheme.colorScheme.onSurfaceVariant)
+                }
             }
-        }
 
-        // Image du docteur
-        Image(
-            painter = painterResource(id = doctorImage),
-            contentDescription = "Doctor",
-            contentScale = ContentScale.Crop,
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(530.dp)
-        )
+            // Doctor Image
+            Image(
+                painter = painterResource(id = doctorImage),
+                contentDescription = "Doctor",
+                contentScale = ContentScale.Crop,
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(imageHeight)
+            )
 
-        // Carte contenant le texte et le bouton
-        Box(
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(
-                    color = MaterialTheme.colorScheme.surfaceVariant,
-                    shape = RoundedCornerShape(30.dp)
-                )
-                .padding(20.dp)
-        ) {
-            Column {
-                Spacer(modifier = Modifier.height(20.dp))
-                Text(
-                    text = titleText,
-                    fontSize = 24.sp,
-                    fontWeight = FontWeight.Bold,
-                    color = MaterialTheme.colorScheme.onSurface
-                )
+            // Bottom Card
+            Box(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(
+                        color = MaterialTheme.colorScheme.surfaceVariant,
+                        shape = RoundedCornerShape(cardCornerRadius)
+                    )
+                    .padding(cardPadding)
+            ) {
+                Column {
+                    Spacer(modifier = Modifier.height(screenHeight * 0.02f))
 
-                Spacer(modifier = Modifier.height(35.dp))
+                    Text(
+                        text = titleText,
+                        fontSize = (screenHeight.value * 0.03).sp, // ~24.sp on 800dp screen
+                        fontWeight = FontWeight.Bold,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
 
-                // Indicateur de progression (trois points)
-                Row(
-                    modifier = Modifier.fillMaxWidth(),
-                    verticalAlignment = Alignment.CenterVertically,
-                    horizontalArrangement = Arrangement.SpaceBetween
-                ) {
-                    // Indicateurs
+                    Spacer(modifier = Modifier.height(screenHeight * 0.04f))
+
                     Row(
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth(),
+                        verticalAlignment = Alignment.CenterVertically,
+                        horizontalArrangement = Arrangement.SpaceBetween
                     ) {
-                        listOf(indicatorColor1, indicatorColor2, indicatorColor3).forEachIndexed { index, color ->
-                            Box(
-                                modifier = Modifier
-                                    .width(18.dp)
-                                    .height(6.dp)
-                                    .clip(RoundedCornerShape(3.dp))
-                                    .background(color)
-                            )
-                            if (index < 2) Spacer(modifier = Modifier.width(4.dp))
+                        // Indicators
+                        Row(verticalAlignment = Alignment.CenterVertically) {
+                            listOf(indicatorColor1, indicatorColor2, indicatorColor3).forEachIndexed { index, color ->
+                                Box(
+                                    modifier = Modifier
+                                        .width(18.dp)
+                                        .height(6.dp)
+                                        .clip(RoundedCornerShape(3.dp))
+                                        .background(color)
+                                )
+                                if (index < 2) Spacer(modifier = Modifier.width(4.dp))
+                            }
                         }
-                    }
 
-                    // Bouton fléché
-                    Box(
-                        modifier = Modifier
-                            .size(50.dp)
-                            .clip(CircleShape)
-                            .background(MaterialTheme.colorScheme.primary)
-                            .padding(10.dp)
-                            .clickable {
-                                navController.navigate(nextPage)
-                            },
-                        contentAlignment = Alignment.Center
-                    ) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowForward,
-                            contentDescription = "Next",
-                            tint = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(30.dp)
-                        )
+                        // Arrow Button
+                        Box(
+                            modifier = Modifier
+                                .size(screenHeight * 0.065f) // ~50.dp
+                                .clip(CircleShape)
+                                .background(MaterialTheme.colorScheme.primary)
+                                .clickable { navController.navigate(nextPage) },
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.ArrowForward,
+                                contentDescription = "Next",
+                                tint = MaterialTheme.colorScheme.onPrimary,
+                                modifier = Modifier.size(screenHeight * 0.04f) // ~30.dp
+                            )
+                        }
                     }
                 }
             }

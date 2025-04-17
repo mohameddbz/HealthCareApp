@@ -31,14 +31,14 @@ fun DoctorCard(
     onFavoriteClick: () -> Unit,
     onDoctorClick: () -> Unit
 ) {
-    Card(
+    Surface(
         modifier = Modifier
             .fillMaxWidth()
             .padding(vertical = 8.dp)
             .clickable { onDoctorClick() },
         shape = RoundedCornerShape(12.dp),
-        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
-        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface)
+        tonalElevation = 1.dp,
+        color = MaterialTheme.colorScheme.tertiaryContainer
     ) {
         Row(
             modifier = Modifier
@@ -58,7 +58,7 @@ fun DoctorCard(
                     Image(
                         painter = painterResource(id = doctor.imageResId),
                         contentDescription = "Doctor ${doctor.name}",
-                        contentScale = ContentScale.Crop,
+                        contentScale = ContentScale.Fit,
                         modifier = Modifier.fillMaxSize()
                     )
                 } else if (!doctor.imageUrl.isNullOrBlank()) {
@@ -111,7 +111,8 @@ fun DoctorCard(
 
                 Text(
                     text = "${doctor.specialty.name} | ${doctor.hospital}",
-                    color = MaterialTheme.colorScheme.onSurfaceVariant,
+                    color = MaterialTheme.colorScheme.outlineVariant,
+                    fontWeight = FontWeight.Bold,
                     fontSize = 14.sp
                 )
 
@@ -129,7 +130,8 @@ fun DoctorCard(
 
                     Text(
                         text = " ${doctor.rating} (${doctor.reviewCount} reviews)",
-                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        color = MaterialTheme.colorScheme.outlineVariant,
+                        fontWeight = FontWeight.Bold,
                         fontSize = 14.sp
                     )
                 }

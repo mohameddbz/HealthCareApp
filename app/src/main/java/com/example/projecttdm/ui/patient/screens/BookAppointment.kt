@@ -46,94 +46,97 @@ fun BookAppointmentScreen(doctorId: String,
         appointmentViewModel.setPatientId(patientId)
     }
 
-    Column(
-        modifier = Modifier
-            .fillMaxSize().verticalScroll(scrollState)
-            .padding(horizontal = 16.dp, vertical = 8.dp),
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Spacer(modifier = Modifier.height(16.dp))
-        Text(
-            text = "Book Appointment",
-            style = MaterialTheme.typography.titleLarge.copy(
-                color = Gray02,
-                fontSize = 20.sp
-            ),
-            modifier = Modifier.padding(bottom = 12.dp)
-        )
-
-        // Calendar Section
-        Text(
-            text = "Select Date",
-            style = MaterialTheme.typography.titleMedium.copy(
-                color = Gray02,
-                fontSize = 16.sp
-            ),
+    Scaffold() {paddingValues ->
+        Column(
             modifier = Modifier
-                .padding(bottom = 4.dp)
-                .align(Alignment.Start)
-        )
-
-        DatePicker(
-            selectedDate = selectedDate,
-            initialMonth = currentMonth,
-            onDateSelected = { date ->
-                if (selectedDate == date) {
-                    appointmentViewModel.setSelectedDate(null)
-                } else {
-                    appointmentViewModel.setSelectedDate(date)
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .background(Blue02, MaterialTheme.shapes.medium)
-                .padding(12.dp)
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Time Slots Section
-        selectedDate?.let {
+                .fillMaxSize().padding(paddingValues)
+                .verticalScroll(scrollState)
+                .padding(horizontal = 16.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally
+        ) {
+            Spacer(modifier = Modifier.height(16.dp))
             Text(
-                text = "Select Hour",
+                text = "Book Appointment",
+                style = MaterialTheme.typography.titleLarge.copy(
+                    color = Gray02,
+                    fontSize = 20.sp
+                ),
+                modifier = Modifier.padding(bottom = 12.dp)
+            )
+
+            // Calendar Section
+            Text(
+                text = "Select Date",
                 style = MaterialTheme.typography.titleMedium.copy(
                     color = Gray02,
                     fontSize = 16.sp
                 ),
                 modifier = Modifier
-                    .align(Alignment.Start)
                     .padding(bottom = 4.dp)
+                    .align(Alignment.Start)
             )
 
-            TimeSlotGrid(
-                selectedTime = selectedTime,
-                onTimeSelected = { time -> appointmentViewModel.setSelectedTime(time) },
-                modifier = Modifier.padding(vertical = 4.dp)
+            DatePicker(
+                selectedDate = selectedDate,
+                initialMonth = currentMonth,
+                onDateSelected = { date ->
+                    if (selectedDate == date) {
+                        appointmentViewModel.setSelectedDate(null)
+                    } else {
+                        appointmentViewModel.setSelectedDate(date)
+                    }
+                },
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .background(Blue02, MaterialTheme.shapes.medium)
+                    .padding(12.dp)
             )
-        }
 
-        Spacer(modifier = Modifier.height(20.dp))
+            Spacer(modifier = Modifier.height(16.dp))
 
-        // Next Button
-        Button(
-            onClick = onNextClicked,
-            enabled = selectedDate != null && selectedTime != null,
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Blue01,
-                disabledContainerColor = Gray01,
-                contentColor = Color.White
-            ),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(44.dp),
-            shape = MaterialTheme.shapes.medium
-        ) {
-            Text(
-                "Next",
-                style = MaterialTheme.typography.bodyLarge.copy(
-                    fontSize = 15.sp
+            // Time Slots Section
+            selectedDate?.let {
+                Text(
+                    text = "Select Hour",
+                    style = MaterialTheme.typography.titleMedium.copy(
+                        color = Gray02,
+                        fontSize = 16.sp
+                    ),
+                    modifier = Modifier
+                        .align(Alignment.Start)
+                        .padding(bottom = 4.dp)
                 )
-            )
+
+                TimeSlotGrid(
+                    selectedTime = selectedTime,
+                    onTimeSelected = { time -> appointmentViewModel.setSelectedTime(time) },
+                    modifier = Modifier.padding(vertical = 4.dp)
+                )
+            }
+
+            Spacer(modifier = Modifier.height(20.dp))
+
+            // Next Button
+            Button(
+                onClick = onNextClicked,
+                enabled = selectedDate != null && selectedTime != null,
+                colors = ButtonDefaults.buttonColors(
+                    containerColor = Blue01,
+                    disabledContainerColor = Gray01,
+                    contentColor = Color.White
+                ),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .height(44.dp),
+                shape = MaterialTheme.shapes.medium
+            ) {
+                Text(
+                    "Next",
+                    style = MaterialTheme.typography.bodyLarge.copy(
+                        fontSize = 15.sp
+                    )
+                )
+            }
         }
     }
 }

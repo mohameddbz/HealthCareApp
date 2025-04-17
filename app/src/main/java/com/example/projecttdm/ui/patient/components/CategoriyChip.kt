@@ -1,6 +1,7 @@
 package com.example.projecttdm.ui.patient.components
 
 import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.padding
@@ -24,6 +25,11 @@ fun CategoryChip(
     Box(
         modifier = Modifier
             .clip(RoundedCornerShape(16.dp))
+            .border(
+                width = 2.dp,
+                color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.primary,
+                shape = RoundedCornerShape(16.dp)
+            )
             .background(
                 color = if (isSelected) MaterialTheme.colorScheme.primary else MaterialTheme.colorScheme.surfaceVariant
             )
@@ -33,7 +39,7 @@ fun CategoryChip(
     ) {
         Text(
             text = category,
-            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.onSurface,
+            color = if (isSelected) MaterialTheme.colorScheme.onPrimary else MaterialTheme.colorScheme.primary,
             fontWeight = if (isSelected) FontWeight.Bold else FontWeight.Normal,
             fontSize = 14.sp
         )

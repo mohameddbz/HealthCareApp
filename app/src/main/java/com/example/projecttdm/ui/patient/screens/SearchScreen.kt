@@ -2,6 +2,7 @@ package com.example.projecttdm.ui.patient.screens
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.FilterList
@@ -11,6 +12,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
+import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
@@ -44,40 +46,60 @@ fun SearchScreen(
 
     Column(
         modifier = Modifier
-            .fillMaxSize()
+            .fillMaxSize().padding(top = 6.dp)
             .background(MaterialTheme.colorScheme.background) // Using theme's background color
     ) {
         TopAppBar(
             title = {
-                TextField(
-                    value = searchQuery,
-                    onValueChange = { doctorSearchViewModel.setSearchQuery(it) },
+                Box(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .clip(MaterialTheme.shapes.small),
-                    placeholder = {
-                        Text(
-                            "Search ...",
-                            fontSize = MaterialTheme.typography.bodySmall.fontSize
+                        .shadow(4.dp, shape = RoundedCornerShape(12.dp))
+                        .clip(RoundedCornerShape(12.dp))
+                ) {
+                    TextField(
+                        value = searchQuery,
+                        onValueChange = { doctorSearchViewModel.setSearchQuery(it) },
+                        modifier = Modifier
+                            .fillMaxWidth(),
+                        placeholder = {
+                            Text(
+                                text = "Search ...",
+                                fontSize = MaterialTheme.typography.bodySmall.fontSize,
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
+                            )
+                        },
+                        textStyle = MaterialTheme.typography.bodyMedium.copy(
+                            color = MaterialTheme.colorScheme.onSurface
+                        ),
+                        leadingIcon = {
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search Icon",
+                                tint = MaterialTheme.colorScheme.primary
+                            )
+                        },
+                        trailingIcon = {
+                            IconButton(onClick = { showFilterDialog = true }) {
+                                Icon(
+                                    imageVector = Icons.Default.FilterList,
+                                    contentDescription = "Filter",
+                                    tint = MaterialTheme.colorScheme.primary
+                                )
+                            }
+                        },
+                        singleLine = true,
+                        shape = RoundedCornerShape(12.dp),
+                        colors = TextFieldDefaults.colors(
+                            unfocusedContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                            focusedContainerColor = MaterialTheme.colorScheme.inverseOnSurface,
+                            unfocusedIndicatorColor = MaterialTheme.colorScheme.inverseOnSurface,
+                            focusedIndicatorColor = MaterialTheme.colorScheme.inverseOnSurface,
+                            cursorColor = MaterialTheme.colorScheme.primary
                         )
-                    },
-                    textStyle = MaterialTheme.typography.bodyMedium,
-                    leadingIcon = {
-                        Icon(imageVector = Icons.Default.Search, contentDescription = "Search Icon")
-                    },
-                    trailingIcon = {
-                        IconButton(onClick = { showFilterDialog = true }) {
-                            Icon(imageVector = Icons.Default.FilterList, contentDescription = "Filter")
-                        }
-                    },
-                    singleLine = true,
-                    colors = TextFieldDefaults.colors(
-                        unfocusedContainerColor = MaterialTheme.colorScheme.surfaceVariant, // Background color for search
-                        focusedContainerColor = MaterialTheme.colorScheme.surface, // Background color on focus
-                        unfocusedIndicatorColor = Color.Transparent,
-                        focusedIndicatorColor = Color.Transparent
                     )
-                )
+                }
+
             },
             navigationIcon = {
                 IconButton(onClick = onBackClick) {
@@ -87,10 +109,6 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxWidth()
                 .padding(horizontal = 12.dp),
-            colors = TopAppBarDefaults.mediumTopAppBarColors(
-                containerColor = MaterialTheme.colorScheme.primaryContainer, // Using theme for TopAppBar container color
-                titleContentColor = MaterialTheme.colorScheme.onPrimaryContainer // Title color from theme
-            )
         )
 
         CategoryFilter(

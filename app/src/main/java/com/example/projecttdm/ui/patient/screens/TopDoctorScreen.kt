@@ -49,11 +49,7 @@ fun TopDoctorScreen(
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(
-                            imageVector = Icons.Default.ArrowBack,
-                            contentDescription = "Back",
-                            tint = MaterialTheme.colorScheme.onPrimary // Use theme color for icon
-                        )
+                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
@@ -61,7 +57,7 @@ fun TopDoctorScreen(
                         Icon(
                             imageVector = Icons.Default.Search,
                             contentDescription = "Search",
-                            tint = MaterialTheme.colorScheme.onPrimary // Apply theme color for icon
+                            tint = MaterialTheme.colorScheme.onPrimaryContainer
                         )
                     }
                     IconButton(onClick = { /* TODO: Implement more options */ }) {
@@ -69,13 +65,10 @@ fun TopDoctorScreen(
                             text = "⋯",
                             fontSize = 24.sp,
                             fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimary // Apply theme color for text
+                            color = MaterialTheme.colorScheme.onPrimaryContainer // Apply theme color for text
                         )
                     }
                 },
-                colors = TopAppBarDefaults.topAppBarColors(
-                    containerColor = MaterialTheme.colorScheme.primary // Apply primary color from theme
-                )
             )
         }
     ) { paddingValues ->
