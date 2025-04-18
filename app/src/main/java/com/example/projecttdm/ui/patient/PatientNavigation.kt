@@ -17,14 +17,16 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.projecttdm.ui.notifications.NotificationsScreen
-import com.example.projecttdm.ui.patient.components.Appointment.FailurePopup
-import com.example.projecttdm.ui.patient.components.Appointment.SuccessPopup
+import com.example.projecttdm.ui.patient.components.BookAppointment.FailurePopup
+import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
+import com.example.projecttdm.ui.patient.screens.AppointmentScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
+import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
@@ -34,6 +36,7 @@ import com.example.projecttdm.viewmodel.NotificationViewModel
 @Composable
 fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
     val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
+    val appointmentViewModel: AppointmentViewModel = viewModel()
     val doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
         initializer { DoctorListViewModel(doctorSearchViewModel) }
     })
@@ -137,6 +140,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 doctorSearchViewModel
             )
         }
+
+        composable(PatientRoutes.Appointment.route) {
+            AppointmentScreen(navController,appointmentViewModel,doctorListViewModel)
+        }
     }
 }
 
@@ -162,7 +169,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "History",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.HomeScreen.route
+        route = PatientRoutes.Appointment.route
     ),
     NavigationItem(
         title = "Articles",

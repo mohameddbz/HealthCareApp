@@ -1,4 +1,4 @@
-package com.example.projecttdm.ui.patient.components.Appointment
+package com.example.projecttdm.ui.patient.components.BookAppointment
 
 import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.layout.Arrangement
@@ -29,8 +29,8 @@ import androidx.compose.ui.window.DialogProperties
 import com.example.projecttdm.R
 
 @Composable
-fun SuccessPopup(
-    onViewAppointment: () -> Unit,
+fun FailurePopup(
+    onTryAgain: () -> Unit,
     onCancel: () -> Unit
 ) {
     Dialog(
@@ -54,15 +54,16 @@ fun SuccessPopup(
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
                 Icon(
-                    painter = painterResource(R.drawable.checked),
-                    contentDescription = "Success",
+                    painter = painterResource(R.drawable.cancel),
+                    contentDescription = "Failure",
                     modifier = Modifier.size(64.dp),
+                    tint = MaterialTheme.colorScheme.error
                 )
 
                 Spacer(Modifier.height(16.dp))
 
                 Text(
-                    text = "Congratulations!",
+                    text = "Oops, Failed!",
                     style = MaterialTheme.typography.headlineSmall,
                     color = MaterialTheme.colorScheme.onSurface,
                     fontWeight = FontWeight.Bold
@@ -70,23 +71,12 @@ fun SuccessPopup(
 
                 Spacer(Modifier.height(8.dp))
 
-                Column(Modifier.padding(vertical = 8.dp)) {
-                    Text(
-                        "Appointment successfully booked.",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "You will receive a notification and the",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                    Text(
-                        "doctor you selected will contact you.",
-                        textAlign = TextAlign.Center,
-                        color = MaterialTheme.colorScheme.onSurfaceVariant
-                    )
-                }
+                Text(
+                    text = "Appointment failed. Please check your internet connection then try again.",
+                    textAlign = TextAlign.Center,
+                    modifier = Modifier.padding(vertical = 8.dp),
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
 
                 Spacer(Modifier.height(24.dp))
 
@@ -95,7 +85,7 @@ fun SuccessPopup(
                     modifier = Modifier.fillMaxWidth()
                 ) {
                     Button(
-                        onClick = onViewAppointment,
+                        onClick = onTryAgain,
                         modifier = Modifier.weight(1f),
                         colors = ButtonDefaults.buttonColors(
                             containerColor = MaterialTheme.colorScheme.primary,
@@ -103,7 +93,7 @@ fun SuccessPopup(
                         ),
                         shape = MaterialTheme.shapes.small
                     ) {
-                        Text("Appointment")
+                        Text("Try Again")
                     }
 
                     OutlinedButton(

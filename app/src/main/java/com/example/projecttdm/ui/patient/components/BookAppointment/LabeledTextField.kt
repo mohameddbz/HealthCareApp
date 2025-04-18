@@ -1,4 +1,4 @@
-package com.example.projecttdm.ui.patient.components.Appointment
+package com.example.projecttdm.ui.patient.components.BookAppointment
 
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.fillMaxWidth

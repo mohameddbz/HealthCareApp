@@ -5,4 +5,6 @@ import com.example.projecttdm.data.model.Doctor
 
 class DoctorRepository {
     fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors
+
+    fun getDoctors(): List<Doctor> = DoctorData.listDcctors
 }

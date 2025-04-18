@@ -1,4 +1,4 @@
-package com.example.projecttdm.ui.patient.components.Appointment
+package com.example.projecttdm.ui.patient.components.BookAppointment
 
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable

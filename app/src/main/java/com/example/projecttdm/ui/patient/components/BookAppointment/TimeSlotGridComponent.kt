@@ -1,4 +1,4 @@
-package com.example.projecttdm.ui.patient.components.Appointment
+package com.example.projecttdm.ui.patient.components.BookAppointment
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -19,8 +19,6 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import com.example.projecttdm.data.local.BookAppointmentData
-import com.example.projecttdm.theme.Blue01
-import com.example.projecttdm.theme.Blue02
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 

@@ -20,9 +20,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.theme.Blue01
-import com.example.projecttdm.theme.Blue02
-import com.example.projecttdm.ui.patient.components.Appointment.GenderDropdown
-import com.example.projecttdm.ui.patient.components.Appointment.LabeledTextField
+import com.example.projecttdm.ui.patient.components.BookAppointment.GenderDropdown
+import com.example.projecttdm.ui.patient.components.BookAppointment.LabeledTextField
 import com.example.projecttdm.viewmodel.PatientDetailsViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
