@@ -31,3 +31,7 @@ val DarkTextSecondary = Color(0xFF246BFD)
 val BorderLight = Color(0xFF246BFD)
 val BorderDark = Color(0xFFFFFFFF)
 
+
+
+val searchBackgroundLight = Color(0xFFF5F5F5)
+val searchBackgroundDark = Color(0xFF1F222A)

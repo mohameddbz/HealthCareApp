@@ -10,4 +10,5 @@ sealed class PatientRoutes(val route: String) {
     object HomeScreen : PatientRoutes("home")
     object topDoctors : PatientRoutes("doctor_top_doctors")
     object searchDoctor : PatientRoutes("search_doctor")
+    object  doctorProfile : PatientRoutes("doctor_profil")
 }

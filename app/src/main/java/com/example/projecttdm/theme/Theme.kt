@@ -38,8 +38,13 @@ private val LightColorScheme = lightColorScheme(
     onErrorContainer = textNotification,
 
     outline = BorderLight,
-    outlineVariant = Gray01
-)
+    outlineVariant = Gray01,
+
+    surfaceDim = searchBackgroundLight ,
+
+    surfaceBright = Blue01 , // BLUE TO WHITE
+
+    )
 
 private val DarkColorScheme = darkColorScheme(
     primary = BluePrimary,
@@ -71,8 +76,15 @@ private val DarkColorScheme = darkColorScheme(
     onErrorContainer = textNotification,
 
     outline = BorderDark,
-    outlineVariant = Gray01
-)
+    outlineVariant = Gray01,
+
+
+    surfaceDim = searchBackgroundDark ,
+
+    surfaceBright = Color.White ,
+
+
+    )
 
 object NotificationColors {
     val canceled = canceledNotification
