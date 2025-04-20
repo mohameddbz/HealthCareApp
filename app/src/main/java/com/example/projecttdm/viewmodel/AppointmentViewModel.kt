@@ -1,11 +1,13 @@
 package com.example.projecttdm.viewmodel
 
+
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
+import com.example.projecttdm.data.model.QRCodeData
 import com.example.projecttdm.data.repository.AppointmentRepository
 import com.example.projecttdm.data.repository.DoctorRepository
 import kotlinx.coroutines.flow.*
@@ -40,6 +42,14 @@ class AppointmentViewModel(
     private val _selectedAppointment = MutableStateFlow<Appointment?>(null)
     val selectedAppointment: StateFlow<Appointment?> = _selectedAppointment.asStateFlow()
 
+    // For QR code data
+    private val _qrCodeData = MutableStateFlow<QRCodeData?>(null)
+    val qrCodeData: StateFlow<QRCodeData?> = _qrCodeData.asStateFlow()
+
+    // For Dialog state
+    private val _showQRCodeDialog = MutableStateFlow(false)
+    val showQRCodeDialog: StateFlow<Boolean> = _showQRCodeDialog.asStateFlow()
+
     init {
         loadAppointments(AppointmentStatus.PENDING)
         refreshAppointments()
@@ -66,7 +76,6 @@ class AppointmentViewModel(
         }
     }
 
-
     // This function performs a search operation on the list of appointments
     fun searchAppointments(query: String) {
         viewModelScope.launch {
@@ -91,7 +100,6 @@ class AppointmentViewModel(
         loadAppointments(_selectedTab.value)
     }
 
-
     fun cancelAppointment(appointmentId: String) {
         viewModelScope.launch {
             _isLoading.value = true
@@ -99,6 +107,10 @@ class AppointmentViewModel(
                 val result = repository.cancelAppointment(appointmentId)
                 if (result.isSuccess) {
                     loadAppointments(_selectedTab.value)
+                    // If we're showing QR for this appointment, close the dialog
+                    if (_selectedAppointment.value?.id == appointmentId) {
+                        closeQRCodeDialog()
+                    }
                 } else {
                     _errorMessage.emit("Failed to cancel appointment: ${result.exceptionOrNull()?.message}")
                 }
@@ -109,7 +121,6 @@ class AppointmentViewModel(
             }
         }
     }
-
 
     fun rescheduleAppointment(appointmentId: String, newDate: LocalDate, newTime: LocalTime) {
         viewModelScope.launch {
@@ -130,7 +141,6 @@ class AppointmentViewModel(
         }
     }
 
-
     fun getAppointmentDetails(appointmentId: String) {
         viewModelScope.launch {
             repository.getAppointmentById(appointmentId).collect { appointment ->
@@ -139,6 +149,71 @@ class AppointmentViewModel(
         }
     }
 
+    fun showAppointmentQRCode(appointmentId: String) {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // First get the appointment details
+                repository.getAppointmentById(appointmentId).collect { appointment ->
+                    _selectedAppointment.value = appointment
+
+                    // Then fetch the QR code data
+                    if (appointment != null) {
+                        val result = repository.getAppointmentQRCode(appointmentId)
+                        if (result.isSuccess) {
+                            _qrCodeData.value = result.getOrNull()
+                            _showQRCodeDialog.value = true
+                            _isLoading.value = false
+                        } else {
+                            _errorMessage.emit("Failed to generate QR code: ${result.exceptionOrNull()?.message}")
+                        }
+                    } else {
+                        _errorMessage.emit("Appointment not found")
+                    }
+                }
+            } catch (e: Exception) {
+                _errorMessage.emit("Error showing QR code: ${e.message}")
+            } finally {
+                _isLoading.value = false
+            }
+        }
+    }
+
+    // New method to load latest appointment for QR display
+    fun loadLatestAppointment() {
+        viewModelScope.launch {
+            _isLoading.value = true
+            try {
+                // Get the first pending appointment
+                repository.getAppointmentsByStatus(AppointmentStatus.PENDING).collect { appointments ->
+                    if (appointments.isNotEmpty()) {
+                        val latestAppointment = appointments.first()
+                        _selectedAppointment.value = latestAppointment
+
+                        // Get QR code for this appointment
+                        val result = repository.getAppointmentQRCode(latestAppointment.id)
+                        if (result.isSuccess) {
+                            _qrCodeData.value = result.getOrNull()
+                            _showQRCodeDialog.value = true
+                        } else {
+                            _errorMessage.emit("Failed to generate QR code: ${result.exceptionOrNull()?.message}")
+                        }
+                    } else {
+                        _errorMessage.emit("No pending appointments found")
+                    }
+                    _isLoading.value = false
+                }
+            } catch (e: Exception) {
+                _errorMessage.emit("Error loading appointment: ${e.message}")
+                _isLoading.value = false
+            }
+        }
+    }
+
+    fun closeQRCodeDialog() {
+        _showQRCodeDialog.value = false
+        _qrCodeData.value = null
+    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun refreshAppointments() {
@@ -159,13 +234,11 @@ class AppointmentViewModel(
         }
     }
 
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun formatTime(time: LocalTime): String {
         val formatter = DateTimeFormatter.ofPattern("h:mm a")
         return time.format(formatter)
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun formatDate(date: LocalDate): String {
@@ -177,7 +250,6 @@ class AppointmentViewModel(
             else -> date.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
         }
     }
-
 
     fun updateAppointmentNotes(appointmentId: String, notes: String) {
         viewModelScope.launch {
@@ -193,4 +265,14 @@ class AppointmentViewModel(
             }
         }
     }
+
+    fun getDoctorName(doctorId: String): String {
+        return try {
+            val doctor = doctorRepository.getDoctorById(doctorId)
+            doctor?.name ?: "Unknown Doctor"
+        } catch (e: Exception) {
+            "Error: ${e.message}"
+        }
+    }
+
 }

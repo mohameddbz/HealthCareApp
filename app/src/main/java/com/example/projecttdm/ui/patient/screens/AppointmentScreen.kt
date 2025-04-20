@@ -25,9 +25,11 @@ import androidx.navigation.NavController
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
+import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.Appointment.EmptyAppointmentsList
 import com.example.projecttdm.ui.patient.components.Appointment.PendingCard
 import com.example.projecttdm.ui.patient.components.Appointment.SearchBar
+import com.example.projecttdm.ui.patient.components.Qr.AppointmentQRDialog
 import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import java.time.LocalDate
@@ -50,6 +52,13 @@ fun AppointmentScreen(
     val snackbarHostState = remember { SnackbarHostState() }
     val doctors by doctorViewModel.doctors.collectAsState()
     var showSearchBar by remember { mutableStateOf(false) }
+    val showDialog by viewModel.showQRCodeDialog.collectAsState()
+    if (showDialog) {
+        AppointmentQRDialog(
+            viewModel = viewModel,
+            onDismiss = { viewModel.closeQRCodeDialog() }
+        )
+    }
 
     // Collect error messages
     LaunchedEffect(key1 = true) {
@@ -107,8 +116,8 @@ fun AppointmentScreen(
                 ) {
                     SearchBar(
                         query = searchQuery,
-                        onQueryChange = { viewModel.searchAppointments(it) },
-                        onClearQuery = { viewModel.clearSearch() },
+                        onQueryChange = { },
+                        onClearQuery = { },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -171,6 +180,10 @@ fun AppointmentScreen(
                     items(appointments, key = { it.id }) { appointment ->
                         val doctor = doctors.find { it.id == appointment.doctorId }
                         PendingCard(
+                            onClick = {
+                                navController.navigate(PatientRoutes.AppQR.createRoute(appointment.id))
+                            },
+
                             appointment = appointment,
                             doctor = doctor,
                             onCardClick = { navController.navigate("appointment_details/${appointment.id}") },

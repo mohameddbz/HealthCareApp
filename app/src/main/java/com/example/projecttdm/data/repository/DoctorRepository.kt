@@ -7,4 +7,8 @@ class DoctorRepository {
     fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors
 
     fun getDoctors(): List<Doctor> = DoctorData.listDcctors
+
+    fun getDoctorById(id: String): Doctor? {
+        return DoctorData.listDcctors.find { it.id == id }
+    }
 }

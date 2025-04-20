@@ -13,9 +13,11 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.projecttdm.ui.notifications.NotificationsScreen
 import com.example.projecttdm.ui.patient.components.BookAppointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
@@ -26,6 +28,8 @@ import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
+import com.example.projecttdm.ui.patient.components.Qr.AppointmentQRDialog
+import com.example.projecttdm.ui.screens.AppointmentQRScreen
 import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
@@ -144,6 +148,21 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable(PatientRoutes.Appointment.route) {
             AppointmentScreen(navController,appointmentViewModel,doctorListViewModel)
         }
+
+
+        // For the AppointmentQR route, update the composable:
+        composable(
+            route = PatientRoutes.AppQR.routeWithArgs,
+            arguments = listOf(navArgument("appointmentId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val appointmentId = backStackEntry.arguments?.getString("appointmentId")
+            AppointmentQRScreen(
+                viewModel = appointmentViewModel,
+                appointmentId = appointmentId,
+                onDismiss = { navController.popBackStack() }
+            )
+        }
+
     }
 }
 
@@ -179,7 +198,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Profile",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.searchDoctor.route
+        route = PatientRoutes.AppointmentQR.route
     ),
 )
 

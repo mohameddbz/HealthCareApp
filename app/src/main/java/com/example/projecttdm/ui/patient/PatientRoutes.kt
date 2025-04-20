@@ -11,4 +11,10 @@ sealed class PatientRoutes(val route: String) {
     object topDoctors : PatientRoutes("doctor_top_doctors")
     object searchDoctor : PatientRoutes("search_doctor")
     object Appointment : PatientRoutes("Appointment")
+    object AppointmentQR : PatientRoutes("QRcode")
+    object AppQR : PatientRoutes("appointmentQR") {
+        const val routeWithArgs = "appointmentQR/{appointmentId}"
+        fun createRoute(appointmentId: String) = "appointmentQR/$appointmentId"
+    }
+
 }

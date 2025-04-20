@@ -32,6 +32,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Divider
 import androidx.compose.material3.Icon
+import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
@@ -66,12 +67,14 @@ import com.example.projecttdm.ui.patient.screens.formattedTime
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PendingCard(
+    onClick: () -> Unit,
     appointment: Appointment,
     doctor: Doctor?,
     onCardClick: () -> Unit,
     onCancelClick: () -> Unit,
     onRescheduleClick: () -> Unit
 ) {
+
 
     val statusColors = mapOf(
         AppointmentStatus.PENDING to yellowNotification,       // Yellow notification background for pending
@@ -352,7 +355,7 @@ fun PendingCard(
                         )
                     ) {
                         OutlinedButton(
-                            onClick = {},
+                            onClick = { },
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.outlinedButtonColors(
                                 contentColor = MaterialTheme.colorScheme.primary,
@@ -387,16 +390,22 @@ fun PendingCard(
 
             }
             if (appointment.status == AppointmentStatus.CONFIRMED) {
-                Icon(
-                    imageVector = Icons.Outlined.QrCode2,
-                    contentDescription = "QR Code",
-                    tint = MaterialTheme.colorScheme.primary,
+                IconButton(
+                    onClick = { onClick() },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 12.dp)
                         .size(48.dp)
-                )
+                ) {
+                    Icon(
+                        imageVector = Icons.Outlined.QrCode2,
+                        contentDescription = "QR Code",
+                        tint = MaterialTheme.colorScheme.primary,
+                        modifier = Modifier.size(48.dp)
+                    )
+                }
             }
+
 
         }
 

@@ -7,6 +7,7 @@ import com.example.projecttdm.data.local.BookAppointmentData
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.data.model.QRCodeData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -30,6 +31,25 @@ class AppointmentRepository {
 
     fun getAppointmentById(appointmentId: String): Flow<Appointment?> {
         return appointments.map { it.find { appt -> appt.id == appointmentId } }
+    }
+
+    suspend fun getAppointmentQRCode(appointmentId: String): Result<QRCodeData> {
+        return try {
+            delay(500) // Simulate network delay for QR code generation
+            val appointment = _appointments.value.find { it.id == appointmentId }
+                ?: return Result.failure(Exception("Appointment not found"))
+
+            // Generate QR code data for the appointment
+            val qrCodeData = QRCodeData(
+                id = appointmentId,
+                content = "APPT:${appointment.id}:${appointment.doctorId}:${appointment.date}:${appointment.time}",
+                timestamp = System.currentTimeMillis()
+            )
+
+            Result.success(qrCodeData)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
     }
 
     fun searchAppointments(query: String, doctors: List<Doctor>): Flow<List<Appointment>> {
@@ -109,8 +129,8 @@ class AppointmentRepository {
     }
 
 
-     @RequiresApi(Build.VERSION_CODES.O)
-     suspend fun refreshAppointments(): Result<Unit> {
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun refreshAppointments(): Result<Unit> {
         return try {
             delay(1000)
             _appointments.value = getSampleAppointments()
@@ -120,13 +140,10 @@ class AppointmentRepository {
         }
     }
 
-
-
     @RequiresApi(Build.VERSION_CODES.O)
     fun isTimeSlotAvailable(time: LocalTime): Boolean {
         return BookAppointmentData.isTimeSlotAvailable(time)
     }
-
 
     fun bookAppointment(
         patientId: String,
@@ -145,12 +162,10 @@ class AppointmentRepository {
             reason = reason
         )
 
-
         _appointments.value = _appointments.value + appointment
 
         return appointment
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun getAvailableTimeSlots(date: LocalDate): List<LocalTime> {
@@ -158,7 +173,6 @@ class AppointmentRepository {
             BookAppointmentData.isTimeSlotAvailable(time)
         }
     }
-
 
     suspend fun cancelAppointment(appointmentId: String): Result<Unit> {
         return try {
@@ -176,18 +190,12 @@ class AppointmentRepository {
         }
     }
 
-
-
     fun getPatientAppointments(patientId: String): List<Appointment> {
         return _appointments.value.filter { it.patientId == patientId }
     }
-
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getSampleAppointments(): List<Appointment>{
         return AppointmentData.Appointments;
     }
-
-
-
 }

@@ -68,6 +68,6 @@ dependencies {
     implementation("androidx.core:core-splashscreen:1.0.0")
     // Coil for image loading
     implementation("io.coil-kt:coil-compose:2.4.0") // Use the latest version
-
+    implementation ("com.google.zxing:core:3.5.0")
 
 }
