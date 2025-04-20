@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.projecttdm.data.local.BookAppointmentData
+import com.example.projecttdm.data.local.AppointmentData
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.theme.Blue02
 import java.time.LocalTime
@@ -31,7 +31,7 @@ fun TimeSlotGrid(
     onTimeSelected: (LocalTime) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeSlots = remember { BookAppointmentData.availableTimeSlots }
+    val timeSlots = remember { AppointmentData.availableTimeSlots }
     val timeFormatter = remember { DateTimeFormatter.ofPattern("hh:mm a") }
 
     LazyVerticalGrid(
@@ -42,7 +42,7 @@ fun TimeSlotGrid(
     ) {
         items(timeSlots) { time ->
             val isSelected = time == selectedTime
-            val isAvailable = remember { BookAppointmentData.isTimeSlotAvailable(time) }
+            val isAvailable = remember(time) { AppointmentData.isTimeSlotAvailable(time) }
 
             // Determine colors based on selection and availability
             val backgroundColor = when {
@@ -59,7 +59,7 @@ fun TimeSlotGrid(
 
             val textColor = when {
                 isSelected -> Color.White
-                isAvailable -> Blue01  // Changed to Blue01 as requested
+                isAvailable -> Blue01
                 else -> Color.Gray
             }
 

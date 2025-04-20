@@ -15,26 +15,36 @@ import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
+import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
+import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
+import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PatientNavigation(navController: NavHostController = rememberNavController()) {
     NavHost(
         navController = navController,
-        startDestination = PatientRoutes.BookAppointment.route
+        startDestination = PatientRoutes.RescheduleReason.route
     ) {
         composable(PatientRoutes.BookAppointment.route) {
             BookAppointmentScreen(
                 onNextClicked = {
-                    navController.navigate(PatientRoutes.PatientDetails.route)
+                    navController.navigate(PatientRoutes.RescheduleReason.route)
                 },
                 doctorId = "defaultDoctorId",
                 patientId = "defaultPatientId",
                 appointmentViewModel = BookAppointmentViewModel()
+            )
+        }
+        composable(PatientRoutes.RescheduleAppointment.route) {
+            RescheduleAppointmentScreen(
+                appointmentId = "98",
+                onRescheduleSuccess = {navController.navigate(PatientRoutes.Success.route)},
+                viewModel = RescheduleAppointmentViewModel()
             )
         }
 
@@ -50,6 +60,16 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 onBackPressed = { navController.popBackStack() },
                 onNextPressed = {
                     navController.navigate(PatientRoutes.PinVerification.route)
+                }
+            )
+        }
+        composable(PatientRoutes.RescheduleReason.route)
+        {
+
+            RescheduleReasonScreen(
+                onNavigateBack = { },
+                onNext = { navController.navigate(PatientRoutes.RescheduleAppointment.route)
+
                 }
             )
         }
