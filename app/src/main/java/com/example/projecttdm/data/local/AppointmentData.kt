@@ -7,7 +7,7 @@ import com.example.projecttdm.data.model.AppointmentStatus
 import java.time.LocalDate
 import java.time.LocalTime
 
-object AppointmentData {
+object AppointmentsData {
     // Simple list of available time slots
     @RequiresApi(Build.VERSION_CODES.O)
     val Appointments = listOf(
@@ -19,7 +19,6 @@ object AppointmentData {
                 time = LocalTime.of(16, 0),
                 status = AppointmentStatus.PENDING,
                 reason = "Annual check-up",
-                notes = "Remember to bring previous test results"
             ),
             Appointment(
                 id = "2",
@@ -47,7 +46,6 @@ object AppointmentData {
                 time = LocalTime.of(11, 30),
                 status = AppointmentStatus.COMPLETED,
                 reason = "Regular check-up",
-                notes = "Suggested more physical activity"
             ),
             Appointment(
                 id = "5",

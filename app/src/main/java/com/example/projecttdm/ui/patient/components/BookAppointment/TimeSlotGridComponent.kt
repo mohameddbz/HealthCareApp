@@ -1,4 +1,4 @@
-package com.example.projecttdm.ui.patient.components.BookAppointment
+package com.example.projecttdm.ui.patient.components.Appointment
 
 import android.os.Build
 import androidx.annotation.RequiresApi
@@ -18,7 +18,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
-import com.example.projecttdm.data.local.BookAppointmentData
+import com.example.projecttdm.data.local.AppointmentData
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -29,7 +29,7 @@ fun TimeSlotGrid(
     onTimeSelected: (LocalTime) -> Unit,
     modifier: Modifier = Modifier
 ) {
-    val timeSlots = remember { BookAppointmentData.availableTimeSlots }
+    val timeSlots = remember { AppointmentData.availableTimeSlots }
     val timeFormatter = remember { DateTimeFormatter.ofPattern("hh:mm a") }
 
     LazyVerticalGrid(
@@ -40,7 +40,7 @@ fun TimeSlotGrid(
     ) {
         items(timeSlots) { time ->
             val isSelected = time == selectedTime
-            val isAvailable = remember { BookAppointmentData.isTimeSlotAvailable(time) }
+            val isAvailable = remember(time) { AppointmentData.isTimeSlotAvailable(time) }
 
             // Use MaterialTheme for theming
             val colorScheme = MaterialTheme.colorScheme

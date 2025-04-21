@@ -19,8 +19,8 @@ import com.example.projecttdm.theme.Gray02
 import com.example.projecttdm.theme.Gray01
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.theme.Blue02
+import com.example.projecttdm.ui.patient.components.Appointment.TimeSlotGrid
 import com.example.projecttdm.ui.patient.components.BookAppointment.DatePicker
-import com.example.projecttdm.ui.patient.components.BookAppointment.TimeSlotGrid
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 
 

@@ -22,14 +22,16 @@ import com.example.projecttdm.ui.notifications.NotificationsScreen
 import com.example.projecttdm.ui.patient.components.BookAppointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
 import com.example.projecttdm.ui.patient.screens.AppointmentScreen
+import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.DoctorProfileScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
+import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
+import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
 import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
-import com.example.projecttdm.ui.patient.components.Qr.AppointmentQRDialog
 import com.example.projecttdm.ui.screens.AppointmentQRScreen
 import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
@@ -37,6 +39,7 @@ import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
+import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
@@ -61,6 +64,13 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 appointmentViewModel = BookAppointmentViewModel()
             )
         }
+        composable(PatientRoutes.RescheduleAppointment.route) {
+            RescheduleAppointmentScreen(
+                appointmentId = "98",
+                onRescheduleSuccess = {navController.navigate(PatientRoutes.Success.route)},
+                viewModel = RescheduleAppointmentViewModel()
+            )
+        }
 
         composable(PatientRoutes.HomeScreen.route) {
             HomeScreen(doctorSearchViewModel,doctorListViewModel,navController)
@@ -69,9 +79,29 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         composable(PatientRoutes.PatientDetails.route) {
             PatientDetailsScreen(
                 onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
-                onNextClicked = { navController.navigate(PatientRoutes.topDoctors.route) }
+                onNextClicked = { navController.navigate(PatientRoutes.PatientSummary.route) }
             )
         }
+        composable(PatientRoutes.PatientSummary.route) {
+            AppointmentReviewScreen(
+                navController = navController,
+                onBackPressed = { navController.popBackStack() },
+                onNextPressed = {
+                    navController.navigate(PatientRoutes.PinVerification.route)
+                }
+            )
+        }
+        composable(PatientRoutes.RescheduleReason.route)
+        {
+
+            RescheduleReasonScreen(
+                onNavigateBack = { },
+                onNext = { navController.navigate(PatientRoutes.RescheduleAppointment.route)
+
+                }
+            )
+        }
+
 
 
         composable(PatientRoutes.PinVerification.route) {

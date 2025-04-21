@@ -53,7 +53,7 @@ fun AppointmentQRContent(
 ) {
     val context = LocalContext.current
     var showNotesDialog by remember { mutableStateOf(false) }
-    var appointmentNotes by remember { mutableStateOf(appointment.notes ?: "") }
+    var appointmentNotes by remember { mutableStateOf(appointment.reason ?: "") }
 
     Column(
         modifier = Modifier

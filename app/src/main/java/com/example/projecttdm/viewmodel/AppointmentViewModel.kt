@@ -122,24 +122,6 @@ class AppointmentViewModel(
         }
     }
 
-    fun rescheduleAppointment(appointmentId: String, newDate: LocalDate, newTime: LocalTime) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val result = repository.rescheduleAppointment(appointmentId, newDate, newTime)
-                if (result.isSuccess) {
-                    // Refresh the appointment list
-                    loadAppointments(_selectedTab.value)
-                } else {
-                    _errorMessage.emit("Failed to reschedule appointment: ${result.exceptionOrNull()?.message}")
-                }
-            } catch (e: Exception) {
-                _errorMessage.emit("Error rescheduling appointment: ${e.message}")
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
 
     fun getAppointmentDetails(appointmentId: String) {
         viewModelScope.launch {

@@ -43,6 +43,7 @@ fun EmptyAppointmentsList(
                 AppointmentStatus.PENDING, AppointmentStatus.CONFIRMED, AppointmentStatus.PENDING -> Icons.Outlined.EventAvailable
                 AppointmentStatus.COMPLETED -> Icons.Outlined.EventAvailable
                 AppointmentStatus.CANCELLED -> Icons.Outlined.EventBusy
+                AppointmentStatus.RESCHEDULED -> TODO()
             },
             contentDescription = null,
             modifier = Modifier.size(80.dp),
@@ -57,6 +58,7 @@ fun EmptyAppointmentsList(
                 AppointmentStatus.PENDING -> "No pending appointments"
                 AppointmentStatus.COMPLETED -> "No completed appointments"
                 AppointmentStatus.CANCELLED -> "No cancelled appointments"
+                AppointmentStatus.RESCHEDULED -> TODO()
             },
             fontSize = 18.sp,
             fontWeight = FontWeight.Medium,

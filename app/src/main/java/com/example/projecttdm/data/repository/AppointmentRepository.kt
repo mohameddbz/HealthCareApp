@@ -3,7 +3,7 @@ package com.example.projecttdm.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.projecttdm.data.local.AppointmentData
-import com.example.projecttdm.data.local.BookAppointmentData
+import com.example.projecttdm.data.local.AppointmentsData
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
@@ -85,42 +85,11 @@ class AppointmentRepository {
         }
     }
 
-    suspend fun rescheduleAppointment(
-        appointmentId: String,
-        newDate: LocalDate,
-        newTime: LocalTime
-    ): Result<Unit> {
-        return try {
-            delay(800)
-
-            val appointment = _appointments.value.find { it.id == appointmentId }
-                ?: return Result.failure(Exception("Appointment not found"))
-
-            val conflict = _appointments.value.any {
-                it.id != appointmentId &&
-                        it.date == newDate &&
-                        it.time == newTime &&
-                        it.doctorId == appointment.doctorId &&
-                        it.status != AppointmentStatus.CANCELLED
-            }
-
-            if (conflict) {
-                Result.failure(Exception("This new time slot is already booked"))
-            } else {
-                _appointments.value = _appointments.value.map {
-                    if (it.id == appointmentId) it.copy(date = newDate, time = newTime) else it
-                }
-                Result.success(Unit)
-            }
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
 
     suspend fun updateAppointmentNotes(appointmentId: String, notes: String): Result<Unit> {
         return try {
             _appointments.value = _appointments.value.map {
-                if (it.id == appointmentId) it.copy(notes = notes) else it
+                if (it.id == appointmentId) it.copy(reason = notes) else it
             }
             Result.success(Unit)
         } catch (e: Exception) {
@@ -142,9 +111,10 @@ class AppointmentRepository {
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun isTimeSlotAvailable(time: LocalTime): Boolean {
-        return BookAppointmentData.isTimeSlotAvailable(time)
+        return AppointmentData.isTimeSlotAvailable(time)
     }
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun bookAppointment(
         patientId: String,
         doctorId: String,
@@ -162,15 +132,47 @@ class AppointmentRepository {
             reason = reason
         )
 
+
         _appointments.value = _appointments.value + appointment
+        AppointmentData.bookTimeSlot(time)
 
         return appointment
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
+    fun rescheduleAppointment(
+        appointmentId: String,
+        newDate: LocalDate,
+        newTime: LocalTime
+    ): Boolean {
+        val appointment = _appointments.value.find { it.id == appointmentId } ?: return false
+
+        // Release the old time slot
+        AppointmentData.releaseTimeSlot(appointment.time)
+
+        // Book the new time slot
+        AppointmentData.bookTimeSlot(newTime)
+
+        // Update the appointment
+        _appointments.value = _appointments.value.map {
+            if (it.id == appointmentId) {
+                it.copy(
+                    date = newDate,
+                    time = newTime,
+                    status = AppointmentStatus.RESCHEDULED
+                )
+            } else {
+                it
+            }
+        }
+
+        return true
+    }
+
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getAvailableTimeSlots(date: LocalDate): List<LocalTime> {
-        return BookAppointmentData.availableTimeSlots.filter { time ->
-            BookAppointmentData.isTimeSlotAvailable(time)
+        return AppointmentData.availableTimeSlots.filter { time ->
+            AppointmentData.isTimeSlotAvailable(time)
         }
     }
 
@@ -196,6 +198,11 @@ class AppointmentRepository {
 
     @RequiresApi(Build.VERSION_CODES.O)
     private fun getSampleAppointments(): List<Appointment>{
-        return AppointmentData.Appointments;
+        return AppointmentsData.Appointments;
     }
+
+    fun getDoctorAppointments(doctorId: String): List<Appointment> {
+        return _appointments.value.filter { it.doctorId == doctorId }
+    }
+
 }
