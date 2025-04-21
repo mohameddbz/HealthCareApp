@@ -1,11 +1,8 @@
 package com.example.projecttdm.ui.patient.screens
 
 import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.verticalScroll
@@ -37,7 +34,6 @@ import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.CostumSearchBar
 import com.example.projecttdm.ui.patient.components.DoctorSpecialitySection
 import com.example.projecttdm.ui.patient.components.MedicalCheckBanner
-import com.example.projecttdm.ui.patient.components.DoctorCard
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 
@@ -58,6 +54,7 @@ fun getWindowType(size: Int): WindowType = when {
     else -> WindowType.Expanded
 }
 
+@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel: DoctorListViewModel = viewModel() , navController :NavHostController) {
 
@@ -69,15 +66,93 @@ fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel
     val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
     Scaffold(
         topBar = {
-            TopAppBar(onNotificationClick = {
-                navController.navigate(PatientRoutes.NotificationScreen.route)
-            })
+
+                TopAppBar(
+                    title = {
+                        Column {
+                            Row(verticalAlignment = Alignment.CenterVertically) {
+                                Text(
+                                    text = "Good Morning ",
+                                    fontSize = when (windowSize.width) {
+                                        WindowType.Compact -> 14.sp
+                                        else -> 16.sp
+                                    },
+                                    color = Color.Gray
+                                )
+                                Text(
+                                    text = "👋",
+                                    fontSize = when (windowSize.width) {
+                                        WindowType.Compact -> 14.sp
+                                        else -> 16.sp
+                                    }
+                                )
+                            }
+                            Text(
+                                text = "Andrew Ainsley",
+                                fontSize = when (windowSize.width) {
+                                    WindowType.Compact -> 16.sp
+                                    else -> 18.sp
+                                },
+                                fontWeight = FontWeight.Bold,
+                                color = Color.Black
+                            )
+                        }
+                    },
+                    navigationIcon = {
+                        Image(
+                            painter = painterResource(id = R.drawable.doctor_image2),
+                            contentDescription = "Profile Picture",
+                            modifier = Modifier
+                                .padding(start = 16.dp)
+                                .size(
+                                    when (windowSize.width) {
+                                        WindowType.Compact -> 40.dp
+                                        else -> 48.dp
+                                    }
+                                )
+                                .clip(CircleShape),
+                            contentScale = ContentScale.Crop
+                        )
+                    },
+                    actions = {
+                        IconButton(onClick = { navController.navigate(PatientRoutes.NotificationScreen.route)}) {
+                            Icon(
+                                imageVector = Icons.Outlined.Notifications,
+                                contentDescription = "Notifications",
+                                tint = Color.Black,
+                                modifier = Modifier.size(
+                                    when (windowSize.width) {
+                                        WindowType.Compact -> 24.dp
+                                        else -> 28.dp
+                                    }
+                                )
+                            )
+                        }
+                        IconButton(onClick = { /* Favorite action */ }) {
+                            Icon(
+                                imageVector = Icons.Outlined.FavoriteBorder,
+                                contentDescription = "Favorites",
+                                tint = Color.Black,
+                                modifier = Modifier.size(
+                                    when (windowSize.width) {
+                                        WindowType.Compact -> 24.dp
+                                        else -> 28.dp
+                                    }
+                                )
+                            )
+                        }
+                    },
+                   /* colors = TopAppBarDefaults.topAppBarColors(
+                        containerColor = MaterialTheme.colorScheme.background
+                    ) */
+                )
+
+
         }
     ) {paddingValues ->
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .background(Color.White)
                 .padding(paddingValues)
                 .verticalScroll(rememberScrollState())
                 .padding(horizontal = 16.dp)
@@ -163,92 +238,6 @@ fun calculateWindowSize(): WindowSize {
 }
 
 @Composable
-fun TopAppBar(onNotificationClick :()-> Unit) {
-    val windowSize: WindowSize = calculateWindowSize()
-
-    Row(
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 4.dp),
-        verticalAlignment = Alignment.CenterVertically
-    ) {
-        // Profile Image
-        Image(
-            painter = painterResource(id = R.drawable.doctor_image2),
-            contentDescription = "Profile Picture",
-            modifier = Modifier
-                .size(
-                    when (windowSize.width) {
-                        WindowType.Compact -> 40.dp
-                        else -> 48.dp
-                    }
-                )
-                .clip(CircleShape),
-            contentScale = ContentScale.Crop
-        )
-
-        Spacer(modifier = Modifier.width(12.dp))
-
-        // Welcome Text
-        Column(modifier = Modifier.weight(1f)) {
-            Row(verticalAlignment = Alignment.CenterVertically) {
-                Text(
-                    text = "Good Morning ",
-                    fontSize = when (windowSize.width) {
-                        WindowType.Compact -> 14.sp
-                        else -> 16.sp
-                    },
-                    color = Color.Gray
-                )
-                Text(
-                    text = "👋",
-                    fontSize = when (windowSize.width) {
-                        WindowType.Compact -> 14.sp
-                        else -> 16.sp
-                    }
-                )
-            }
-            Text(
-                text = "Andrew Ainsley",
-                fontSize = when (windowSize.width) {
-                    WindowType.Compact -> 16.sp
-                    else -> 18.sp
-                },
-                fontWeight = FontWeight.Bold,
-                color = Color.Black
-            )
-        }
-
-        // Notification Icon
-        IconButton(onClick = onNotificationClick) {
-            Icon(
-                imageVector = Icons.Outlined.Notifications,
-                contentDescription = "Notifications",
-                tint = Color.Black,
-                modifier = Modifier.size(when (windowSize.width) {
-                    WindowType.Compact -> 24.dp
-                    else -> 28.dp
-                })
-            )
-        }
-
-        // Favorite Icon
-        IconButton(onClick = { /* Favorite action */ }) {
-            Icon(
-                imageVector = Icons.Outlined.FavoriteBorder,
-                contentDescription = "Favorites",
-                tint = Color.Black,
-                modifier = Modifier.size(when (windowSize.width) {
-                    WindowType.Compact -> 24.dp
-                    else -> 28.dp
-                })
-            )
-        }
-    }
-}
-
-
-@Composable
 fun TopDoctorsSection(navController : NavHostController, windowSize: WindowSize, specialtiess: List<Specialty>, selectedSpecialtyy: Specialty?, onSpecialtySelected: (Specialty) -> Unit) {
     Column {
         Row(
@@ -258,7 +247,7 @@ fun TopDoctorsSection(navController : NavHostController, windowSize: WindowSize,
         ) {
             Text(
                 text = "Top Doctors",
-                color = Color.Black,
+                color = MaterialTheme.colorScheme.onPrimaryContainer,
                 fontSize = when (windowSize.width) {
                     WindowType.Compact -> 18.sp
                     else -> 20.sp
@@ -276,7 +265,7 @@ fun TopDoctorsSection(navController : NavHostController, windowSize: WindowSize,
                     else -> 18.sp
                 },
                 fontWeight = FontWeight.SemiBold,
-                color = Color.Blue
+                color = MaterialTheme.colorScheme.primary
             )
         }
         CategoryFilter(

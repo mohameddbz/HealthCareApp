@@ -26,7 +26,7 @@ fun NotificationItem(notification: Notification) {
         modifier = Modifier
             .fillMaxWidth()
             .padding(horizontal = 16.dp, vertical = 8.dp),
-        color = MaterialTheme.colorScheme.surface,
+        color = MaterialTheme.colorScheme.tertiaryContainer,
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 1.dp
     ) {
@@ -63,7 +63,7 @@ fun NotificationItem(notification: Notification) {
                     ) {
                         Text(
                             text = "${notification.date} | ${notification.heure}",
-                            color = NotificationColors.text,
+                            color = MaterialTheme.colorScheme.onTertiaryContainer,
                             fontFamily = Baloo,
                             fontWeight = FontWeight.Normal,
                             fontSize = 12.sp
@@ -90,7 +90,7 @@ fun NotificationItem(notification: Notification) {
 
             Text(
                 text = notification.message,
-                color = NotificationColors.text,
+                color = MaterialTheme.colorScheme.onTertiaryContainer,
                 fontFamily = Baloo,
                 fontWeight = FontWeight.Normal,
                 fontSize = 14.sp

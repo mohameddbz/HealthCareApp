@@ -31,6 +31,7 @@ import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -83,7 +84,7 @@ fun CostumSearchBar(
                 else -> 56.dp
             })
             .clip(RoundedCornerShape(24.dp))
-            .background(Color(0xFFF5F5F5))
+            .background(MaterialTheme.colorScheme.surfaceDim)
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -107,14 +108,14 @@ fun CostumSearchBar(
                 value = query,
                 onValueChange = onQueryChange,
                 textStyle = TextStyle(
-                    color = Color.Black,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer,
                     fontSize = when (windowSize.width) {
                         WindowType.Compact -> 14.sp
                         else -> 16.sp
                     }
                 ),
                 singleLine = true,
-                cursorBrush = SolidColor(Color.Black),
+                cursorBrush = SolidColor(Color.Gray),
                 keyboardOptions = KeyboardOptions(imeAction = ImeAction.Search),
                 keyboardActions = KeyboardActions(
                     onSearch = {
@@ -215,14 +216,14 @@ fun DoctorSpecialitySection(windowSize: WindowSize) {
                 text = "Doctor Speciality",
                 fontSize = if (windowSize.width == WindowType.Compact) 18.sp else 20.sp,
                 fontWeight = FontWeight.Bold,
-                color = Color.Black
+                color = MaterialTheme.colorScheme.onPrimaryContainer
             )
 
             Text(
                 text = "See All",
                 fontSize = if (windowSize.width == WindowType.Compact) 16.sp else 18.sp,
                 fontWeight = FontWeight.SemiBold,
-                color = Blue01,
+                color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable {
 
                     // hna nkteb la methode
@@ -263,7 +264,7 @@ fun SpecialityItem(imageResId: Int, title: String, windowSize: WindowSize) {
             modifier = Modifier
                 .size(60.dp) // Taille spécifique
                 .clip(CircleShape) // Rend le Box circulaire
-                .background(Blue02), // Couleur de fond (facultatif)
+                .background(MaterialTheme.colorScheme.primaryContainer), // Couleur de fond (facultatif)
             contentAlignment = Alignment.Center // Centre le contenu à l'intérieur du Box
         ) {
             Image(
@@ -279,7 +280,7 @@ fun SpecialityItem(imageResId: Int, title: String, windowSize: WindowSize) {
             maxLines = 1,
             fontWeight = FontWeight.SemiBold,
             overflow = TextOverflow.Ellipsis,
-            color = Gray02
+            color = MaterialTheme.colorScheme.onPrimaryContainer
         )
     }
 }

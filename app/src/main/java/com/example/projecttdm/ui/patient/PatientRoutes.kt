@@ -17,4 +17,5 @@ sealed class PatientRoutes(val route: String) {
         fun createRoute(appointmentId: String) = "appointmentQR/$appointmentId"
     }
 
+    object  doctorProfile : PatientRoutes("doctor_profil")
 }

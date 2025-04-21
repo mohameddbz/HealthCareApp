@@ -27,9 +27,10 @@ import com.example.projecttdm.viewmodel.NotificationViewModel
 fun NotificationsScreen(viewModel:NotificationViewModel,navController :NavHostController) {
     val notificationData by viewModel.notificationData.collectAsState()
     Scaffold(
+        modifier = Modifier.background(MaterialTheme.colorScheme.background),
         topBar = {
             TopAppBar(
-                title = { Text("Notifications" , color = Black , fontWeight = FontWeight.SemiBold) },
+                title = { Text("Notifications" , color = MaterialTheme.colorScheme.onPrimaryContainer , fontWeight = FontWeight.SemiBold) },
                 navigationIcon = {
                     IconButton(onClick = {  navController.popBackStack() }) {
                         Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
@@ -41,14 +42,12 @@ fun NotificationsScreen(viewModel:NotificationViewModel,navController :NavHostCo
                     }
                 }
             )
-        }
-    ) { paddingValues ->
-        LazyColumn(
-            modifier = Modifier
+        },
 
-                .fillMaxSize()
-                .background(MaterialTheme.colorScheme.background)
-                .padding(paddingValues)
+        ) { paddingValues ->
+        LazyColumn(
+            contentPadding = paddingValues,
+            modifier = Modifier.fillMaxSize()
         ) {
             items(notificationData) { notification ->
                 NotificationItem(notification)
@@ -56,5 +55,6 @@ fun NotificationsScreen(viewModel:NotificationViewModel,navController :NavHostCo
         }
     }
 }
+
 
 

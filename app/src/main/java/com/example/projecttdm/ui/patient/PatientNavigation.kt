@@ -23,6 +23,7 @@ import com.example.projecttdm.ui.patient.components.BookAppointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
 import com.example.projecttdm.ui.patient.screens.AppointmentScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
+import com.example.projecttdm.ui.patient.screens.DoctorProfileScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
@@ -34,6 +35,7 @@ import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
+import com.example.projecttdm.viewmodel.DoctorProfileViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -163,6 +165,14 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
+        composable(PatientRoutes.doctorProfile.route){
+            val doctorProfileViewModel: DoctorProfileViewModel = viewModel()
+            DoctorProfileScreen(
+                viewModel = doctorProfileViewModel ,
+                onBackClick = {navController.popBackStack()},
+                navigateToAllReviews = {}
+            )
+        }
     }
 }
 
@@ -188,12 +198,12 @@ val navigationItems = listOf(
     NavigationItem(
         title = "History",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.Appointment.route
+        route = PatientRoutes.doctorProfile.route
     ),
     NavigationItem(
         title = "Articles",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.PatientDetails.route
+        route = PatientRoutes.Appointment.route
     ),
     NavigationItem(
         title = "Profile",

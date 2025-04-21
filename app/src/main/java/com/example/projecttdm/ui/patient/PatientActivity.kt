@@ -22,6 +22,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.currentBackStackEntryAsState
 import androidx.navigation.compose.rememberNavController
 import com.example.projecttdm.theme.Gray01
 import com.example.projecttdm.theme.ProjectTDMTheme
@@ -34,11 +35,18 @@ class PatientActivity : ComponentActivity() {
         // Activer edge-to-edge mais nous allons le gérer nous-mêmes
         setContent {
             val navController: NavHostController = rememberNavController()
+            val navBackStackEntry = navController.currentBackStackEntryAsState()
+            val currentRoute = navBackStackEntry.value?.destination?.route
 
             ProjectTDMTheme{
                 Scaffold(
                     bottomBar = {
-                        BottomNavigationBar(navController)
+                        // Liste des routes qui doivent afficher la BottomNavigation
+                        val showBottomBarRoutes = listOf(PatientRoutes.doctorProfile.route)
+
+                        if (currentRoute !in showBottomBarRoutes) {
+                            BottomNavigationBar(navController)
+                        }
                     },
                     contentColor = Gray01
                 ) { paddingValues ->
