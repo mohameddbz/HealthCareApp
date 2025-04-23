@@ -14,6 +14,7 @@ import androidx.compose.material.icons.filled.Visibility
 import androidx.compose.material.icons.filled.VisibilityOff
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -39,15 +40,19 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.Util.OrDivider
+import com.example.projecttdm.ui.common.components.showError
+import com.example.projecttdm.viewmodel.AuthViewModel
 
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun LoginScreen(navController:NavHostController) {
+fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
+    val authState by authViewModel.authState.collectAsState()
 
     Column(
         modifier = Modifier
@@ -150,11 +155,22 @@ fun LoginScreen(navController:NavHostController) {
 
 
         Spacer(modifier = Modifier.height(16.dp))
+        when (authState) {
+            is UiState.Init -> {}
+            is UiState.Loading -> CircularProgressIndicator()
+            is UiState.Error -> showError((authState as UiState.Error).message)
+            is UiState.Success -> LaunchedEffect(Unit) {
+                navController.navigate("home") {
+                    popUpTo("login") { inclusive = true }
+                }
+            }
 
+
+        }
         // Sign In Button
         Button(
             onClick = {
-                navController.navigate(AuthRoutes.registerScreen.route)
+                authViewModel.login(email,password)
             },
             colors = ButtonDefaults.buttonColors(
                 containerColor = MaterialTheme.colorScheme.primary

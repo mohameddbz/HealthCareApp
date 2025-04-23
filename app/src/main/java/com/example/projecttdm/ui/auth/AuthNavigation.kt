@@ -13,6 +13,7 @@ import com.example.projecttdm.ui.auth.screens.FillProfileScreen
 import com.example.projecttdm.ui.auth.screens.LoginScreen
 import com.example.projecttdm.ui.auth.screens.SignInScreen
 import com.example.projecttdm.ui.auth.screens.WelcomeScreen
+import com.example.projecttdm.viewmodel.AuthViewModel
 
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController(),
@@ -60,7 +61,8 @@ fun AuthNavigation(navController: NavHostController = rememberNavController(),
             )
         }
         composable(AuthRoutes.loginScreen.route) {
-            LoginScreen(navController = navController)
+            val authViewModel = AuthViewModel();
+            LoginScreen(navController = navController,authViewModel)
         }
         composable(AuthRoutes.registerScreen.route) {
             SignInScreen(navController = navController)

@@ -71,4 +71,10 @@ dependencies {
     implementation("io.coil-kt:coil-compose:2.4.0") // Use the latest version
     implementation ("com.google.zxing:core:3.5.0")
 
+
+    // ----------------------- //
+    implementation("com.squareup.retrofit2:retrofit:2.6.0")
+    implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
+    implementation ("com.google.code.gson:gson:2.8.5")
+
 }
