@@ -9,6 +9,7 @@ import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
+import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
@@ -21,9 +22,11 @@ import androidx.navigation.navArgument
 import com.example.projecttdm.ui.notifications.NotificationsScreen
 import com.example.projecttdm.ui.patient.components.BookAppointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
+import com.example.projecttdm.ui.patient.components.CancelDialog
 import com.example.projecttdm.ui.patient.screens.AppointmentScreen
 import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
+import com.example.projecttdm.ui.patient.screens.CancelReasonScreen
 import com.example.projecttdm.ui.patient.screens.DoctorProfileScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
@@ -37,8 +40,10 @@ import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
+import com.example.projecttdm.viewmodel.CancelReasonViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
+import com.example.projecttdm.viewmodel.ReasonViewModel
 import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -93,8 +98,9 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
         composable(PatientRoutes.RescheduleReason.route)
         {
-
+            val reasonViewModel: ReasonViewModel = viewModel(factory = ReasonViewModel.Factory(LocalContext.current))
             RescheduleReasonScreen(
+                viewModel = reasonViewModel,
                 onNavigateBack = { },
                 onNext = { navController.navigate(PatientRoutes.RescheduleAppointment.route)
 
@@ -102,7 +108,24 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
+        composable(PatientRoutes.CancelReason.route)
+        {
+            val reasonViewModel: CancelReasonViewModel = viewModel(factory = CancelReasonViewModel.Factory(LocalContext.current))
+            CancelReasonScreen (
+                viewModel = reasonViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNext = {navController.navigate(PatientRoutes.SuccessCancel.route) }
+            )
+        }
 
+        composable(PatientRoutes.CancelDialog.route)
+        {
+            CancelDialog(
+                onBackClick = { navController.popBackStack() },
+                onConfirmClick = { navController.navigate(PatientRoutes.CancelReason.route) },
+                onDismiss = {navController.popBackStack()}
+            )
+        }
 
         composable(PatientRoutes.PinVerification.route) {
             PinVerificationScreen(
@@ -127,18 +150,37 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
 
         composable(PatientRoutes.Success.route) {
-            SuccessPopup (
-                onViewAppointment = {
+            SuccessPopup(
+                titleText = "Congratulations!",
+                messageText = "Appointment successfully booked.\nYou will receive a notification and the\ndoctor you selected will contact you.",
+                buttonText = "View Appointment", // Primary button text
+                onPrimaryAction = {
                     navController.navigate(PatientRoutes.PatientDetails.route) {
                         popUpTo(0)
                     }
                 },
-                onCancel = {
+                onDismiss = {
                     navController.navigate(PatientRoutes.BookAppointment.route) {
                         popUpTo(0)
                     }
-                }
+                },
+                showSecondaryButton = true, // Show the cancel button
+                secondaryButtonText = "Cancel" // Optional: override default "Cancel" text
             )
+
+        }
+
+        composable(PatientRoutes.SuccessCancel.route) {
+            SuccessPopup(
+                titleText = "Cancel Appointment\nSuccess!",
+                messageText = "We are very sad that you have canceled your appointment. We will always improve our service to satisfy you in the next appointment.",
+                buttonText = "OK",
+                onPrimaryAction = { /* dismiss */ },
+                onDismiss = { /* dismiss */ },
+                showSecondaryButton = false // 👈 hides the second button
+            )
+
+
         }
 
         composable(PatientRoutes.Failure.route) {
@@ -203,6 +245,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 navigateToAllReviews = {}
             )
         }
+
     }
 }
 
@@ -238,7 +281,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Profile",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.AppointmentQR.route
+        route = PatientRoutes.CancelReason.route
     ),
 )
 

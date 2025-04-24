@@ -35,11 +35,16 @@ import androidx.compose.ui.window.DialogProperties
 
 @Composable
 fun SuccessPopup(
-    onViewAppointment: () -> Unit,
-    onCancel: () -> Unit
+    titleText: String,
+    messageText: String,
+    buttonText: String,
+    onPrimaryAction: () -> Unit,
+    onDismiss: () -> Unit,
+    showSecondaryButton: Boolean = true,
+    secondaryButtonText: String = "Cancel"
 ) {
     Dialog(
-        onDismissRequest = onCancel,
+        onDismissRequest = onDismiss,
         properties = DialogProperties(usePlatformDefaultWidth = false)
     ) {
         Card(
@@ -53,7 +58,7 @@ fun SuccessPopup(
                 modifier = Modifier.padding(24.dp),
                 horizontalAlignment = Alignment.CenterHorizontally
             ) {
-                // Blue Circle with Calendar Icon
+                // Circle Icon
                 Box(
                     modifier = Modifier
                         .size(80.dp)
@@ -67,61 +72,29 @@ fun SuccessPopup(
                         contentAlignment = Alignment.Center
                     ) {
                         Text(
-                            text = "📅",
+                            text = "✔️",
                             fontSize = 24.sp,
                             color = Color.White
                         )
-                    }
-
-                    Box(
-                        modifier = Modifier
-                            .fillMaxSize()
-                            .padding(4.dp)
-                    ) {
-                        listOf(
-                            Alignment.TopCenter,
-                            Alignment.BottomCenter,
-                            Alignment.CenterStart,
-                            Alignment.CenterEnd
-                        ).forEach {
-                            Box(
-                                modifier = Modifier
-                                    .size(6.dp)
-                                    .background(Color(0xFF4285F4), CircleShape)
-                                    .align(it)
-                            )
-                        }
-
-                        listOf(
-                            Alignment.TopStart to Pair(16.dp, 16.dp),
-                            Alignment.TopEnd to Pair((-16).dp, 16.dp)
-                        ).forEach { (alignment, offset) ->
-                            Box(
-                                modifier = Modifier
-                                    .size(4.dp)
-                                    .background(Color(0xFF4285F4), CircleShape)
-                                    .align(alignment)
-                                    .offset(x = offset.first, y = offset.second)
-                            )
-                        }
                     }
                 }
 
                 Spacer(modifier = Modifier.height(20.dp))
 
                 Text(
-                    text = "Congratulations!",
+                    text = titleText,
                     style = MaterialTheme.typography.headlineSmall.copy(
                         fontSize = 20.sp,
                         fontWeight = FontWeight.Bold,
-                        color = Color(0xFF4285F4)
+                        color = Color(0xFF4285F4),
+                        textAlign = TextAlign.Center
                     )
                 )
 
                 Spacer(modifier = Modifier.height(12.dp))
 
                 Text(
-                    text = "Appointment successfully booked.\nYou will receive a notification and the\ndoctor you selected will contact you.",
+                    text = messageText,
                     textAlign = TextAlign.Center,
                     style = MaterialTheme.typography.bodyMedium.copy(
                         fontSize = 14.sp,
@@ -133,7 +106,7 @@ fun SuccessPopup(
                 Spacer(modifier = Modifier.height(24.dp))
 
                 Button(
-                    onClick = onViewAppointment,
+                    onClick = onPrimaryAction,
                     modifier = Modifier
                         .fillMaxWidth()
                         .height(48.dp),
@@ -141,29 +114,31 @@ fun SuccessPopup(
                     shape = RoundedCornerShape(24.dp)
                 ) {
                     Text(
-                        text = "View Appointment",
+                        text = buttonText,
                         fontSize = 16.sp,
                         fontWeight = FontWeight.Medium
                     )
                 }
 
-                Spacer(modifier = Modifier.height(12.dp))
-
-                TextButton(
-                    onClick = onCancel,
-                    modifier = Modifier
-                        .fillMaxWidth()
-                        .height(48.dp),
-                    shape = RoundedCornerShape(24.dp)
-                ) {
-                    Text(
-                        text = "Cancel",
-                        fontSize = 16.sp,
-                        fontWeight = FontWeight.Medium,
-                        color = Color.Gray
-                    )
+                if (showSecondaryButton) {
+                    Spacer(modifier = Modifier.height(12.dp))
+                    TextButton(
+                        onClick = onDismiss,
+                        modifier = Modifier
+                            .fillMaxWidth()
+                            .height(48.dp),
+                        shape = RoundedCornerShape(24.dp)
+                    ) {
+                        Text(
+                            text = secondaryButtonText,
+                            fontSize = 16.sp,
+                            fontWeight = FontWeight.Medium,
+                            color = Color.Gray
+                        )
+                    }
                 }
             }
         }
     }
 }
+

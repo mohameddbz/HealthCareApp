@@ -183,11 +183,10 @@ fun AppointmentScreen(
                             onClick = {
                                 navController.navigate(PatientRoutes.AppQR.createRoute(appointment.id))
                             },
-
                             appointment = appointment,
                             doctor = doctor,
                             onCardClick = { navController.navigate("appointment_details/${appointment.id}") },
-                            onCancelClick = { viewModel.cancelAppointment(appointment.id) },
+                            onCancelClick = { navController.navigate(PatientRoutes.CancelDialog.route) },
                             onRescheduleClick = { navController.navigate(PatientRoutes.RescheduleReason.route)}
                         )
                     }

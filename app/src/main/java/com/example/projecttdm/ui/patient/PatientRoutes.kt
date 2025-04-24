@@ -6,6 +6,7 @@ sealed class PatientRoutes(val route: String) {
     object PinVerification : PatientRoutes("pinVerification")
     object PatientSummary : PatientRoutes("patientSummary")
     object Success : PatientRoutes("success")
+    object SuccessCancel : PatientRoutes("successCancel")
     object Failure : PatientRoutes("failure")
     object NotificationScreen : PatientRoutes("notifications")
     object HomeScreen : PatientRoutes("home")
@@ -20,5 +21,7 @@ sealed class PatientRoutes(val route: String) {
 
     object  doctorProfile : PatientRoutes("doctor_profil")
     object RescheduleReason : PatientRoutes("rescheduleAppointmentReason")
+    object CancelReason : PatientRoutes("cancelReason")
     object RescheduleAppointment : PatientRoutes("rescheduleAppointment")
+    object CancelDialog : PatientRoutes("cancelDialog")
 }
