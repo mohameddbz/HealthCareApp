@@ -6,6 +6,6 @@ import com.example.projecttdm.data.model.User
 
 class NotificationRepository {
 
-    fun getNotificationsOfUser(): List<Notification> = StaticData.notifications
+  suspend  fun getNotificationsOfUser(): List<Notification> = StaticData.notifications
 
 }

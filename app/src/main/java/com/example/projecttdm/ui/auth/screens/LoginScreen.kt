@@ -1,5 +1,9 @@
 package com.example.projecttdm.ui.auth.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
+import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -26,6 +30,7 @@ import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.SpanStyle
 import androidx.compose.ui.text.TextStyle
@@ -40,11 +45,17 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.data.endpoint.ApiClient
+import com.example.projecttdm.data.model.auth.AuthResponse
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.Util.OrDivider
 import com.example.projecttdm.ui.common.components.showError
+import com.example.projecttdm.ui.patient.PatientActivity
+import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.viewmodel.AuthViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.withContext
 
 
 @OptIn(ExperimentalMaterial3Api::class)
@@ -53,6 +64,7 @@ fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
     var email by remember { mutableStateOf("") }
     var password by remember { mutableStateOf("") }
     val authState by authViewModel.authState.collectAsState()
+    val context = LocalContext.current
 
     Column(
         modifier = Modifier
@@ -160,9 +172,23 @@ fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
             is UiState.Loading -> CircularProgressIndicator()
             is UiState.Error -> showError((authState as UiState.Error).message)
             is UiState.Success -> LaunchedEffect(Unit) {
-                navController.navigate("home") {
-                    popUpTo("login") { inclusive = true }
+                withContext(Dispatchers.IO) {
+                    val succesLogin = authState as UiState.Success<AuthResponse>
+                    val sharedPreferences =
+                        context.getSharedPreferences("doctor_prefs", Context.MODE_PRIVATE)
+                    with(sharedPreferences.edit()) {
+                        putBoolean("user_connected", true)
+                        putString("auth_token", succesLogin.data.token)
+                        putString("role", succesLogin.data.role)
+                        apply()
+                    }
+                    ApiClient.setTokenProvider { succesLogin.data.token }
+
                 }
+                val intent = Intent(context, PatientActivity::class.java)
+                context.startActivity(intent)
+                val activity = context as? Activity
+                activity?.finish()
             }
 
 
@@ -202,7 +228,7 @@ fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
             color = MaterialTheme.colorScheme.primary,
             modifier = Modifier
                 .clickable {
-//                    navController.navigate("forgot_password")
+                    navController.navigate(AuthRoutes.registerScreen.route)
                 }
                 .padding(top = 8.dp)
         )

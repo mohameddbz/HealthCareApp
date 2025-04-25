@@ -29,6 +29,9 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Specialty
+import com.example.projecttdm.state.UiState
+import com.example.projecttdm.ui.common.components.DeconnectionButton
+import com.example.projecttdm.ui.common.components.UserProfileImage
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.CostumSearchBar
@@ -36,6 +39,7 @@ import com.example.projecttdm.ui.patient.components.DoctorSpecialitySection
 import com.example.projecttdm.ui.patient.components.MedicalCheckBanner
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.HomeViewModel
 
 
 // Classe pour gérer les informations de taille d'écran
@@ -56,7 +60,7 @@ fun getWindowType(size: Int): WindowType = when {
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel: DoctorListViewModel = viewModel() , navController :NavHostController) {
+fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel: DoctorListViewModel = viewModel() , navController :NavHostController,homeViewModel: HomeViewModel) {
 
     val (searchQuery, setSearchQuery) = remember { mutableStateOf("") }
 
@@ -64,88 +68,92 @@ fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel
     val doctors by doctorListViewModel.doctors.collectAsState()
     val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
     val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
+
+    val currentUser by homeViewModel.currentUser.collectAsState()
+
     Scaffold(
         topBar = {
-
-                TopAppBar(
-                    title = {
-                        Column {
-                            Row(verticalAlignment = Alignment.CenterVertically) {
+            when (currentUser) {
+                is UiState.Init -> {
+                    // Ne rien afficher ou un écran vide
+                }
+                is UiState.Loading -> {
+                    CircularProgressIndicator()
+                }
+                is UiState.Success -> {
+                    val user = (currentUser as UiState.Success).data
+                    TopAppBar(
+                        title = {
+                            Column {
+                                Row(verticalAlignment = Alignment.CenterVertically) {
+                                    Text(
+                                        text = "Good Morning ",
+                                        fontSize = when (windowSize.width) {
+                                            WindowType.Compact -> 14.sp
+                                            else -> 16.sp
+                                        },
+                                        color = Color.Gray
+                                    )
+                                    Text(
+                                        text = "👋",
+                                        fontSize = when (windowSize.width) {
+                                            WindowType.Compact -> 14.sp
+                                            else -> 16.sp
+                                        }
+                                    )
+                                }
                                 Text(
-                                    text = "Good Morning ",
-                                    fontSize = when (windowSize.width) {
-                                        WindowType.Compact -> 14.sp
-                                        else -> 16.sp
-                                    },
-                                    color = Color.Gray
-                                )
-                                Text(
-                                    text = "👋",
-                                    fontSize = when (windowSize.width) {
-                                        WindowType.Compact -> 14.sp
-                                        else -> 16.sp
-                                    }
+                                    text = user.first_name + " " + user.last_name ,
+                                    fontSize = 18.sp,
+                                    fontWeight = FontWeight.Bold,
+                                    color = Color.Black,
+                                    maxLines = 1
                                 )
                             }
-                            Text(
-                                text = "Andrew Ainsley",
-                                fontSize = when (windowSize.width) {
-                                    WindowType.Compact -> 16.sp
-                                    else -> 18.sp
-                                },
-                                fontWeight = FontWeight.Bold,
-                                color = Color.Black
-                            )
-                        }
-                    },
-                    navigationIcon = {
-                        Image(
-                            painter = painterResource(id = R.drawable.doctor_image2),
-                            contentDescription = "Profile Picture",
-                            modifier = Modifier
-                                .padding(start = 16.dp)
-                                .size(
-                                    when (windowSize.width) {
-                                        WindowType.Compact -> 40.dp
-                                        else -> 48.dp
-                                    }
+                        },
+                        navigationIcon = {
+                            UserProfileImage(user.image)
+                        },
+                        actions = {
+                            IconButton(onClick = { navController.navigate(PatientRoutes.NotificationScreen.route)}) {
+                                Icon(
+                                    imageVector = Icons.Outlined.Notifications,
+                                    contentDescription = "Notifications",
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(
+                                        when (windowSize.width) {
+                                            WindowType.Compact -> 24.dp
+                                            else -> 28.dp
+                                        }
+                                    )
                                 )
-                                .clip(CircleShape),
-                            contentScale = ContentScale.Crop
-                        )
-                    },
-                    actions = {
-                        IconButton(onClick = { navController.navigate(PatientRoutes.NotificationScreen.route)}) {
-                            Icon(
-                                imageVector = Icons.Outlined.Notifications,
-                                contentDescription = "Notifications",
-                                tint = Color.Black,
-                                modifier = Modifier.size(
-                                    when (windowSize.width) {
-                                        WindowType.Compact -> 24.dp
-                                        else -> 28.dp
-                                    }
+                            }
+                            IconButton(onClick = { /* Favorite action */ }) {
+                                Icon(
+                                    imageVector = Icons.Outlined.FavoriteBorder,
+                                    contentDescription = "Favorites",
+                                    tint = Color.Black,
+                                    modifier = Modifier.size(
+                                        when (windowSize.width) {
+                                            WindowType.Compact -> 24.dp
+                                            else -> 28.dp
+                                        }
+                                    )
                                 )
-                            )
-                        }
-                        IconButton(onClick = { /* Favorite action */ }) {
-                            Icon(
-                                imageVector = Icons.Outlined.FavoriteBorder,
-                                contentDescription = "Favorites",
-                                tint = Color.Black,
-                                modifier = Modifier.size(
-                                    when (windowSize.width) {
-                                        WindowType.Compact -> 24.dp
-                                        else -> 28.dp
-                                    }
-                                )
-                            )
-                        }
-                    },
-                   /* colors = TopAppBarDefaults.topAppBarColors(
-                        containerColor = MaterialTheme.colorScheme.background
-                    ) */
-                )
+                            }
+                        },
+                        /* colors = TopAppBarDefaults.topAppBarColors(
+                             containerColor = MaterialTheme.colorScheme.background
+                         ) */
+                    )
+
+                }
+                is UiState.Error -> {
+                    val errorMessage = (currentUser as UiState.Error).message
+                    Text("Erreur : $errorMessage", color = Color.Red)
+                }
+            }
+
 
 
         }
@@ -271,5 +279,6 @@ fun TopDoctorsSection(navController : NavHostController, windowSize: WindowSize,
         CategoryFilter(
             specialties = specialtiess, selectedSpecialty = selectedSpecialtyy, onSpecialtySelected = onSpecialtySelected,
         )
+        DeconnectionButton()
     }
 }

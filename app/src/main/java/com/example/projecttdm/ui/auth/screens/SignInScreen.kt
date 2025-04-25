@@ -41,12 +41,14 @@ import androidx.navigation.NavHostController
 import com.example.projecttdm.R
 import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.Util.OrDivider
+import com.example.projecttdm.viewmodel.AuthViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun SignInScreen(navController: NavHostController) {
-    var email by remember { mutableStateOf("") }
-    var password by remember { mutableStateOf("") }
+fun SignInScreen(navController: NavHostController,authViewModel : AuthViewModel) {
+
+    val email by authViewModel.email.collectAsState()
+    val password by authViewModel.password.collectAsState()
 
     Column(
         modifier = Modifier
@@ -77,7 +79,7 @@ fun SignInScreen(navController: NavHostController) {
         // Email TextField
         OutlinedTextField(
             value = email,
-            onValueChange = { email = it },
+            onValueChange = { authViewModel.onEmailChanged(it) },
             label = { Text("Email") },
             keyboardOptions = KeyboardOptions.Default.copy(
                 keyboardType = KeyboardType.Text
@@ -108,7 +110,7 @@ fun SignInScreen(navController: NavHostController) {
 
         OutlinedTextField(
             value = password,
-            onValueChange = { password = it },
+            onValueChange = { authViewModel.onPasswordChanged(it) },
             label = { Text("Password") },
             singleLine = true,
             leadingIcon = {
