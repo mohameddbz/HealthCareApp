@@ -31,6 +31,7 @@ import com.example.projecttdm.ui.patient.screens.DoctorProfileScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
@@ -43,6 +44,7 @@ import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.CancelReasonViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
+import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import com.example.projecttdm.viewmodel.ReasonViewModel
 import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 
@@ -246,9 +248,16 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
+        composable(PatientRoutes.Prescription.route){
+            val prescriptionViewModel: PrescriptionViewModel = viewModel()
+
+            PrescriptionScreenContent(
+                viewModel = prescriptionViewModel ,
+            )
+        }
+
     }
 }
-
 
 
 data class NavigationItem(
@@ -281,7 +290,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Profile",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.CancelReason.route
+        route = PatientRoutes.Prescription.route
     ),
 )
 

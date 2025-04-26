@@ -24,4 +24,5 @@ sealed class PatientRoutes(val route: String) {
     object CancelReason : PatientRoutes("cancelReason")
     object RescheduleAppointment : PatientRoutes("rescheduleAppointment")
     object CancelDialog : PatientRoutes("cancelDialog")
+    object Prescription : PatientRoutes("prescription")
 }
