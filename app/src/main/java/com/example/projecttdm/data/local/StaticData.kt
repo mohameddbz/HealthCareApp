@@ -6,9 +6,9 @@ import com.example.projecttdm.data.model.Notification
 import com.example.projecttdm.data.model.User
 
 object StaticData {
-    val users = listOf(
-        User(1, "Dr. John Doe", "john@example.com", "doctor"),
-        User(2, "Jane Doe", "jane@example.com", "patient")
+    val users = listOf<User>(
+      //  User(1, "Dr. John Doe", "john@example.com", "doctor"),
+       // User(2, "Jane Doe", "jane@example.com", "patient")
     )
     val notifications = listOf(
         Notification(

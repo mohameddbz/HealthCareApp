@@ -18,7 +18,9 @@ import com.example.projecttdm.viewmodel.AuthViewModel
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController(),
                    onLoginSuccess: () -> Unit) {
-    NavHost(navController, startDestination = AuthRoutes.splash.route) {
+    val authViewModel = AuthViewModel();
+
+    NavHost(navController, startDestination = AuthRoutes.loginScreen.route) {
         composable(AuthRoutes.splash.route) {
             SplashScreen(onFinish = { navController.navigate(AuthRoutes.onboarding.route) })
         }
@@ -61,14 +63,13 @@ fun AuthNavigation(navController: NavHostController = rememberNavController(),
             )
         }
         composable(AuthRoutes.loginScreen.route) {
-            val authViewModel = AuthViewModel();
             LoginScreen(navController = navController,authViewModel)
         }
         composable(AuthRoutes.registerScreen.route) {
-            SignInScreen(navController = navController)
+            SignInScreen(navController = navController,authViewModel)
         }
         composable(AuthRoutes.profileScreen.route) {
-            FillProfileScreen()
+            FillProfileScreen(authViewModel)
         }
     }
 

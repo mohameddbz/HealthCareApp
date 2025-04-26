@@ -43,6 +43,7 @@ import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.CancelReasonViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
+import com.example.projecttdm.viewmodel.HomeViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import com.example.projecttdm.viewmodel.ReasonViewModel
@@ -53,6 +54,7 @@ import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
     val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
     val appointmentViewModel: AppointmentViewModel = viewModel()
+    val homeViewModel: HomeViewModel = viewModel()
     val doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
         initializer { DoctorListViewModel(doctorSearchViewModel) }
     })
@@ -80,7 +82,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(PatientRoutes.HomeScreen.route) {
-            HomeScreen(doctorSearchViewModel,doctorListViewModel,navController)
+            HomeScreen(doctorSearchViewModel,doctorListViewModel,navController,homeViewModel)
                 }
 
         composable(PatientRoutes.PatientDetails.route) {

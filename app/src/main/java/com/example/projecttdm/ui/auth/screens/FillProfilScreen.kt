@@ -1,5 +1,8 @@
 package com.example.projecttdm.ui.auth.screens
 
+import android.app.Activity
+import android.content.Context
+import android.content.Intent
 import android.net.Uri
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
@@ -7,6 +10,7 @@ import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.text.KeyboardActions
@@ -34,11 +38,21 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import coil.compose.rememberAsyncImagePainter
 import com.example.projecttdm.composant.NavBarTop
+import com.example.projecttdm.data.endpoint.ApiClient
+import com.example.projecttdm.data.model.auth.AuthResponse
+import com.example.projecttdm.state.UiState
+import com.example.projecttdm.ui.common.components.showError
+import com.example.projecttdm.ui.patient.PatientActivity
+import com.example.projecttdm.viewmodel.AuthViewModel
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.*
-
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
-fun FillProfileScreen() {
+fun FillProfileScreen(authViewModel: AuthViewModel) {
+    val email by authViewModel.email.collectAsState()
+    val password by authViewModel.password.collectAsState()
     var firstName by remember { mutableStateOf("") }
     var lastName by remember { mutableStateOf("") }
     var birthDate by remember { mutableStateOf("") }
@@ -46,26 +60,27 @@ fun FillProfileScreen() {
     var gender by remember { mutableStateOf("") }
     var expanded by remember { mutableStateOf(false) }
     var imageUri by remember { mutableStateOf<Uri?>(null) }
+    val authState by authViewModel.authState.collectAsState()
+
+
+
+    val scope = rememberCoroutineScope()
 
     val focusManager = LocalFocusManager.current
     val keyboardController = LocalSoftwareKeyboardController.current
     val context = LocalContext.current
 
-    // Focus requesters for each field
     val firstNameFocusRequester = remember { FocusRequester() }
     val lastNameFocusRequester = remember { FocusRequester() }
     val phoneFocusRequester = remember { FocusRequester() }
 
-    // Image picker launcher separated into a function
     val imagePicker = rememberImagePicker { uri ->
         imageUri = uri
     }
 
-    // Date picker state
     val datePickerState = rememberDatePickerState()
     var showDatePicker by remember { mutableStateOf(false) }
 
-    // Show DatePickerDialog when needed
     if (showDatePicker) {
         ShowDatePickerDialog(
             datePickerState = datePickerState,
@@ -80,81 +95,77 @@ fun FillProfileScreen() {
     Column {
         NavBarTop("Fill Your Profile")
 
-        Column(
+        LazyColumn(
             modifier = Modifier
                 .fillMaxSize()
                 .background(MaterialTheme.colorScheme.onPrimary)
-                .padding(20.dp),
-            horizontalAlignment = Alignment.CenterHorizontally
+                .padding(horizontal = 20.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+            contentPadding = PaddingValues(vertical = 20.dp),
+            verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            Spacer(modifier = Modifier.height(40.dp))
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
+                ProfileImageSection(
+                    imageUri = imageUri,
+                    onEditClick = { imagePicker.launch("image/*") }
+                )
+            }
 
-            // Profile image with edit button
-            ProfileImageSection(
-                imageUri = imageUri,
-                onEditClick = { imagePicker.launch("image/*") }
-            )
+            item {
+                OutlinedTextField(
+                    value = firstName,
+                    onValueChange = { firstName = it },
+                    placeholder = { Text("First Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(firstNameFocusRequester),
+                    shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                            lastNameFocusRequester.requestFocus()
+                        }
+                    ),
+                    colors = customTextFieldColors()
+                )
+            }
 
-            Spacer(modifier = Modifier.height(40.dp))
+            item {
+                OutlinedTextField(
+                    value = lastName,
+                    onValueChange = { lastName = it },
+                    placeholder = { Text("Last Name") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(lastNameFocusRequester),
+                    shape = RoundedCornerShape(16.dp),
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Text,
+                        imeAction = ImeAction.Next
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onNext = {
+                            focusManager.moveFocus(FocusDirection.Down)
+                            phoneFocusRequester.requestFocus()
+                        }
+                    ),
+                    colors = customTextFieldColors()
+                )
+            }
 
-            // First Name
-            OutlinedTextField(
-                value = firstName,
-                onValueChange = { firstName = it },
-                placeholder = { Text("First Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .focusRequester(firstNameFocusRequester),
-                shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                        lastNameFocusRequester.requestFocus()
-                    }
-                ),
-                colors = customTextFieldColors()
-            )
-
-            // Last Name
-            OutlinedTextField(
-                value = lastName,
-                onValueChange = { lastName = it },
-                placeholder = { Text("Last Name") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .focusRequester(lastNameFocusRequester),
-                shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Text,
-                    imeAction = ImeAction.Next
-                ),
-                keyboardActions = KeyboardActions(
-                    onNext = {
-                        focusManager.moveFocus(FocusDirection.Down)
-                        phoneFocusRequester.requestFocus()
-                    }
-                ),
-                colors = customTextFieldColors()
-            )
-
-            // Birth Date (Date Picker)
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable { showDatePicker = true }
-            ) {
+            item {
                 OutlinedTextField(
                     value = birthDate,
                     onValueChange = {},
                     placeholder = { Text("Date of Birth") },
-                    modifier = Modifier.fillMaxWidth(),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { showDatePicker = true },
                     shape = RoundedCornerShape(16.dp),
                     readOnly = true,
                     enabled = false,
@@ -171,108 +182,138 @@ fun FillProfileScreen() {
                 )
             }
 
-            // Phone number
-            OutlinedTextField(
-                value = phone,
-                onValueChange = { phone = it },
-                placeholder = { Text("Phone") },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .focusRequester(phoneFocusRequester),
-                shape = RoundedCornerShape(16.dp),
-                keyboardOptions = KeyboardOptions(
-                    keyboardType = KeyboardType.Phone,
-                    imeAction = ImeAction.Done
-                ),
-                keyboardActions = KeyboardActions(
-                    onDone = {
-                        focusManager.clearFocus()
-                        keyboardController?.hide()
-                    }
-                ),
-                trailingIcon = {
-                    Icon(Icons.Default.Phone, contentDescription = "Phone", tint = Color.Gray)
-                },
-                colors = customTextFieldColors()
-            )
-
-            // Gender dropdown with clickable box
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp)
-                    .clickable { expanded = !expanded }
-            ) {
+            item {
                 OutlinedTextField(
-                    value = gender,
-                    onValueChange = {},
-                    placeholder = { Text("Gender") },
-                    modifier = Modifier.fillMaxWidth(),
+                    value = phone,
+                    onValueChange = { phone = it },
+                    placeholder = { Text("Phone") },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .focusRequester(phoneFocusRequester),
                     shape = RoundedCornerShape(16.dp),
-                    readOnly = true,
-                    enabled = false,
-                    trailingIcon = {
-                        IconButton(onClick = { expanded = !expanded }) {
-                            Icon(
-                                Icons.Default.KeyboardArrowDown,
-                                contentDescription = "Select Gender",
-                                tint = Color.Gray
-                            )
+                    keyboardOptions = KeyboardOptions.Default.copy(
+                        keyboardType = KeyboardType.Phone,
+                        imeAction = ImeAction.Done
+                    ),
+                    keyboardActions = KeyboardActions(
+                        onDone = {
+                            focusManager.clearFocus()
+                            keyboardController?.hide()
                         }
+                    ),
+                    trailingIcon = {
+                        Icon(Icons.Default.Phone, contentDescription = "Phone", tint = Color.Gray)
                     },
                     colors = customTextFieldColors()
                 )
+            }
 
-                DropdownMenu(
-                    expanded = expanded,
-                    onDismissRequest = { expanded = false },
-                    modifier = Modifier.fillMaxWidth(0.9f)
+            item {
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .clickable { expanded = !expanded }
                 ) {
-                    listOf("Male", "Female", "Other").forEach { option ->
-                        DropdownMenuItem(
-                            text = { Text(option) },
-                            onClick = {
-                                gender = option
-                                expanded = false
+                    OutlinedTextField(
+                        value = gender,
+                        onValueChange = {},
+                        placeholder = { Text("Gender") },
+                        modifier = Modifier.fillMaxWidth(),
+                        shape = RoundedCornerShape(16.dp),
+                        readOnly = true,
+                        enabled = false,
+                        trailingIcon = {
+                            IconButton(onClick = { expanded = !expanded }) {
+                                Icon(
+                                    Icons.Default.KeyboardArrowDown,
+                                    contentDescription = "Select Gender",
+                                    tint = Color.Gray
+                                )
                             }
-                        )
+                        },
+                        colors = customTextFieldColors()
+                    )
+
+                    DropdownMenu(
+                        expanded = expanded,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.fillMaxWidth(0.9f)
+                    ) {
+                        listOf("Male", "Female", "Other").forEach { option ->
+                            DropdownMenuItem(
+                                text = { Text(option) },
+                                onClick = {
+                                    gender = option
+                                    expanded = false
+                                }
+                            )
+                        }
                     }
                 }
             }
 
-            Spacer(modifier = Modifier.weight(1f))
+            item {
+                Spacer(modifier = Modifier.height(20.dp))
 
-            // Continue Button
-            Button(
-                onClick = {
-                    // Handle continue logic here
-                    keyboardController?.hide()
-                },
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .height(56.dp),
-                shape = RoundedCornerShape(28.dp),
-                colors = ButtonDefaults.buttonColors(
-                    containerColor = MaterialTheme.colorScheme.primary
-                )
-            ) {
-                Text(
-                    text = "Continue",
-                    fontSize = 18.sp,
-                    fontWeight = FontWeight.Medium
-                )
+                when (authState) {
+                    is UiState.Init -> {}
+                    is UiState.Loading -> CircularProgressIndicator()
+                    is UiState.Error -> showError((authState as UiState.Error).message)
+                    is UiState.Success -> LaunchedEffect(Unit) {
+                        withContext(Dispatchers.IO) {
+                            val succesSignup = authState as UiState.Success<AuthResponse>
+                            val sharedPreferences =
+                                context.getSharedPreferences("doctor_prefs", Context.MODE_PRIVATE)
+                            with(sharedPreferences.edit()) {
+                                putBoolean("user_connected", true)
+                                putString("auth_token", succesSignup.data.token)
+                                putString("role", succesSignup.data.role)
+                                apply()
+                            }
+                            ApiClient.setTokenProvider { succesSignup.data.token }
+                        }
+                        val intent = Intent(context, PatientActivity::class.java)
+                        context.startActivity(intent)
+                        val activity = context as? Activity
+                        activity?.finish()
+                    }
+
+
+                }
+
+                Button(
+                    onClick = {
+                        keyboardController?.hide()
+                        // Handle continue logic
+                        scope.launch {
+                            authViewModel.registerUser(firstName,lastName,email,password,phone,"patient",imageUri,context)
+                        }
+                    },
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(56.dp),
+                    shape = RoundedCornerShape(28.dp),
+                    colors = ButtonDefaults.buttonColors(
+                        containerColor = MaterialTheme.colorScheme.primary
+                    )
+                ) {
+                    Text(
+                        text = "Continue",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium
+                    )
+                }
             }
 
-            Spacer(modifier = Modifier.height(20.dp))
+            item { Spacer(modifier = Modifier.height(20.dp)) }
         }
     }
 
-    // This helps get focus at start
     LaunchedEffect(Unit) {
         firstNameFocusRequester.requestFocus()
     }
 }
+
 
 @Composable
 fun ProfileImageSection(imageUri: Uri?, onEditClick: () -> Unit) {
