@@ -18,6 +18,8 @@ import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
+import com.example.projecttdm.ui.favorite.FavoriteDoctorsScreen
+import com.example.projecttdm.ui.favorite.FavoriteDoctorsViewModel
 import com.example.projecttdm.ui.notifications.NotificationsScreen
 import com.example.projecttdm.ui.patient.components.BookAppointment.FailurePopup
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
@@ -69,6 +71,14 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 appointmentId = "98",
                 onRescheduleSuccess = {navController.navigate(PatientRoutes.Success.route)},
                 viewModel = RescheduleAppointmentViewModel()
+            )
+        }
+        composable(PatientRoutes.FavoriteDoctors.route) {
+            val favoriteDoctorsViewModel: FavoriteDoctorsViewModel = viewModel()
+            FavoriteDoctorsScreen(
+                viewModel = favoriteDoctorsViewModel,
+                onBackClick = { navController.popBackStack() }
+
             )
         }
 
