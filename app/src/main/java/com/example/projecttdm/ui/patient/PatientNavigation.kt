@@ -28,6 +28,7 @@ import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
 import com.example.projecttdm.ui.patient.screens.BookAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.CancelReasonScreen
 import com.example.projecttdm.ui.patient.screens.DoctorProfileScreen
+import com.example.projecttdm.ui.patient.screens.FavoriteDoctorsScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
@@ -43,6 +44,7 @@ import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.CancelReasonViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
+import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
 import com.example.projecttdm.viewmodel.HomeViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
@@ -148,6 +150,14 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                         popUpTo(PatientRoutes.PinVerification.route) { inclusive = true }
                     }
                 }
+            )
+        }
+        composable(PatientRoutes.FavoriteDoctors.route) {
+            val favoriteDoctorsViewModel: FavoriteDoctorsViewModel = viewModel()
+            FavoriteDoctorsScreen(
+                viewModel = favoriteDoctorsViewModel,
+                onBackClick = { navController.popBackStack() }
+
             )
         }
 
