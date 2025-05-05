@@ -2,6 +2,7 @@ package com.example.projecttdm.data.local
 
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.data.model.ImageBlob
 import com.example.projecttdm.data.model.Specialty
 
 object DoctorData {
@@ -14,7 +15,7 @@ object DoctorData {
         Specialty(id = "5", name = "General Practitioner")
     )
 
-    val listDcctors = listOf(
+    val listDcctors  = listOf(
         Doctor(
             id = "1",
             name = "Randy Wigham",
@@ -40,7 +41,10 @@ object DoctorData {
             hospital = "Franklin Hospital",
             rating = 4.8f,
             reviewCount = 5362,
-            imageUrl = "https://example.com/doctor3.jpg"
+            imageUrl = ImageBlob(
+                type = "url",
+                data = emptyList() // because you currently have a URL not bytes
+            )
         ),
         Doctor(
             id = "4",
@@ -49,7 +53,10 @@ object DoctorData {
             hospital = "JFK Medical Center",
             rating = 4.6f,
             reviewCount = 3837,
-            imageUrl = "https://example.com/doctor4.jpg"
+            imageUrl = ImageBlob(
+                type = "url",
+                data = emptyList()
+            )
         ),
         Doctor(
             id = "5",
@@ -58,7 +65,11 @@ object DoctorData {
             hospital = "Memorial Hospital",
             rating = 4.5f,
             reviewCount = 4050,
-            imageUrl = "https://example.com/doctor5.jpg"
+            imageUrl = ImageBlob(
+                type = "url",
+                data = emptyList()
+            )
         )
     )
+
 }

@@ -42,9 +42,9 @@ class RescheduleAppointmentViewModel : ViewModel() {
 
     // Function to set the appointment to reschedule
     suspend fun setAppointmentToReschedule(appointmentId: String) {
-            repository.getAppointmentById(appointmentId).collect { appointment ->
-                _appointmentToReschedule.value = appointment
-            }
+//            repository.getAppointmentById(appointmentId).collect { appointment ->
+//                _appointmentToReschedule.value = appointment
+//            }
     }
 
 

@@ -75,6 +75,18 @@ fun PendingCard(
     onRescheduleClick: () -> Unit
 ) {
 
+    val displayDate = try {
+        appointment.formattedDate()
+    } catch (e: Exception) {
+        "Date unavailable"
+    }
+
+    val displayTime = try {
+        appointment.formattedTime()
+    } catch (e: Exception) {
+        "Time unavailable"
+    }
+
 
     val statusColors = mapOf(
         AppointmentStatus.PENDING to yellowNotification,       // Yellow notification background for pending

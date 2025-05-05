@@ -14,6 +14,10 @@ class AuthRepository(private val endpoint: AuthEndPoint) {
     fun getUsers(): List<User> = StaticData.users
 
     suspend fun login(loginRequest: LoginRequest): AuthResponse {
+        println(loginRequest)
+        println("loginRequest")
+        println(endpoint.login(loginRequest))
+        println("login")
         return endpoint.login(loginRequest)
     }
 

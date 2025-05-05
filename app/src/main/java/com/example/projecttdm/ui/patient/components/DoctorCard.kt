@@ -11,16 +11,21 @@ import androidx.compose.material.icons.filled.FavoriteBorder
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import coil.compose.rememberImagePainter
+import coil.ImageLoader
+import coil.compose.rememberAsyncImagePainter
+import android.graphics.BitmapFactory
+import androidx.compose.ui.graphics.asImageBitmap
+import coil.request.CachePolicy
+import coil.request.ImageRequest
 
 import com.example.projecttdm.data.model.Doctor
 
@@ -49,32 +54,29 @@ fun DoctorCard(
             // Doctor Image (Rectangle)
             Box(
                 modifier = Modifier
-                    .height(80.dp) // Set fixed height for rectangle shape
-                    .width(80.dp) // Set fixed width
-                    .clip(RoundedCornerShape(8.dp)) // Rounded corners for the rectangle
-                    .background(MaterialTheme.colorScheme.surfaceVariant) // Background color from theme
+                    .height(80.dp)
+                    .width(80.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(MaterialTheme.colorScheme.surfaceVariant)
             ) {
-                if (doctor.imageResId != null) {
-                    Image(
-                        painter = painterResource(id = doctor.imageResId),
-                        contentDescription = "Doctor ${doctor.name}",
-                        contentScale = ContentScale.Fit,
-                        modifier = Modifier.fillMaxSize()
-                    )
-                } else if (!doctor.imageUrl.isNullOrBlank()) {
-                    Image(
-                        painter = rememberImagePainter(
-                            data = doctor.imageUrl,
-                            builder = {
-                                crossfade(true)
-                            }
-                        ),
-                        contentDescription = "Doctor ${doctor.name}",
-                        contentScale = ContentScale.Crop,
-                        modifier = Modifier.fillMaxSize()
-                    )
+                doctor.imageUrl?.let { imageBlob ->
+                    val byteArray = imageBlob.data.map { it.toByte() }.toByteArray()
+
+                    val imageBitmap = remember(byteArray) {
+                        BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)?.asImageBitmap()
+                    }
+
+                    imageBitmap?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = "Doctor ${doctor.name}",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
                 }
             }
+
 
             // Doctor Info
             Column(
@@ -138,4 +140,38 @@ fun DoctorCard(
             }
         }
     }
+}
+
+@Composable
+fun CachedImage(url:String,
+                modifier: Modifier = Modifier.fillMaxWidth(),
+                contentDescription: String? = null,
+                contentScale: ContentScale = ContentScale.Crop) {
+    val context = LocalContext.current
+
+    val imageLoader = remember {
+        ImageLoader.Builder(context)
+
+            .respectCacheHeaders(false)
+            .build()
+    }
+
+    val request = ImageRequest.Builder(context)
+        .data(url)
+        .diskCachePolicy(CachePolicy.ENABLED)
+        .memoryCachePolicy(CachePolicy.ENABLED)
+        .crossfade(true)
+        .build()
+
+    val painter = rememberAsyncImagePainter(
+        model = request,
+        imageLoader = imageLoader
+    )
+
+    Image(
+        painter = painter,
+        contentDescription = contentDescription,
+        modifier = modifier,
+        contentScale = contentScale
+    )
 }

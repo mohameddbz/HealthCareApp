@@ -42,7 +42,7 @@ class PatientActivity : ComponentActivity() {
                 Scaffold(
                     bottomBar = {
                         // Liste des routes qui doivent afficher la BottomNavigation
-                        val showBottomBarRoutes = listOf(PatientRoutes.doctorProfile.route)
+                        val showBottomBarRoutes = listOf("${PatientRoutes.doctorProfile.route}/{doctorId}")
 
                         if (currentRoute !in showBottomBarRoutes) {
                             BottomNavigationBar(navController)

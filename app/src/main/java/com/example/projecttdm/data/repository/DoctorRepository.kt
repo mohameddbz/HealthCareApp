@@ -1,27 +1,39 @@
 package com.example.projecttdm.data.repository
 
-import com.example.projecttdm.R
+
+import com.example.projecttdm.data.endpoint.ApiClient
+import com.example.projecttdm.data.endpoint.DoctorEndPoint
 import com.example.projecttdm.data.local.DoctorData
 import com.example.projecttdm.data.model.Doctor
-import com.example.projecttdm.data.model.Specialty
+import com.example.projecttdm.state.UiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class DoctorRepository {
-    fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors
+class DoctorRepository() {
 
-    fun  getDetailDoctorById(doctorId :String): Doctor = Doctor(
-        id = "dr-jenny-watson",
-        name = "Dr. Jenny Watson",
-        specialty = Specialty(id = "12", name = "Ophtalmologue"),
-        hospital = "Christ Hospital",
-        hospitalLocation = "London, UK",
-        patients = 5000,
-        yearsExperience = 10,
-        rating = 4.8f,
-        reviewCount = 4942,
-        about = "Dr. Jenny Watson is the top most Immunologists specialist in Christ Hospital at London. She achieved several awards for her wonderful contribution in medical field. She is available for private consultation.",
-        workingHours = "Monday - Friday, 08.00 AM - 20.00 PM",
-        imageResId = R.drawable.doctor_image2,
-    )
+    private val endpoint = ApiClient.create(DoctorEndPoint::class.java)
+
+
+     fun getTopDoctors(): Flow<UiState<List<Doctor>>> = flow {
+        emit(UiState.Loading) // Emit loading first
+        try {
+            val doctorsList = endpoint.getDoctors() // Fetch data
+            emit(UiState.Success(doctorsList))      // Emit success
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Unknown error")) // Emit error
+        }
+    }
+
+    fun getDetailDoctorById(doctorId: String): Flow<UiState<Doctor>> = flow {
+        emit(UiState.Loading)
+        try {
+            // Make network call directly on IO dispatcher
+            val doctor = endpoint.getDoctorById(doctorId)
+            emit(UiState.Success(doctor))
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "An unexpected error occurred"))
+        }
+    }
 
     fun getDoctors(): List<Doctor> = DoctorData.listDcctors
 

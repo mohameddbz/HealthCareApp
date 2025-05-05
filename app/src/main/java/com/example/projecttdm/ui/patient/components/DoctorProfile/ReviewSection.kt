@@ -40,7 +40,7 @@ fun ReviewsSection(
                 text = "Reviews",
                 fontSize = 18.sp,
                 fontWeight = FontWeight.Bold,
-                color = MaterialTheme.colorScheme.onPrimaryContainer
+                color = MaterialTheme.colorScheme.onSurface
             )
 
             Text(
@@ -55,6 +55,8 @@ fun ReviewsSection(
 
         reviews.take(5).forEach { review ->
             ReviewItem(review = review)
+            Spacer(modifier = Modifier.height(8.dp))
         }
     }
 }
+

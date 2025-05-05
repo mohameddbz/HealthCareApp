@@ -53,11 +53,20 @@ class AuthViewModel : ViewModel() {
             try {
                 val response = authRepository.login(request)
                 _authState.value = UiState.Success(response)
+            } catch (e: retrofit2.HttpException) {
+                val errorBody = e.response()?.errorBody()?.string()
+                println("HTTP error: ${e.code()} - $errorBody")
+                _authState.value = UiState.Error("Erreur du serveur : ${errorBody ?: e.message()}")
+            } catch (e: java.io.IOException) {
+                println("Network error: ${e.message}")
+                _authState.value = UiState.Error("Erreur de connexion. Veuillez vérifier votre réseau.")
             } catch (e: Exception) {
+                println("Unknown error: ${e.message}")
                 _authState.value = UiState.Error(e.message ?: "Erreur inconnue")
             }
         }
     }
+
 
     // Dans votre ViewModel ou repository
      fun registerUser(

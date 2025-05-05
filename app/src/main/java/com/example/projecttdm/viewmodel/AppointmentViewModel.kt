@@ -8,8 +8,12 @@ import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.QRCodeData
+import com.example.projecttdm.data.model.User
 import com.example.projecttdm.data.repository.AppointmentRepository
 import com.example.projecttdm.data.repository.DoctorRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
+import com.example.projecttdm.data.repository.SpecialtyRepository
+import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -19,6 +23,7 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 class AppointmentViewModel(
 ) : ViewModel() {
+
 
     private val repository = AppointmentRepository()
     private val doctorRepository = DoctorRepository()
@@ -50,6 +55,11 @@ class AppointmentViewModel(
     private val _showQRCodeDialog = MutableStateFlow(false)
     val showQRCodeDialog: StateFlow<Boolean> = _showQRCodeDialog.asStateFlow()
 
+    private val userRepository = RepositoryHolder.UserRepository
+
+    private val _currentUser = MutableStateFlow<UiState<User>>(UiState.Init)
+    val currentUser: StateFlow<UiState<User>> = _currentUser.asStateFlow()
+
     init {
         loadAppointments(AppointmentStatus.PENDING)
         refreshAppointments()
@@ -64,17 +74,24 @@ class AppointmentViewModel(
     private fun loadAppointments(status: AppointmentStatus) {
         viewModelScope.launch {
             _isLoading.value = true
+
             try {
                 repository.getAppointmentsByStatus(status).collect { appointmentList ->
+                    appointmentList.forEach { appt ->
+                    }
                     _appointments.value = appointmentList
                     _isLoading.value = false
                 }
             } catch (e: Exception) {
-                _errorMessage.emit("Error loading appointments: ${e.message}")
+                val message = "Error loading appointments: ${e.message}"
+                println(message)
+                e.printStackTrace()
+                _errorMessage.emit(message)
                 _isLoading.value = false
             }
         }
     }
+
 
     // This function performs a search operation on the list of appointments
     fun searchAppointments(query: String) {
@@ -125,8 +142,28 @@ class AppointmentViewModel(
 
     fun getAppointmentDetails(appointmentId: String) {
         viewModelScope.launch {
-            repository.getAppointmentById(appointmentId).collect { appointment ->
-                _selectedAppointment.value = appointment
+            _isLoading.value = true
+
+            // Reset current appointment to avoid showing stale data
+            _selectedAppointment.value = null
+
+            repository.getAppointmentById(appointmentId).collect { state ->
+                when (state) {
+                    is UiState.Loading -> {
+                        // Loading already set to true above
+                    }
+                    is UiState.Success -> {
+                        _selectedAppointment.value = state.data
+                        _isLoading.value = false
+                    }
+                    is UiState.Error -> {
+                        _errorMessage.emit("Error fetching appointment: ${state.message}")
+                        _isLoading.value = false
+                    }
+                    else -> {
+                        // Handle other states if needed
+                    }
+                }
             }
         }
     }
@@ -137,7 +174,7 @@ class AppointmentViewModel(
             try {
                 // First get the appointment details
                 repository.getAppointmentById(appointmentId).collect { appointment ->
-                    _selectedAppointment.value = appointment
+                    //_selectedAppointment.value = appointment
 
                     // Then fetch the QR code data
                     if (appointment != null) {
@@ -206,15 +243,18 @@ class AppointmentViewModel(
                 if (result.isSuccess) {
                     loadAppointments(_selectedTab.value)
                 } else {
-                    _errorMessage.emit("Failed to refresh appointments: ${result.exceptionOrNull()?.message}")
-                    _isLoading.value = false
+                    val errorMsg = result.exceptionOrNull()?.message
+                    _errorMessage.emit("Failed to refresh appointments: $errorMsg")
                 }
             } catch (e: Exception) {
                 _errorMessage.emit("Error refreshing appointments: ${e.message}")
+            } finally {
                 _isLoading.value = false
             }
         }
     }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun formatTime(time: LocalTime): String {

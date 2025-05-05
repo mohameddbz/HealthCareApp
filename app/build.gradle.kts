@@ -27,28 +27,32 @@ android {
             )
         }
     }
+
     compileOptions {
         sourceCompatibility = JavaVersion.VERSION_11
         targetCompatibility = JavaVersion.VERSION_11
     }
+
     kotlinOptions {
         jvmTarget = "11"
     }
+
     buildFeatures {
         compose = true
     }
 }
 
 dependencies {
-    implementation("io.coil-kt:coil-compose:2.4.0")
-    implementation("androidx.compose.material:material-icons-extended:1.5.0")
+    // UI & Compose
     implementation("androidx.compose.material3:material3:1.2.0")
+    implementation("androidx.compose.material3:material3:1.1.2")
+    implementation("androidx.compose.material:material-icons-extended:1.5.0")
     implementation("androidx.navigation:navigation-compose:2.7.4")
-    implementation ("androidx.compose.material:material-icons-extended:<version>")
     implementation("androidx.lifecycle:lifecycle-viewmodel-compose:2.6.2")
     implementation("androidx.appcompat:appcompat:1.6.1")
-    implementation("androidx.compose.material3:material3:1.1.2")
-    implementation (libs.androidx.material.icons.extended)
+
+    // Compose libraries via libs.versions.toml
+    implementation(libs.androidx.material.icons.extended)
     implementation(libs.androidx.core.ktx)
     implementation(libs.androidx.lifecycle.runtime.ktx)
     implementation(libs.androidx.activity.compose)
@@ -59,6 +63,8 @@ dependencies {
     implementation(libs.androidx.material3)
     implementation(libs.kizitonwose.calendar)
     implementation(libs.androidx.media3.effect)
+
+    // Testing
     implementation(libs.androidx.espresso.core)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
@@ -67,15 +73,18 @@ dependencies {
     androidTestImplementation(libs.androidx.ui.test.junit4)
     debugImplementation(libs.androidx.ui.tooling)
     debugImplementation(libs.androidx.ui.test.manifest)
+
+    // Splash Screen
     implementation("androidx.core:core-splashscreen:1.0.0")
+
     // Coil for image loading
-    implementation("io.coil-kt:coil-compose:2.4.0") // Use the latest version
-    implementation ("com.google.zxing:core:3.5.0")
+    implementation("io.coil-kt:coil-compose:2.4.0")
 
+    // ZXing for QR code support
+    implementation("com.google.zxing:core:3.5.0")
 
-    // ----------------------- //
-    implementation("com.squareup.retrofit2:retrofit:2.6.0")
-    implementation ("com.squareup.retrofit2:converter-gson:2.6.0")
-    implementation ("com.google.code.gson:gson:2.8.5")
-
+    // Retrofit & Gson (versions updated)
+    implementation("com.squareup.retrofit2:retrofit:2.9.0")
+    implementation("com.squareup.retrofit2:converter-gson:2.9.0")
+    implementation("com.google.code.gson:gson:2.10.1")
 }

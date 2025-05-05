@@ -13,26 +13,45 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
-import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.lifecycle.viewmodel.initializer
+import com.example.projecttdm.data.repository.DoctorRepository
+import com.example.projecttdm.data.repository.ReviewRepository
+import com.example.projecttdm.data.repository.SpecialtyRepository
 import com.example.projecttdm.ui.common.components.NotFoundComponent
 import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.DoctorCard
 import com.example.projecttdm.ui.patient.components.FilterDialog
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.DoctorListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onBackClick: () -> Unit = {},
-    doctorSearchViewModel: DoctorSearchViewModel
+    onDoctorClick: (String) -> Unit = {}
 ) {
-    val doctors by doctorSearchViewModel.filteredDoctors.collectAsState()
-    val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
-    val searchQuery by doctorSearchViewModel.searchQuery.collectAsState()
-    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
-    val resultsCount = doctors.size
+    val doctorRepository = DoctorRepository()
+    val reviewRepository = ReviewRepository()
+    val specialtyRepository = SpecialtyRepository()
+
+    val doctorListViewModel: DoctorListViewModel = viewModel(
+        factory = androidx.lifecycle.viewmodel.viewModelFactory {
+            initializer {
+                DoctorListViewModel(
+                    doctorRepository = doctorRepository,
+                    reviewRepository = reviewRepository,
+                    specialtyRepository = specialtyRepository
+                )
+            }
+        }
+    )
+
+    val filteredDoctors by doctorListViewModel.filteredDoctors.collectAsState()
+    val selectedSpecialty by doctorListViewModel.selectedSpecialty.collectAsState()
+    val searchQuery by doctorListViewModel.searchQuery.collectAsState()
+    val specialties by doctorListViewModel.allSpecialties.collectAsState()
+    val resultsCount = filteredDoctors.size
 
     var loading by remember { mutableStateOf(false) }
     var showFilterDialog by remember { mutableStateOf(false) }
@@ -59,7 +78,7 @@ fun SearchScreen(
                 ) {
                     TextField(
                         value = searchQuery,
-                        onValueChange = { doctorSearchViewModel.setSearchQuery(it) },
+                        onValueChange = { doctorListViewModel.setSearchQuery(it) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         placeholder = {
@@ -114,7 +133,7 @@ fun SearchScreen(
         CategoryFilter(
             specialties = specialties,
             selectedSpecialty = selectedSpecialty,
-            onSpecialtySelected = { doctorSearchViewModel.setSpecialty(it) }
+            onSpecialtySelected = { doctorListViewModel.setSpecialty(it) }
         )
 
         Row(
@@ -140,7 +159,7 @@ fun SearchScreen(
                 CircularProgressIndicator(color = MaterialTheme.colorScheme.primary) // Using theme color for indicator
             }
         } else {
-            if (doctors.isEmpty()) {
+            if (filteredDoctors.isEmpty()) {
                 NotFoundComponent()
             } else {
                 Column(
@@ -149,12 +168,12 @@ fun SearchScreen(
                         .padding(horizontal = 16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    doctors.forEach { doctor ->
+                    filteredDoctors.forEach { doctor ->
                         DoctorCard(
                             doctor = doctor,
                             isFavorite = false,
                             onFavoriteClick = { /* Optional: Handle favorites */ },
-                            onDoctorClick = { /* TODO: Handle doctor click */ }
+                            onDoctorClick = { onDoctorClick(doctor.id) }
                         )
                     }
                 }
@@ -166,9 +185,11 @@ fun SearchScreen(
     if (showFilterDialog) {
         FilterDialog(
             selectedSpecialty = selectedSpecialty,
+            selectedRating = doctorListViewModel.selectedRating.collectAsState().value,
             onDismiss = { showFilterDialog = false },
-            onApplyFilter = {
-                // Apply any additional filter logic here
+            onApplyFilter = { specialty, rating ->
+                doctorListViewModel.setSpecialty(specialty)
+                doctorListViewModel.setRating(rating)
                 showFilterDialog = false
             }
         )

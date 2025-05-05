@@ -12,7 +12,7 @@ import retrofit2.http.POST
 import retrofit2.http.Part
 import retrofit2.http.Path
 
-interface AuthEndPoint {
+interface   AuthEndPoint {
 
     @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): AuthResponse

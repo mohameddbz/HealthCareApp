@@ -1,167 +1,78 @@
 package com.example.projecttdm.ui.patient.components
 
-
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.shape.RoundedCornerShape
-
+import androidx.compose.foundation.selection.selectable
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
-import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.data.model.Specialty
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 
-@OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FilterDialog(
     selectedSpecialty: Specialty,
+    selectedRating: String,
     onDismiss: () -> Unit,
-    onApplyFilter: () -> Unit,
-    doctorSearchViewModel: DoctorSearchViewModel = viewModel()
+    onApplyFilter: (Specialty, String) -> Unit
 ) {
-    val modalBottomSheetState = rememberModalBottomSheetState()
-    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
+    var tempSelectedSpecialty by remember { mutableStateOf(selectedSpecialty) }
+    var tempSelectedRating by remember { mutableStateOf(selectedRating) }
 
-    val selectedRatingVM by doctorSearchViewModel.selectedRating.collectAsState()
-    var selectedRating by remember { mutableStateOf(selectedRatingVM) }
+    val ratingOptions = listOf("All", "5", "4", "3", "2", "1")
 
-    // Apply the custom theme to the ModalBottomSheet
-    ModalBottomSheet(
+    AlertDialog(
         onDismissRequest = onDismiss,
-        sheetState = modalBottomSheetState,
-        containerColor = MaterialTheme.colorScheme.background, // Using theme color
-        shape = RoundedCornerShape(topStart = 36.dp, topEnd = 36.dp),
-    ) {
-        Column(
-            modifier = Modifier
-                .fillMaxWidth()
-                .padding(start = 16.dp, end = 16.dp, top = 2.dp, bottom = 24.dp)
-        ) {
-            // Title
-            Box(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 12.dp),
-                contentAlignment = Alignment.Center
-            ) {
+        title = { Text("Filter Doctors") },
+        text = {
+            Column(modifier = Modifier.padding(8.dp)) {
+                // Title for the specialty section
                 Text(
-                    text = "Filter",
-                    style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
+                    "Rating",
+                    style = MaterialTheme.typography.titleMedium,
+                    modifier = Modifier.padding(vertical = 8.dp)
                 )
-            }
 
-            Divider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                thickness = 1.dp,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 20.dp)
-            )
-
-            // Specialty section
-            Text(
-                text = "Speciality",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Specialty chips
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                // "All" option
-                CategoryFilter(
-                    specialties = specialties,
-                    selectedSpecialty = selectedSpecialty,
-                    onSpecialtySelected = { doctorSearchViewModel.setSpecialty(it) }
-                )
-            }
-
-            // Rating section
-            Text(
-                text = "Rating",
-                style = MaterialTheme.typography.bodyLarge.copy(fontWeight = FontWeight.Bold),
-                modifier = Modifier.padding(bottom = 8.dp)
-            )
-
-            // Rating chips
-            var selectedRating by remember { mutableStateOf("All") }
-            val ratingOptions = listOf("All", "5", "4", "3", "2")
-
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(bottom = 20.dp),
-                horizontalArrangement = Arrangement.spacedBy(8.dp)
-            ) {
-                RatingFilter(
-                    ratings = ratingOptions,
-                    selectedRating = selectedRating,
-                    onRatingSelected = { selectedRating = it }
-                )
-            }
-
-            Divider(
-                color = MaterialTheme.colorScheme.onSurface.copy(alpha = 0.1f),
-                thickness = 1.dp,
-                modifier = Modifier.fillMaxWidth().padding(bottom = 24.dp),
-            )
-
-            // Buttons
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth(),
-                horizontalArrangement = Arrangement.spacedBy(12.dp)
-            ) {
-                Button(
-                    onClick = {
-                        selectedRating = "All"
-                        onDismiss()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.secondary.copy(alpha = 0.1f)
-                    ),
-                    shape = RoundedCornerShape(50.dp) // Fully rounded button
-                ) {
-                    Text(
-                        text = "Reset",
-                        color = MaterialTheme.colorScheme.primary
-                    )
+                // Rating filter
+                Column {
+                    ratingOptions.forEach { rating ->
+                        Row(
+                            modifier = Modifier
+                                .fillMaxWidth()
+                                .selectable(
+                                    selected = tempSelectedRating == rating,
+                                    onClick = { tempSelectedRating = rating }
+                                )
+                                .padding(vertical = 8.dp),
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            RadioButton(
+                                selected = tempSelectedRating == rating,
+                                onClick = { tempSelectedRating = rating }
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = if (rating == "All") "All Ratings" else "$rating Stars and above",
+                                style = MaterialTheme.typography.bodyMedium
+                            )
+                        }
+                    }
                 }
 
-                Spacer(modifier = Modifier.width(8.dp)) // Optional spacing between buttons
-
-                Button(
-                    onClick = {
-                        doctorSearchViewModel.setRating(selectedRating)
-                        onApplyFilter()
-                    },
-                    modifier = Modifier
-                        .weight(1f)
-                        .height(50.dp),
-                    colors = ButtonDefaults.buttonColors(
-                        containerColor = MaterialTheme.colorScheme.primary
-                    ),
-                    shape = RoundedCornerShape(50.dp) // Fully rounded button
-                ) {
-                    Text(
-                        text = "Apply",
-                        color = MaterialTheme.colorScheme.onPrimary
-                    )
-                }
-
+                // We could add more filter options here if needed
             }
-
-            // Add some padding at the bottom to account for system bars
-            Spacer(modifier = Modifier.height(24.dp))
+        },
+        confirmButton = {
+            Button(
+                onClick = { onApplyFilter(tempSelectedSpecialty, tempSelectedRating) }
+            ) {
+                Text("Apply")
+            }
+        },
+        dismissButton = {
+            TextButton(onClick = onDismiss) {
+                Text("Cancel")
+            }
         }
-    }
+    )
 }
