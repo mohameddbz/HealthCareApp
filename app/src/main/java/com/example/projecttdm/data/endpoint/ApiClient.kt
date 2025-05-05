@@ -10,7 +10,8 @@ import retrofit2.converter.gson.GsonConverterFactory
 
 object ApiClient {
 
-    private const val BASE_URL = "https://doctor-app-backend-b63m.onrender.com/api/"
+//    private const val BASE_URL = "https://doctor-app-backend-b63m.onrender.com/api/"
+private const val BASE_URL = "http://10.0.2.2:5000/api/"
     private var tokenProvider: () -> String? = { null }
 
     fun setTokenProvider(provider: () -> String?) {

@@ -28,6 +28,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.data.model.Patient
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.common.components.DeconnectionButton
@@ -128,7 +129,7 @@ fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel
                                     )
                                 )
                             }
-                            IconButton(onClick = { /* Favorite action */ }) {
+                            IconButton(onClick = { navController.navigate(PatientRoutes.PrescriptionCreate.route) }) {
                                 Icon(
                                     imageVector = Icons.Outlined.FavoriteBorder,
                                     contentDescription = "Favorites",

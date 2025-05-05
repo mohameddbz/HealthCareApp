@@ -15,5 +15,4 @@ data class Doctor(
     val hospitalLocation: String? = null ,
     val patients : Int? = null ,
     val workingHours :String? = null ,
-
 )

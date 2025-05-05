@@ -23,7 +23,7 @@ import com.example.projecttdm.theme.ProjectTDMTheme
 import com.example.projecttdm.ui.patient.components.Prescription.PdfActionDialog
 import com.example.projecttdm.ui.patient.components.Prescription.PrescriptionContent
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
-
+/*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrescriptionScreenContent(viewModel: PrescriptionViewModel = viewModel()) {
@@ -136,3 +136,6 @@ fun PrescriptionScreenContent(viewModel: PrescriptionViewModel = viewModel()) {
         }
     }
 }
+
+
+ */

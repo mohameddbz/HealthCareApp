@@ -8,13 +8,71 @@ import android.net.Uri
 import android.view.View
 import androidx.core.content.FileProvider
 import com.example.projecttdm.R
+import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
 import com.example.projecttdm.data.model.*
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PrescriptionRepository {
+class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
+
+
+        suspend fun getAllPrescriptions(): List<Prescriptions> {
+            return endpoint.getAllPrescriptions()
+        }
+
+        suspend fun getPrescriptionById(id: String): Prescriptions {
+            return endpoint.getPrescriptionById(id)
+        }
+
+        suspend fun getPrescriptionsByDoctor(doctorId: String): List<Prescriptions> {
+            return endpoint.getPrescriptionsByDoctor(doctorId)
+        }
+
+        suspend fun getPrescriptionsByPatient(patientId: String): List<Prescriptions> {
+            return endpoint.getPrescriptionsByPatient(patientId)
+        }
+
+        suspend fun createPrescription(
+            patientId: String,
+            doctorId: String,
+            medications: List<Medications>,
+            instructions: String,
+            expiryDate: String
+        ): PrescriptionResponse {
+            val request = PrescriptionRequest(
+                patientId = patientId,
+                doctorId = doctorId,
+                medications = medications,
+                instructions = instructions,
+                expiryDate = expiryDate
+            )
+            return endpoint.createPrescription(request)
+        }
+
+        suspend fun updatePrescription(
+            id: String,
+            patientId: String,
+            doctorId: String,
+            medications: List<Medications>,
+            instructions: String,
+            expiryDate: String
+        ): PrescriptionResponse {
+            val request = PrescriptionRequest(
+                patientId = patientId,
+                doctorId = doctorId,
+                medications = medications,
+                instructions = instructions,
+                expiryDate = expiryDate
+            )
+            return endpoint.updatePrescription(id, request)
+        }
+
+        suspend fun deletePrescription(id: String): PrescriptionResponse {
+            return endpoint.deletePrescription(id)
+        }
+
 
     fun getSamplePrescription(): Prescription {
         val doctor = Doctor(

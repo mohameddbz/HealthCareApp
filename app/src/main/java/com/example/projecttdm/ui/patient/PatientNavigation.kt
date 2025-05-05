@@ -31,7 +31,7 @@ import com.example.projecttdm.ui.patient.screens.DoctorProfileScreen
 import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
-import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
+import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
@@ -152,7 +152,13 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
 
-
+        composable(PatientRoutes.PrescriptionCreate.route){
+            val prescriptionViewModel = PrescriptionViewModel()
+            PrescriptionCreateScreen(
+                onNavigateBack = {navController.popBackStack()},
+                prescriptionViewModel
+            )
+        }
         composable(PatientRoutes.Success.route) {
             SuccessPopup(
                 titleText = "Congratulations!",
@@ -250,13 +256,13 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-        composable(PatientRoutes.Prescription.route){
-            val prescriptionViewModel: PrescriptionViewModel = viewModel()
+    //    composable(PatientRoutes.Prescription.route){
+      //      val prescriptionViewModel: PrescriptionViewModel = viewModel()
 
-            PrescriptionScreenContent(
-                viewModel = prescriptionViewModel ,
-            )
-        }
+        //    PrescriptionScreenContent(
+         //       viewModel = prescriptionViewModel ,
+          //  )
+       // }
 
     }
 }
