@@ -129,7 +129,7 @@ fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel
                                     )
                                 )
                             }
-                            IconButton(onClick = { navController.navigate(PatientRoutes.PrescriptionCreate.route) }) {
+                            IconButton(onClick = { navController.navigate(PatientRoutes.FavoriteDoctors.route)}) {
                                 Icon(
                                     imageVector = Icons.Outlined.FavoriteBorder,
                                     contentDescription = "Favorites",

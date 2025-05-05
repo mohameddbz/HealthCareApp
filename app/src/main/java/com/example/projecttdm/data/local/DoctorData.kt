@@ -31,7 +31,7 @@ object DoctorData {
             hospital = "Christ Hospital",
             rating = 4.4f,
             reviewCount = 6942,
-            imageResId = R.drawable.logo
+            imageResId = R.drawable.doctor_image
         ),
         Doctor(
             id = "3",
@@ -40,7 +40,7 @@ object DoctorData {
             hospital = "Franklin Hospital",
             rating = 4.8f,
             reviewCount = 5362,
-            imageUrl = "https://example.com/doctor3.jpg"
+            imageResId = R.drawable.doctor_image2
         ),
         Doctor(
             id = "4",
@@ -58,7 +58,6 @@ object DoctorData {
             hospital = "Memorial Hospital",
             rating = 4.5f,
             reviewCount = 4050,
-            imageUrl = "https://example.com/doctor5.jpg"
-        )
+            imageResId = R.drawable.doctor_image3        )
     )
 }
