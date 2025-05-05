@@ -192,7 +192,7 @@ fun HomeScreen(doctorSearchViewModel: DoctorSearchViewModel, doctorListViewModel
             Spacer(modifier = Modifier.height(16.dp))
 
             // Doctor Speciality Section
-            DoctorSpecialitySection(windowSize)
+            DoctorSpecialitySection(windowSize,homeViewModel)
 
             Spacer(modifier = Modifier.height(16.dp))
 

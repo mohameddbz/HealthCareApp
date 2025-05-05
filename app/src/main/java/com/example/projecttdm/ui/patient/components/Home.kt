@@ -29,11 +29,14 @@ import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -56,6 +59,8 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.data.model.Specialty
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.theme.Blue02
 import com.example.projecttdm.theme.Gray02
@@ -63,6 +68,7 @@ import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.screens.WindowSize
 import com.example.projecttdm.ui.patient.screens.WindowType
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.HomeViewModel
 
 @Composable
 fun CostumSearchBar(
@@ -203,8 +209,9 @@ val specialities = listOf(
 )
 
 @Composable
-fun DoctorSpecialitySection(windowSize: WindowSize) {
+fun DoctorSpecialitySection(windowSize: WindowSize,homeViewModel: HomeViewModel) {
     val context  = LocalContext.current;
+    val specialtiesState by homeViewModel.specialtyUiState.collectAsState()
     Column {
         // Title Row
         Row(
@@ -225,39 +232,58 @@ fun DoctorSpecialitySection(windowSize: WindowSize) {
                 fontWeight = FontWeight.SemiBold,
                 color = MaterialTheme.colorScheme.primary,
                 modifier = Modifier.clickable {
-
-                    // hna nkteb la methode
-                    Toast.makeText(context,"omba3d diro page specialité", Toast.LENGTH_SHORT).show();
+                    Toast.makeText(context, "omba3d diro page specialité", Toast.LENGTH_SHORT).show()
                 }
             )
-
         }
 
         Spacer(modifier = Modifier.height(16.dp))
 
-        // Grid Section
         val columns = if (windowSize.width == WindowType.Compact) 4 else 8
-        val displayedList = if (windowSize.width == WindowType.Compact) specialities.take(8) else specialities
 
-        LazyVerticalGrid(
-            columns = GridCells.Fixed(columns),
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(200.dp), // adjust as needed
-            horizontalArrangement = Arrangement.SpaceEvenly,
-            verticalArrangement = Arrangement.spacedBy(12.dp),
-            userScrollEnabled = false // optional: disable scrolling inside this section
-        ) {
-            items(displayedList) { speciality ->
-                SpecialityItem(
-                    imageResId = speciality.icon,
-                    title = speciality.title,
-                    windowSize = windowSize
+        when (specialtiesState) {
+            is UiState.Loading -> {
+                CircularProgressIndicator()
+            }
+
+            is UiState.Success -> {
+                val specialties = (specialtiesState as UiState.Success<List<Specialty>>).data
+                val displayedList = if (windowSize.width == WindowType.Compact) specialties.take(8) else specialties
+                LazyVerticalGrid(
+                    columns = GridCells.Fixed(columns),
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .height(200.dp),
+                    horizontalArrangement = Arrangement.SpaceEvenly,
+                    verticalArrangement = Arrangement.spacedBy(12.dp),
+                    userScrollEnabled = false
+                ) {
+                    items(displayedList) { speciality ->
+                        SpecialityItem(
+                            imageResId = homeViewModel.getIconForSpecialty(speciality.name),
+                            title = speciality.name,
+                            windowSize = windowSize
+                        )
+                    }
+                }
+            }
+
+            is UiState.Error -> {
+                Text(
+                    text = (specialtiesState as UiState.Error).message,
+                    color = MaterialTheme.colorScheme.error,
+                    modifier = Modifier.padding(16.dp)
                 )
+            }
+
+            UiState.Init -> {
+                // Optional placeholder or do nothing
             }
         }
     }
-}@Composable
+}
+
+@Composable
 fun SpecialityItem(imageResId: Int, title: String, windowSize: WindowSize) {
     Column(horizontalAlignment = Alignment.CenterHorizontally) {
         Box(
@@ -284,6 +310,8 @@ fun SpecialityItem(imageResId: Int, title: String, windowSize: WindowSize) {
         )
     }
 }
+
+
 
 
 

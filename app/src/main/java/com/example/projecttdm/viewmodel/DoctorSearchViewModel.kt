@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.data.repository.DoctorRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.data.repository.SpecialtyRepository
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
@@ -13,7 +14,7 @@ import kotlinx.coroutines.launch
 class DoctorSearchViewModel : ViewModel() {
 
     private val doctorRepository = DoctorRepository()
-    private val specialtyRepository = SpecialtyRepository()
+    private val specialtyRepository = RepositoryHolder.specialtyRepository
 
     // Flow to fetch doctors and specialties
     private val _allDoctors = MutableStateFlow<List<Doctor>>(emptyList())
