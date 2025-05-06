@@ -32,6 +32,13 @@ fun TopDoctorScreen(
     onSearchClick: () -> Unit,
     doctorListViewModel: DoctorListViewModel
 ) {
+
+    LaunchedEffect(true) {
+        doctorListViewModel.loadDoctors()
+        doctorListViewModel.loadSpecialties()
+        doctorListViewModel.setupFiltering()
+    }
+
     val doctorsState by doctorListViewModel.doctorsState.collectAsState()
     val filteredDoctors by doctorListViewModel.filteredDoctors.collectAsState()
     val specialties by doctorListViewModel.allSpecialties.collectAsState()

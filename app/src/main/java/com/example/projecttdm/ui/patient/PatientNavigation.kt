@@ -54,7 +54,6 @@ import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
-    val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
     val appointmentViewModel: AppointmentViewModel = viewModel()
     val homeViewModel: HomeViewModel = viewModel()
     val doctorListViewModel: DoctorListViewModel = viewModel()
@@ -84,7 +83,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.HomeScreen.route) {
             HomeScreen(
-                doctorSearchViewModel, navController, homeViewModel,
+                navController, homeViewModel,
                 onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
             )
                 }

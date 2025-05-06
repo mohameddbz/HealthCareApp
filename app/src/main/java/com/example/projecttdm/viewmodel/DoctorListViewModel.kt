@@ -18,7 +18,6 @@ import kotlinx.coroutines.launch
 class DoctorListViewModel() : ViewModel() {
     private val doctorRepository = RepositoryHolder.doctorRepository
     private val specialtyRepository = RepositoryHolder.specialtyRepository
-    private val reviewRepository = RepositoryHolder.reviewRepository
 
     // State for all doctors
     private val _doctorsState = MutableStateFlow<UiState<List<Doctor>>>(UiState.Loading)
@@ -50,14 +49,14 @@ class DoctorListViewModel() : ViewModel() {
     val favorites: StateFlow<Set<String>> = _favorites.asStateFlow()
 
 
-    init {
-        loadDoctors()
-        loadSpecialties()
-        setupFiltering()
-    }
+//    init {
+//        loadDoctors()
+//        loadSpecialties()
+//        setupFiltering()
+//    }
 
     // Function to load all specialties
-    private fun loadSpecialties() {
+    fun loadSpecialties() {
         viewModelScope.launch {
             try {
                 val specialties = specialtyRepository.getAllSpecialtiesWithAll()
@@ -75,7 +74,7 @@ class DoctorListViewModel() : ViewModel() {
         }
     }
 
-    private fun loadDoctors() {
+    fun loadDoctors() {
         viewModelScope.launch {
             try {
                 _doctorsState.value = UiState.Loading
@@ -93,7 +92,7 @@ class DoctorListViewModel() : ViewModel() {
     }
 
     // Setup filtering for doctors based on specialty, query and rating
-    private fun setupFiltering() {
+    fun setupFiltering() {
         viewModelScope.launch {
             combine(
                 _selectedSpecialty,

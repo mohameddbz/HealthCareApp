@@ -80,7 +80,6 @@ fun CostumSearchBar(
     onQueryChange: (String) -> Unit,
     onSearch: (String) -> Unit = {},
     onFilterClick: () -> Unit = {},
-    doctorSearchViewModel: DoctorSearchViewModel,
     navController: NavHostController
 ) {
     val focusManager = LocalFocusManager.current
@@ -136,7 +135,6 @@ fun CostumSearchBar(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onSearch(query)
-                        doctorSearchViewModel.setSearchQuery(query)
                         focusManager.clearFocus()
                         navController.navigate(PatientRoutes.searchDoctor.route)
                     }

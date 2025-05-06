@@ -49,12 +49,10 @@ fun calculateWindowSize(): WindowSize {
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun HomeScreen(
-    doctorSearchViewModel: DoctorSearchViewModel,
     navController: NavHostController,
     homeViewModel: HomeViewModel,
     onSearchClick: () -> Unit,
 ) {
-    val searchQuery = doctorSearchViewModel.searchQuery.collectAsState().value
     val windowSize = calculateWindowSize()
     val doctorsState by homeViewModel.doctorsState.collectAsState()
     val currentUser by homeViewModel.currentUser.collectAsState()
@@ -131,12 +129,11 @@ fun HomeScreen(
             item {
                 CostumSearchBar(
                     windowSize = windowSize,
-                    query = searchQuery,
-                    onQueryChange = { doctorSearchViewModel.setSearchQuery(it) },
+                    query = "",
+                    onQueryChange = { },
                     onSearch = {},
                     onFilterClick = { println("Filter clicked") },
                     navController = navController,
-                    doctorSearchViewModel = doctorSearchViewModel
                 )
 
             }
