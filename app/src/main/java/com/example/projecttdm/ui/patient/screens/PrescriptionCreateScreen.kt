@@ -38,6 +38,7 @@ fun PrescriptionCreateScreen(
 ) {
     val patientId by viewModel.patientId.collectAsState()
     val doctorId by viewModel.doctorId.collectAsState()
+    val appointmentId by viewModel.appointmentId.collectAsState()
     val instructions by viewModel.instructions.collectAsState()
     val expiryDate by viewModel.expiryDate.collectAsState()
     val medications by viewModel.medications.collectAsState()
@@ -104,6 +105,14 @@ fun PrescriptionCreateScreen(
                         label = { Text("ID du médecin") },
                         modifier = Modifier.fillMaxWidth()
                     )
+
+                    OutlinedTextField(
+                            value = appointmentId,
+                            onValueChange = { viewModel.onAppointmentIdChanged(it) },
+                            label = { Text("ID du Appointment") },
+                            modifier = Modifier.fillMaxWidth()
+                        )
+
 
                     // Champ de date d'expiration avec sélecteur de date
                     Row(

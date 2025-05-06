@@ -17,6 +17,7 @@ data class Prescriptions(
     val doctorId: String,
     val medications: List<Medications>,
     val instructions: String,
+    val appointmentId: String,  // Ajout du champ appointmentId optionnel
     val createdAt: String? = null,
     val expiryDate: String
 )
@@ -33,6 +34,7 @@ data class PrescriptionRequest(
     val patientId: String,
     val doctorId: String,
     val medications: List<Medications>,
+    val appointmentId: String ,  // Ajout du champ appointmentId optionnel
     val instructions: String,
     val expiryDate: String
 )
@@ -48,10 +50,12 @@ data class FullPrescription(
     val patient_id: Int,
     val doctor_id: Int,
     val instructions: String,
+    val appointment_id: Int ,  // Ajout du champ appointment_id optionnel
     val created_at: String,
     val expiry_date: String,
     val MEDICATIONs: List<Medication>,
     val Doctor: Doctor,
-    val Patient: PatientX
+    val Patient: PatientX,
+    val Appointment: Appointment? = null  // Ajout du champ Appointment optionnel
 )
 

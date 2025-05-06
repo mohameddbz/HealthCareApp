@@ -281,5 +281,10 @@ fun TopDoctorsSection(navController : NavHostController, windowSize: WindowSize,
             specialties = specialtiess, selectedSpecialty = selectedSpecialtyy, onSpecialtySelected = onSpecialtySelected,
         )
         DeconnectionButton()
+        Button(
+            onClick = {navController.navigate(PatientRoutes.Prescription.createRoute("2"))}
+        ) {
+            Text("3ABAZ BRK")
+        }
     }
 }

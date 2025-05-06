@@ -22,7 +22,7 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
             return endpoint.getAllPrescriptions()
         }
 
-        suspend fun getPrescriptionById(id: String): Prescriptions {
+        suspend fun getPrescriptionById(id: String): PrescriptionResponse {
             return endpoint.getPrescriptionById(id)
         }
 
@@ -34,47 +34,51 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
             return endpoint.getPrescriptionsByPatient(patientId)
         }
 
-        suspend fun createPrescription(
-            patientId: String,
-            doctorId: String,
-            medications: List<Medications>,
-            instructions: String,
-            expiryDate: String
-        ): PrescriptionResponse {
-            val request = PrescriptionRequest(
-                patientId = patientId,
-                doctorId = doctorId,
-                medications = medications,
-                instructions = instructions,
-                expiryDate = expiryDate
-            )
-            return endpoint.createPrescription(request)
-        }
+    suspend fun createPrescription(
+        patientId: String,
+        doctorId: String,
+        medications: List<Medications>,
+        instructions: String,
+        expiryDate: String,
+        appointmentId: String  // Ajout du paramètre appointmentId optionnel
+    ): PrescriptionResponse {
+        val request = PrescriptionRequest(
+            patientId = patientId,
+            doctorId = doctorId,
+            medications = medications,
+            instructions = instructions,
+            expiryDate = expiryDate,
+            appointmentId = appointmentId  // Ajout du champ appointmentId
+        )
+        return endpoint.createPrescription(request)
+    }
 
-        suspend fun updatePrescription(
-            id: String,
-            patientId: String,
-            doctorId: String,
-            medications: List<Medications>,
-            instructions: String,
-            expiryDate: String
-        ): PrescriptionResponse {
-            val request = PrescriptionRequest(
-                patientId = patientId,
-                doctorId = doctorId,
-                medications = medications,
-                instructions = instructions,
-                expiryDate = expiryDate
-            )
-            return endpoint.updatePrescription(id, request)
-        }
+    suspend fun updatePrescription(
+        id: String,
+        patientId: String,
+        doctorId: String,
+        medications: List<Medications>,
+        instructions: String,
+        expiryDate: String,
+        appointmentId: String   // Ajout du paramètre appointmentId optionnel
+    ): PrescriptionResponse {
+        val request = PrescriptionRequest(
+            patientId = patientId,
+            doctorId = doctorId,
+            medications = medications,
+            instructions = instructions,
+            expiryDate = expiryDate,
+            appointmentId = appointmentId  // Ajout du champ appointmentId
+        )
+        return endpoint.updatePrescription(id, request)
+    }
 
         suspend fun deletePrescription(id: String): PrescriptionResponse {
             return endpoint.deletePrescription(id)
         }
 
 
-    fun getSamplePrescription(): Prescription {
+    fun getSamplePrescription(): FullPrescription {
         val doctor = Doctor(
             id = "doc123",
             name = "Dr. Aitmekidech",
@@ -90,12 +94,12 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
             workingHours = "08:00 - 17:00"
         )
 
-        val patient = Patient(
-            id = "pat456",
+        val patient = PatientX(
+            patient_id = 3,
+            user_id = 12,
             fullName = "Dabouz Mohamed",
-            gender = "Homme",
-            age = 66,
-            problemDescription = "Hypertension artérielle"
+            sexe = "Homme",
+            date_birthday = "2025-04-08T10:52:12.000Z",
         )
 
         val medications = listOf(
@@ -103,11 +107,17 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
             Medication("Aspirine", "81mg", "1 fois par jour", "30 jours")
         )
 
-        return Prescription(
-            doctor = doctor,
-            patient = patient,
-            medications = medications,
-            date = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date())
+        return FullPrescription(
+            Doctor = doctor,
+            Patient = patient,
+            MEDICATIONs = medications,
+            prescription_id =  2,
+            patient_id =  3,
+           doctor_id =  4,
+           instructions = "madir welo sobhan lah ew ",
+          appointment_id =12 ,  // Ajout du champ appointment_id optionnel
+          created_at = SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(Date()),
+            expiry_date= ""
         )
     }
 

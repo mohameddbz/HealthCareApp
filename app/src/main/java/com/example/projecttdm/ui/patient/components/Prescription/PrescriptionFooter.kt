@@ -1,5 +1,7 @@
 package com.example.projecttdm.ui.patient.components.Prescription
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -22,10 +24,13 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.projecttdm.data.model.FullPrescription
 import com.example.projecttdm.data.model.Prescription
+import com.example.projecttdm.utils.transformerDateIsoVersLisible
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun PrescriptionFooter(prescription: Prescription) {
+fun PrescriptionFooter(prescription: FullPrescription) {
     Column(
         modifier = Modifier.fillMaxWidth()
     ) {
@@ -55,7 +60,7 @@ fun PrescriptionFooter(prescription: Prescription) {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = prescription.doctor.hospital,
+                    text = prescription.Doctor.hospital,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )
@@ -75,7 +80,7 @@ fun PrescriptionFooter(prescription: Prescription) {
                 Spacer(modifier = Modifier.width(4.dp))
 
                 Text(
-                    text = prescription.date,
+                    text =  transformerDateIsoVersLisible(prescription.created_at) ,
                     fontSize = 14.sp,
                     color = MaterialTheme.colorScheme.onSurfaceVariant
                 )

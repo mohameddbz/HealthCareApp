@@ -33,6 +33,7 @@ import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
@@ -47,6 +48,7 @@ import com.example.projecttdm.viewmodel.DoctorProfileViewModel
 import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
 import com.example.projecttdm.viewmodel.HomeViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
+import com.example.projecttdm.viewmodel.PrescriptionContentViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import com.example.projecttdm.viewmodel.ReasonViewModel
 import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
@@ -266,13 +268,19 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-    //    composable(PatientRoutes.Prescription.route){
-      //      val prescriptionViewModel: PrescriptionViewModel = viewModel()
+        composable(
+            route = PatientRoutes.Prescription.routeWithArgs,
+            arguments = listOf(navArgument("prescriptionId") { type = NavType.StringType }))
+        {
+            backStackEntry ->
+            val prescriptionId = backStackEntry.arguments?.getString("prescriptionId")
+            val prescriptionViewModel: PrescriptionContentViewModel = viewModel()
 
-        //    PrescriptionScreenContent(
-         //       viewModel = prescriptionViewModel ,
-          //  )
-       // }
+            PrescriptionScreenContent(
+                prescriptionId = prescriptionId,
+                viewModel = prescriptionViewModel ,
+           )
+        }
 
     }
 }
@@ -298,7 +306,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "History",
         icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.doctorProfile.route
+        route = PatientRoutes.Prescription.route
     ),
     NavigationItem(
         title = "Articles",

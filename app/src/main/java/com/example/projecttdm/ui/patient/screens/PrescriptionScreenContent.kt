@@ -22,11 +22,12 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.theme.ProjectTDMTheme
 import com.example.projecttdm.ui.patient.components.Prescription.PdfActionDialog
 import com.example.projecttdm.ui.patient.components.Prescription.PrescriptionContent
+import com.example.projecttdm.viewmodel.PrescriptionContentViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
-/*
+
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PrescriptionScreenContent(viewModel: PrescriptionViewModel = viewModel()) {
+fun PrescriptionScreenContent( prescriptionId : String?, viewModel: PrescriptionContentViewModel = viewModel()) {
     val prescription by viewModel.prescription.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val downloadSuccess by viewModel.downloadSuccess.collectAsState()
@@ -35,6 +36,15 @@ fun PrescriptionScreenContent(viewModel: PrescriptionViewModel = viewModel()) {
     var prescriptionComposeView by remember { mutableStateOf<ComposeView?>(null) }
     var showDialog by remember { mutableStateOf(false) }
     var uriToHandle by remember { mutableStateOf<Uri?>(null) }
+
+
+    LaunchedEffect(prescriptionId) {
+        prescriptionId?.let {
+            viewModel.fetchPrescriptionById(it)
+        }
+    }
+
+
 
     LaunchedEffect(downloadSuccess) {
         downloadSuccess?.let {
@@ -138,4 +148,3 @@ fun PrescriptionScreenContent(viewModel: PrescriptionViewModel = viewModel()) {
 }
 
 
- */

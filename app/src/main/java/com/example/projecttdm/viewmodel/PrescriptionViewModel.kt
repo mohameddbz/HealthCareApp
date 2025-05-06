@@ -5,52 +5,20 @@ import android.net.Uri
 import android.view.View
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecttdm.data.model.FullPrescription
 import com.example.projecttdm.data.model.Medications
+import com.example.projecttdm.data.model.Prescription
 import com.example.projecttdm.data.model.PrescriptionResponse
 import com.example.projecttdm.data.model.Prescriptions
 import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.state.UiState
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.util.UUID
-
-/*
-class PrescriptionViewModel : ViewModel() {
-
-    private val repository = PrescriptionRepository()
-
-    private val _prescription = MutableStateFlow<Prescription?>(null)
-    val prescription: StateFlow<Prescription?> = _prescription
-
-    private val _downloadSuccess = MutableStateFlow<Uri?>(null)
-    val downloadSuccess: StateFlow<Uri?> = _downloadSuccess
-
-    private val _isLoading = MutableStateFlow(false)
-    val isLoading: StateFlow<Boolean> = _isLoading
-
-    init {
-        loadSamplePrescription()
-    }
-
-    private fun loadSamplePrescription() {
-        _prescription.value = repository.getSamplePrescription()
-    }
-
-    fun downloadPrescription(context: Context, prescriptionView: View) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            val uri = withContext(Dispatchers.IO) {
-                repository.createPdfFromView(context, prescriptionView)
-            }
-            _downloadSuccess.value = uri
-            _isLoading.value = false
-        }
-    }
-}*/
-
-
 
 class PrescriptionViewModel : ViewModel() {
     private val prescriptionRepository = RepositoryHolder.prescriptionRepository
@@ -70,6 +38,7 @@ class PrescriptionViewModel : ViewModel() {
     // Champs observables pour la création/modification de prescription
     val patientId = MutableStateFlow("")
     val doctorId = MutableStateFlow("")
+    val appointmentId = MutableStateFlow("")  // Ajout du champ appointmentId
     val instructions = MutableStateFlow("")
     val expiryDate = MutableStateFlow("")
 
@@ -83,9 +52,6 @@ class PrescriptionViewModel : ViewModel() {
     val medicationFrequency = MutableStateFlow("")
     val medicationDuration = MutableStateFlow("")
 
-
-
-    
     // Fonctions pour mettre à jour les champs
     fun onPatientIdChanged(newValue: String) {
         patientId.value = newValue
@@ -93,6 +59,10 @@ class PrescriptionViewModel : ViewModel() {
 
     fun onDoctorIdChanged(newValue: String) {
         doctorId.value = newValue
+    }
+
+    fun onAppointmentIdChanged(newValue: String) {
+        appointmentId.value = newValue
     }
 
     fun onInstructionsChanged(newValue: String) {
@@ -192,18 +162,7 @@ class PrescriptionViewModel : ViewModel() {
         }
     }
 
-    // Charger une prescription spécifique
-    fun loadPrescriptionById(id: String) {
-        viewModelScope.launch {
-            _selectedPrescription.value = UiState.Loading
-            try {
-                val response = prescriptionRepository.getPrescriptionById(id)
-                _selectedPrescription.value = UiState.Success(response)
-            } catch (e: Exception) {
-                _selectedPrescription.value = UiState.Error(e.message ?: "Erreur inconnue")
-            }
-        }
-    }
+
 
     // Créer une nouvelle prescription
     fun createPrescription() {
@@ -225,7 +184,8 @@ class PrescriptionViewModel : ViewModel() {
                     doctorId = doctorId.value,
                     medications = _medications.value,
                     instructions = instructions.value,
-                    expiryDate = expiryDate.value
+                    expiryDate = expiryDate.value,
+                    appointmentId = appointmentId.value // Ajout du champ appointmentId
                 )
                 _prescriptionState.value = UiState.Success(response)
 
@@ -260,7 +220,8 @@ class PrescriptionViewModel : ViewModel() {
                     doctorId = doctorId.value,
                     medications = _medications.value,
                     instructions = instructions.value,
-                    expiryDate = expiryDate.value
+                    expiryDate = expiryDate.value,
+                    appointmentId = appointmentId.value // Ajout du champ appointmentId
                 )
                 _prescriptionState.value = UiState.Success(response)
 
@@ -291,6 +252,7 @@ class PrescriptionViewModel : ViewModel() {
     fun loadPrescriptionForEdit(prescription: Prescriptions) {
         patientId.value = prescription.patientId
         doctorId.value = prescription.doctorId
+        appointmentId.value = prescription.appointmentId // Ajout du champ appointmentId
         instructions.value = prescription.instructions
         expiryDate.value = prescription.expiryDate
         _medications.value = prescription.medications
@@ -300,6 +262,7 @@ class PrescriptionViewModel : ViewModel() {
     fun resetFields() {
         patientId.value = ""
         doctorId.value = ""
+        appointmentId.value = "" // Réinitialisation du champ appointmentId
         instructions.value = ""
         expiryDate.value = ""
         _medications.value = emptyList()
@@ -309,5 +272,6 @@ class PrescriptionViewModel : ViewModel() {
         medicationDuration.value = ""
         _prescriptionState.value = UiState.Init
     }
-}
 
+
+}

@@ -20,9 +20,11 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projecttdm.data.model.Patient
+import com.example.projecttdm.data.model.PatientX
+import com.example.projecttdm.utils.calculateAgeFromIsoDate
 
 @Composable
-fun PatientInfoSection(patient: Patient) {
+fun PatientInfoSection(patient: PatientX) {
     Card(
         shape = RoundedCornerShape(16.dp),
         colors = CardDefaults.cardColors(
@@ -52,12 +54,12 @@ fun PatientInfoSection(patient: Patient) {
                     modifier = Modifier.weight(1f)
                 ) {
                     PatientInfoItem("Nom", patient.fullName)
-                    PatientInfoItem("Âge", "${patient.age} ans")
-                    PatientInfoItem("Genre", patient.gender)
+                    PatientInfoItem("Âge", "${calculateAgeFromIsoDate(patient.date_birthday)} ans")
+                    PatientInfoItem("Genre", patient.sexe)
                 }
 
                 // Vertical divider
-                if (patient.problemDescription.isNotEmpty()) {
+               /* if (patient.problemDescription.isNotEmpty()) {
                     Box(
                         modifier = Modifier
                             .width(1.dp)
@@ -87,6 +89,8 @@ fun PatientInfoSection(patient: Patient) {
                         )
                     }
                 }
+
+                */
             }
         }
     }
