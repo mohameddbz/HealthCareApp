@@ -17,5 +17,6 @@ interface AppointmentEndPoint {
     suspend fun getAppointmentsByPatientId(): List<Appointment>
 
 
-
+    @GET("appointments/first-upcoming")
+    suspend fun getfirstUpcomingAppointment(): Appointment
 }

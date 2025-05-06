@@ -2,6 +2,7 @@ package com.example.projecttdm.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.data.model.User
@@ -20,6 +21,7 @@ class HomeViewModel : ViewModel() {
     private val userRepository = RepositoryHolder.UserRepository
     private val specialtyRepository = RepositoryHolder.specialtyRepository
     private val doctorRepository = RepositoryHolder.doctorRepository
+    private val appointmentRepository = RepositoryHolder.appointmentRepository
 
     private val _currentUser = MutableStateFlow<UiState<User>>(UiState.Init)
     val currentUser: StateFlow<UiState<User>> = _currentUser.asStateFlow()
@@ -30,11 +32,14 @@ class HomeViewModel : ViewModel() {
     private val _doctorsState = MutableStateFlow<UiState<List<Doctor>>>(UiState.Loading)
     val doctorsState: StateFlow<UiState<List<Doctor>>> = _doctorsState.asStateFlow()
 
+    private val _appointmentState = MutableStateFlow<UiState<Appointment>>(UiState.Loading)
+    val appointmentState: StateFlow<UiState<Appointment>> = _appointmentState
 
     init {
         getCurrentUser()
         loadSpecialties()
         loadDoctors()
+        fetchUpcomingAppointment()
     }
 
     /**
@@ -48,6 +53,14 @@ class HomeViewModel : ViewModel() {
                 _currentUser.value = UiState.Success(response)
             } catch (e: Exception) {
                 _currentUser.value = UiState.Error(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    fun fetchUpcomingAppointment() {
+        viewModelScope.launch {
+            appointmentRepository.getUpcomingAppointment().collect { state ->
+                _appointmentState.value = state
             }
         }
     }

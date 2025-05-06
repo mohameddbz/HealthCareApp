@@ -143,6 +143,22 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
         }
     }
 
+    fun getUpcomingAppointment(): Flow<UiState<Appointment>> = flow {
+        emit(UiState.Loading)
+
+        try {
+            val appointment = endpoint.getfirstUpcomingAppointment()
+
+            if (appointment.status == AppointmentStatus.PENDING) {
+                emit(UiState.Success(appointment))
+            } else {
+                emit(UiState.Error("No upcoming pending appointments found"))
+            }
+        } catch (e: Exception) {
+            emit(UiState.Error("Error: ${e.localizedMessage ?: "Unexpected error occurred"}"))
+        }
+    }
+
 
 
     @RequiresApi(Build.VERSION_CODES.O)

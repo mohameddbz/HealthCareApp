@@ -1,6 +1,8 @@
 package com.example.projecttdm.ui.patient.components
 
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -65,6 +67,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.patient.PatientRoutes
@@ -435,11 +438,14 @@ fun MedicalCheckBanner(windowSize: WindowSize) {
     }
 }
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun UpcomingAppointmentBannner(
+fun UpcomingAppointmentBanner(
     windowSize: WindowSize,
+    appointmentState:  UiState<Appointment>,
     onClick: () -> Unit = {}
 ) {
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -448,72 +454,100 @@ fun UpcomingAppointmentBannner(
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         colors = CardDefaults.cardColors(containerColor = Color.White)
     ) {
-        Column(modifier = Modifier.fillMaxWidth()) {
-
-            // Appointment details section
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(16.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                // Doctor avatar placeholder
-                Image(
-                    painter = painterResource(id = R.drawable.doctor_image2),
-                    contentDescription = "Doctor",
+        when (appointmentState) {
+            is UiState.Loading -> {
+                Box(
                     modifier = Modifier
-                        .size(when (windowSize.width) {
-                            WindowType.Compact -> 100.dp
-                            WindowType.Medium -> 120.dp
-                            WindowType.Expanded -> 140.dp
-                        }),
-                    contentScale = ContentScale.Fit
-                )
-
-                Spacer(modifier = Modifier.width(16.dp))
-
-                Column(modifier = Modifier.weight(1f)) {
-                    Text(
-                        text = "Dr. Sarah Johnson",
-                        fontWeight = FontWeight.Bold,
-                        fontSize = 18.sp
-                    )
-
-                    Text(
-                        text = "Cardiologist",
-                        color = Color.Gray,
-                        fontSize = 14.sp
-                    )
-
-                    Spacer(modifier = Modifier.height(8.dp))
-
-                    // Appointment time and date
-                    Row(
-                        verticalAlignment = Alignment.CenterVertically
-                    ) {
-                        AppointmentInfo(
-                            icon = Icons.Default.Schedule,
-                            info = "02:30 PM"
-                        )
-
-                        Spacer(modifier = Modifier.width(16.dp))
-
-                        AppointmentInfo(
-                            icon = Icons.Default.DateRange,
-                            info = "May 1, 2025"
-                        )
-                    }
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    CircularProgressIndicator()
                 }
-
-                Icon(
-                    imageVector = Icons.Default.KeyboardArrowRight,
-                    contentDescription = "View Details",
-                    tint = Color.Gray
-                )
             }
+
+            is UiState.Error -> {
+                val message = (appointmentState as UiState.Error).message
+                Box(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    contentAlignment = Alignment.Center
+                ) {
+                    Text(text = message, color = Color.Red)
+                }
+            }
+
+            is UiState.Success -> {
+                val appointment = (appointmentState as UiState.Success).data
+
+                Row(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp),
+                    verticalAlignment = Alignment.CenterVertically
+                ) {
+                    Image(
+                        painter = painterResource(id = R.drawable.doctor_image2),
+                        contentDescription = "Doctor",
+                        modifier = Modifier
+                            .size(
+                                when (windowSize.width) {
+                                    WindowType.Compact -> 100.dp
+                                    WindowType.Medium -> 120.dp
+                                    WindowType.Expanded -> 140.dp
+                                }
+                            ),
+                        contentScale = ContentScale.Fit
+                    )
+
+                    Spacer(modifier = Modifier.width(16.dp))
+
+                    Column(modifier = Modifier.weight(1f)) {
+                        Text(
+                            text = "Dr.Mohamed Davouz",
+                            fontWeight = FontWeight.Bold,
+                            fontSize = 18.sp
+                        )
+
+                        Text(
+                            text = "Cardiologists",
+                            color = Color.Gray,
+                            fontSize = 14.sp
+                        )
+
+                        Spacer(modifier = Modifier.height(8.dp))
+
+                        Row(
+                            verticalAlignment = Alignment.CenterVertically
+                        ) {
+                            AppointmentInfo(
+                                icon = Icons.Default.Schedule,
+                                info = appointment.time.toString() // e.g., "02:30 PM"
+                            )
+
+                            Spacer(modifier = Modifier.width(16.dp))
+
+                            AppointmentInfo(
+                                icon = Icons.Default.DateRange,
+                                info = appointment.date.toString() // e.g., "May 6, 2025"
+                            )
+                        }
+                    }
+
+                    Icon(
+                        imageVector = Icons.Default.KeyboardArrowRight,
+                        contentDescription = "View Details",
+                        tint = Color.Gray
+                    )
+                }
+            }
+
+            UiState.Init -> TODO()
         }
     }
 }
+
 
 @Composable
 private fun AppointmentInfo(

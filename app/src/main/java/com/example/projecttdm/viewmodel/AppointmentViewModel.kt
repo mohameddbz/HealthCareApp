@@ -50,6 +50,8 @@ class AppointmentViewModel(
     private val _showQRCodeDialog = MutableStateFlow(false)
     val showQRCodeDialog: StateFlow<Boolean> = _showQRCodeDialog.asStateFlow()
 
+
+
 //    init {
 //        refreshAppointments()
 //    }
@@ -58,6 +60,7 @@ class AppointmentViewModel(
         _selectedTab.value = status
         loadAppointments(status)
     }
+
 
     // This function loads a list of appointments based on a given status
     private fun loadAppointments(status: AppointmentStatus) {

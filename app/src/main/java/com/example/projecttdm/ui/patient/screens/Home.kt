@@ -55,6 +55,7 @@ fun HomeScreen(
 ) {
     val windowSize = calculateWindowSize()
     val doctorsState by homeViewModel.doctorsState.collectAsState()
+    val appointmentState by homeViewModel.appointmentState.collectAsState()
     val currentUser by homeViewModel.currentUser.collectAsState()
 
     Scaffold(
@@ -141,9 +142,10 @@ fun HomeScreen(
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
             item {
-                UpcomingAppointmentBannner(
+                UpcomingAppointmentBanner(
                     windowSize = windowSize,
-                    onClick = { }
+                    onClick = { },
+                    appointmentState = appointmentState
                 )
 
             }
