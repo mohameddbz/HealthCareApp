@@ -58,6 +58,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
     val appointmentViewModel: AppointmentViewModel = viewModel()
     val homeViewModel: HomeViewModel = viewModel()
     val doctorListViewModel: DoctorListViewModel = viewModel()
+    val doctorProfileViewModel: DoctorProfileViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = PatientRoutes.HomeScreen.route,
@@ -227,8 +228,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.topDoctors.route) {
             TopDoctorScreen(
-                onBackClick = { },
-                onDoctorClick = { },
+                onBackClick = { navController.popBackStack() },
+                onDoctorClick = { doctorId ->
+                    navController.navigate("${PatientRoutes.doctorProfile.route}/$doctorId")
+                },
                 onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
                 doctorListViewModel = doctorListViewModel
             )
@@ -259,12 +262,16 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-        composable(PatientRoutes.doctorProfile.route){
-            val doctorProfileViewModel: DoctorProfileViewModel = viewModel()
+        composable(
+            route = "${PatientRoutes.doctorProfile.route}/{doctorId}",
+            arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: ""
             DoctorProfileScreen(
-                viewModel = doctorProfileViewModel ,
-                onBackClick = {navController.popBackStack()},
-                navigateToAllReviews = {}
+                viewModel = doctorProfileViewModel,
+                doctorId = doctorId,
+                onBackClick = { navController.popBackStack() },
+                navigateToAllReviews = { }
             )
         }
 

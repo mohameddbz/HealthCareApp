@@ -3,6 +3,7 @@ package com.example.projecttdm.viewmodel
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.data.model.Review
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.data.repository.DoctorRepository
 import com.example.projecttdm.data.repository.RepositoryHolder
@@ -17,6 +18,7 @@ import kotlinx.coroutines.launch
 class DoctorListViewModel() : ViewModel() {
     private val doctorRepository = RepositoryHolder.doctorRepository
     private val specialtyRepository = RepositoryHolder.specialtyRepository
+    private val reviewRepository = RepositoryHolder.reviewRepository
 
     // State for all doctors
     private val _doctorsState = MutableStateFlow<UiState<List<Doctor>>>(UiState.Loading)
@@ -46,6 +48,7 @@ class DoctorListViewModel() : ViewModel() {
     // Keep track of favorites
     private val _favorites = MutableStateFlow<Set<String>>(emptySet())
     val favorites: StateFlow<Set<String>> = _favorites.asStateFlow()
+
 
     init {
         loadDoctors()
@@ -180,4 +183,6 @@ class DoctorListViewModel() : ViewModel() {
     fun isFavorite(doctorId: String): Boolean {
         return _favorites.value.contains(doctorId)
     }
+
+
 }
