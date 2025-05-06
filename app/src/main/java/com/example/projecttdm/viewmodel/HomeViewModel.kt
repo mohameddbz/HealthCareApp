@@ -2,6 +2,7 @@ package com.example.projecttdm.viewmodel
 
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.data.model.User
 import com.example.projecttdm.data.repository.RepositoryHolder
@@ -9,6 +10,7 @@ import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.collectLatest
 import kotlinx.coroutines.launch
 
@@ -17,6 +19,7 @@ class HomeViewModel : ViewModel() {
 
     private val userRepository = RepositoryHolder.UserRepository
     private val specialtyRepository = RepositoryHolder.specialtyRepository
+    private val doctorRepository = RepositoryHolder.doctorRepository
 
     private val _currentUser = MutableStateFlow<UiState<User>>(UiState.Init)
     val currentUser: StateFlow<UiState<User>> = _currentUser.asStateFlow()
@@ -24,9 +27,13 @@ class HomeViewModel : ViewModel() {
     private val _specialtyUiState = MutableStateFlow<UiState<List<Specialty>>>(UiState.Init)
     val specialtyUiState: StateFlow<UiState<List<Specialty>>> = _specialtyUiState.asStateFlow()
 
+    private val _doctorsState = MutableStateFlow<UiState<List<Doctor>>>(UiState.Loading)
+    val doctorsState: StateFlow<UiState<List<Doctor>>> = _doctorsState.asStateFlow()
+
     init {
         getCurrentUser()
         loadSpecialties()
+        loadDoctors()
     }
 
     /**
@@ -63,6 +70,20 @@ class HomeViewModel : ViewModel() {
             }
         }
     }
+
+
+    private fun loadDoctors() {
+        viewModelScope.launch {
+            doctorRepository.getTopDoctors()
+                .catch { e ->
+                    _doctorsState.value = UiState.Error(e.message ?: "An unexpected error occurred")
+                }
+                .collect { state ->
+                    _doctorsState.value = state
+                }
+        }
+    }
+
 
 
 

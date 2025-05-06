@@ -5,6 +5,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.Review
 import com.example.projecttdm.data.repository.DoctorRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.data.repository.ReviewRepository
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -13,7 +14,7 @@ import kotlinx.coroutines.launch
 
 // ViewModel
 class DoctorProfileViewModel : ViewModel() {
-    val doctorRepository = DoctorRepository()
+    val doctorRepository = RepositoryHolder.doctorRepository
     val reviewRepository = ReviewRepository()
     private val _doctorData = MutableStateFlow<Doctor?>(null)
     val doctorData: StateFlow<Doctor?> = _doctorData

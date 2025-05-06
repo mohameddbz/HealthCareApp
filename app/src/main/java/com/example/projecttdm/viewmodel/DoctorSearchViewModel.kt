@@ -13,7 +13,7 @@ import kotlinx.coroutines.launch
 
 class DoctorSearchViewModel : ViewModel() {
 
-    private val doctorRepository = DoctorRepository()
+    private val doctorRepository = RepositoryHolder.doctorRepository
     private val specialtyRepository = RepositoryHolder.specialtyRepository
 
     // Flow to fetch doctors and specialties
@@ -44,7 +44,7 @@ class DoctorSearchViewModel : ViewModel() {
     private fun fetchDoctors() {
         // Simulate fetching data, replace with actual repository call
         viewModelScope.launch {
-            _allDoctors.value = doctorRepository.getTopDoctors()  // fetch doctors
+            _allDoctors.value = doctorRepository.getDoctors()  // fetch doctors
         }
     }
 

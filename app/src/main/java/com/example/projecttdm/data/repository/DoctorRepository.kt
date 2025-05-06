@@ -1,11 +1,15 @@
 package com.example.projecttdm.data.repository
 
 import com.example.projecttdm.R
+import com.example.projecttdm.data.endpoint.DoctorEndPoint
 import com.example.projecttdm.data.local.DoctorData
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.Specialty
+import com.example.projecttdm.state.UiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class DoctorRepository {
+class DoctorRepository (private val endpoint: DoctorEndPoint) {
 
     private val patientFavorites = mapOf(
         "patient1" to listOf("1", "3", "5"),
@@ -20,7 +24,16 @@ class DoctorRepository {
     fun getDoctors(): List<Doctor> = DoctorData.listDcctors
 
 
-    fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors
+    //fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors
+    fun getTopDoctors(): Flow<UiState<List<Doctor>>> = flow {
+        emit(UiState.Loading) // Emit loading first
+        try {
+            val doctorsList = endpoint.getDoctors() // Fetch data
+            emit(UiState.Success(doctorsList))      // Emit success
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Unknown error")) // Emit error
+        }
+    }
 
 
     fun getDoctorById(id: String): Doctor? {

@@ -49,7 +49,7 @@ object DoctorData {
             hospital = "JFK Medical Center",
             rating = 4.6f,
             reviewCount = 3837,
-            imageUrl = "https://example.com/doctor4.jpg"
+            imageUrl = null
         ),
         Doctor(
             id = "5",
