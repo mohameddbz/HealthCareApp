@@ -4,8 +4,11 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -274,13 +277,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-    //    composable(PatientRoutes.Prescription.route){
-      //      val prescriptionViewModel: PrescriptionViewModel = viewModel()
 
-        //    PrescriptionScreenContent(
-         //       viewModel = prescriptionViewModel ,
-          //  )
-       // }
 
     }
 }
@@ -301,22 +298,22 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Appointment",
         icon = Icons.Default.Person,
-        route = PatientRoutes.BookAppointment.route
-    ),
-    NavigationItem(
-        title = "History",
-        icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.doctorProfile.route
-    ),
-    NavigationItem(
-        title = "Articles",
-        icon = Icons.Default.ShoppingCart,
         route = PatientRoutes.Appointment.route
     ),
     NavigationItem(
-        title = "Profile",
-        icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.PrescriptionCreate.route
+        title = "Top Doctors",
+        icon = Icons.Default.Star,
+        route = PatientRoutes.topDoctors.route
+    ),
+    NavigationItem(
+        title = "Notifications",
+        icon = Icons.Default.Notifications,
+        route = PatientRoutes.NotificationScreen.route
+    ),
+    NavigationItem(
+        title = "Prescriptions",
+        icon = Icons.Default.MedicalServices,
+        route = PatientRoutes.Prescription.route
     ),
 )
 

@@ -1,6 +1,7 @@
 package com.example.projecttdm.data.repository
 
 import com.example.projecttdm.data.endpoint.ApiClient
+import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.AuthEndPoint
 import com.example.projecttdm.data.endpoint.DoctorEndPoint
 import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
@@ -28,5 +29,8 @@ object RepositoryHolder {
     }
     val reviewRepository by lazy {
         ReviewRepository(ApiClient.create(ReviewEndPoint::class.java))
+    }
+    val appointmentRepository by lazy {
+        AppointmentRepository(ApiClient.create(AppointmentEndPoint::class.java))
     }
 }

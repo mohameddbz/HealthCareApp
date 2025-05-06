@@ -5,6 +5,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.repository.AppointmentRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
@@ -14,7 +15,7 @@ import java.time.YearMonth
 
 @RequiresApi(Build.VERSION_CODES.O)
 class RescheduleAppointmentViewModel : ViewModel() {
-    private val repository = AppointmentRepository()
+    private val repository = RepositoryHolder.appointmentRepository
 
     // Selected date for rescheduled appointment
     private val _selectedDate = MutableStateFlow<LocalDate?>(null)
@@ -43,7 +44,7 @@ class RescheduleAppointmentViewModel : ViewModel() {
     // Function to set the appointment to reschedule
     suspend fun setAppointmentToReschedule(appointmentId: String) {
             repository.getAppointmentById(appointmentId).collect { appointment ->
-                _appointmentToReschedule.value = appointment
+              //  _appointmentToReschedule.value = appointment
             }
     }
 
