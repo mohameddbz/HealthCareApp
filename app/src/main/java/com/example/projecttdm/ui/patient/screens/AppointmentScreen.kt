@@ -25,6 +25,8 @@ import androidx.navigation.NavController
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
+import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.Appointment.EmptyAppointmentsList
 import com.example.projecttdm.ui.patient.components.Appointment.PendingCard
@@ -50,7 +52,7 @@ fun AppointmentScreen(
     val searchQuery by viewModel.searchQuery.collectAsState()
     val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val doctors by doctorViewModel.doctors.collectAsState()
+    val doctorsState  by doctorViewModel.doctorsState.collectAsState()
     var showSearchBar by remember { mutableStateOf(false) }
     val showDialog by viewModel.showQRCodeDialog.collectAsState()
     if (showDialog) {
@@ -164,6 +166,13 @@ fun AppointmentScreen(
             }
 
             // 👇 Content Area
+            val doctorsState by doctorViewModel.doctorsState.collectAsState()
+
+            val doctorList = when (doctorsState) {
+                is UiState.Success -> (doctorsState as UiState.Success<List<Doctor>>).data
+                else -> emptyList()
+            }
+
             if (appointments.isEmpty() && !isLoading) {
                 EmptyAppointmentsList(
                     status = selectedTab,
@@ -178,7 +187,7 @@ fun AppointmentScreen(
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     items(appointments, key = { it.id }) { appointment ->
-                        val doctor = doctors.find { it.id == appointment.doctorId }
+                        val doctor = doctorList.find { it.id == appointment.doctorId }
                         PendingCard(
                             onClick = {
                                 navController.navigate(PatientRoutes.AppQR.createRoute(appointment.id))

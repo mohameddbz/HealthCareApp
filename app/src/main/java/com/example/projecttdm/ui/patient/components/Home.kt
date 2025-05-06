@@ -25,10 +25,15 @@ import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Clear
+import androidx.compose.material.icons.filled.DateRange
+import androidx.compose.material.icons.filled.KeyboardArrowRight
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.Button
 import androidx.compose.material3.ButtonDefaults
+import androidx.compose.material3.Card
+import androidx.compose.material3.CardDefaults
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -42,6 +47,7 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.SolidColor
+import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.input.key.Key
 import androidx.compose.ui.input.key.KeyEventType
 import androidx.compose.ui.input.key.key
@@ -61,9 +67,6 @@ import androidx.navigation.NavHostController
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.state.UiState
-import com.example.projecttdm.theme.Blue01
-import com.example.projecttdm.theme.Blue02
-import com.example.projecttdm.theme.Gray02
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.screens.WindowSize
 import com.example.projecttdm.ui.patient.screens.WindowType
@@ -85,12 +88,17 @@ fun CostumSearchBar(
     Box(
         modifier = Modifier
             .fillMaxWidth()
-            .height(when (windowSize.width) {
-                WindowType.Compact -> 48.dp
-                else -> 56.dp
-            })
+            .height(
+                when (windowSize.width) {
+                    WindowType.Compact -> 48.dp
+                    else -> 56.dp
+                }
+            )
             .clip(RoundedCornerShape(24.dp))
             .background(MaterialTheme.colorScheme.surfaceDim)
+            .clickable {
+                navController.navigate(PatientRoutes.searchDoctor.route)
+            }
             .padding(horizontal = 16.dp),
         contentAlignment = Alignment.CenterStart
     ) {
@@ -102,10 +110,12 @@ fun CostumSearchBar(
                 imageVector = Icons.Default.Search,
                 contentDescription = "Search",
                 tint = Color.Gray,
-                modifier = Modifier.size(when (windowSize.width) {
-                    WindowType.Compact -> 20.dp
-                    else -> 24.dp
-                })
+                modifier = Modifier.size(
+                    when (windowSize.width) {
+                        WindowType.Compact -> 20.dp
+                        else -> 24.dp
+                    }
+                )
             )
 
             Spacer(modifier = Modifier.width(8.dp))
@@ -126,22 +136,12 @@ fun CostumSearchBar(
                 keyboardActions = KeyboardActions(
                     onSearch = {
                         onSearch(query)
+                        doctorSearchViewModel.setSearchQuery(query)
                         focusManager.clearFocus()
+                        navController.navigate(PatientRoutes.searchDoctor.route)
                     }
                 ),
-                modifier = Modifier
-                    .weight(1f)
-                    .onKeyEvent { keyEvent ->
-                        if (keyEvent.key == Key.Enter && keyEvent.type == KeyEventType.KeyUp) {
-                            onSearch(query)
-                            focusManager.clearFocus()
-                            doctorSearchViewModel.setSearchQuery(query)
-                            navController.navigate(PatientRoutes.searchDoctor.route)
-                            true
-                        } else {
-                            false
-                        }
-                    },
+                modifier = Modifier.weight(1f),
                 decorationBox = { innerTextField ->
                     Box {
                         if (query.isEmpty()) {
@@ -162,10 +162,12 @@ fun CostumSearchBar(
             if (query.isNotEmpty()) {
                 IconButton(
                     onClick = { onQueryChange("") },
-                    modifier = Modifier.size(when (windowSize.width) {
-                        WindowType.Compact -> 20.dp
-                        else -> 24.dp
-                    })
+                    modifier = Modifier.size(
+                        when (windowSize.width) {
+                            WindowType.Compact -> 20.dp
+                            else -> 24.dp
+                        }
+                    )
                 ) {
                     Icon(
                         imageVector = Icons.Default.Clear,
@@ -180,15 +182,18 @@ fun CostumSearchBar(
                 contentDescription = "Filter",
                 tint = Color.Blue,
                 modifier = Modifier
-                    .size(when (windowSize.width) {
-                        WindowType.Compact -> 20.dp
-                        else -> 24.dp
-                    })
+                    .size(
+                        when (windowSize.width) {
+                            WindowType.Compact -> 20.dp
+                            else -> 24.dp
+                        }
+                    )
                     .clickable { onFilterClick() }
             )
         }
     }
 }
+
 
 
 
@@ -432,4 +437,107 @@ fun MedicalCheckBanner(windowSize: WindowSize) {
     }
 }
 
+@Composable
+fun UpcomingAppointmentBannner(
+    windowSize: WindowSize,
+    onClick: () -> Unit = {}
+) {
+    Card(
+        modifier = Modifier
+            .fillMaxWidth()
+            .clickable(onClick = onClick),
+        shape = RoundedCornerShape(16.dp),
+        elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
+        colors = CardDefaults.cardColors(containerColor = Color.White)
+    ) {
+        Column(modifier = Modifier.fillMaxWidth()) {
 
+            // Appointment details section
+            Row(
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(16.dp),
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Doctor avatar placeholder
+                Image(
+                    painter = painterResource(id = R.drawable.doctor_image2),
+                    contentDescription = "Doctor",
+                    modifier = Modifier
+                        .size(when (windowSize.width) {
+                            WindowType.Compact -> 100.dp
+                            WindowType.Medium -> 120.dp
+                            WindowType.Expanded -> 140.dp
+                        }),
+                    contentScale = ContentScale.Fit
+                )
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column(modifier = Modifier.weight(1f)) {
+                    Text(
+                        text = "Dr. Sarah Johnson",
+                        fontWeight = FontWeight.Bold,
+                        fontSize = 18.sp
+                    )
+
+                    Text(
+                        text = "Cardiologist",
+                        color = Color.Gray,
+                        fontSize = 14.sp
+                    )
+
+                    Spacer(modifier = Modifier.height(8.dp))
+
+                    // Appointment time and date
+                    Row(
+                        verticalAlignment = Alignment.CenterVertically
+                    ) {
+                        AppointmentInfo(
+                            icon = Icons.Default.Schedule,
+                            info = "02:30 PM"
+                        )
+
+                        Spacer(modifier = Modifier.width(16.dp))
+
+                        AppointmentInfo(
+                            icon = Icons.Default.DateRange,
+                            info = "May 1, 2025"
+                        )
+                    }
+                }
+
+                Icon(
+                    imageVector = Icons.Default.KeyboardArrowRight,
+                    contentDescription = "View Details",
+                    tint = Color.Gray
+                )
+            }
+        }
+    }
+}
+
+@Composable
+private fun AppointmentInfo(
+    icon: ImageVector,
+    info: String
+) {
+    Row(
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = null,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(16.dp)
+        )
+
+        Spacer(modifier = Modifier.width(4.dp))
+
+        Text(
+            text = info,
+            fontSize = 14.sp,
+            color = Color.DarkGray
+        )
+    }
+}

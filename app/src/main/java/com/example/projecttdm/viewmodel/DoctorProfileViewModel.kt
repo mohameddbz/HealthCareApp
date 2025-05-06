@@ -34,7 +34,7 @@ class DoctorProfileViewModel : ViewModel() {
             try {
                 // Simulation d'un appel API
                 delay(500)
-                _doctorData.value = doctorRepository.getDetailDoctorById("dr-jenny-watson")
+              //  _doctorData.value = doctorRepository.getDetailDoctorById("dr-jenny-watson")
 
                 _reviews.value = reviewRepository.getReviewOfDoctor(_doctorData.value!!.id)
                _isLoading.value = false;

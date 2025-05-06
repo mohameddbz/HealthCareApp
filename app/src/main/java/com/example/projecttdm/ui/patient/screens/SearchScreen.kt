@@ -20,18 +20,18 @@ import com.example.projecttdm.ui.common.components.NotFoundComponent
 import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.DoctorCard
 import com.example.projecttdm.ui.patient.components.FilterDialog
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.DoctorListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun SearchScreen(
     onBackClick: () -> Unit = {},
-    doctorSearchViewModel: DoctorSearchViewModel
+    doctorListViewModel: DoctorListViewModel
 ) {
-    val doctors by doctorSearchViewModel.filteredDoctors.collectAsState()
-    val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
-    val searchQuery by doctorSearchViewModel.searchQuery.collectAsState()
-    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
+    val doctors by doctorListViewModel.filteredDoctors.collectAsState()
+    val selectedSpecialty by doctorListViewModel.selectedSpecialty.collectAsState()
+    val searchQuery by doctorListViewModel.searchQuery.collectAsState()
+    val specialties by doctorListViewModel.allSpecialties.collectAsState()
     val resultsCount = doctors.size
 
     var loading by remember { mutableStateOf(false) }
@@ -59,7 +59,7 @@ fun SearchScreen(
                 ) {
                     TextField(
                         value = searchQuery,
-                        onValueChange = { doctorSearchViewModel.setSearchQuery(it) },
+                        onValueChange = { doctorListViewModel.setSearchQuery(it) },
                         modifier = Modifier
                             .fillMaxWidth(),
                         placeholder = {
@@ -114,7 +114,7 @@ fun SearchScreen(
         CategoryFilter(
             specialties = specialties,
             selectedSpecialty = selectedSpecialty,
-            onSpecialtySelected = { doctorSearchViewModel.setSpecialty(it) }
+            onSpecialtySelected = { doctorListViewModel.setSpecialty(it) }
         )
 
         Row(
@@ -153,7 +153,7 @@ fun SearchScreen(
                         DoctorCard(
                             doctor = doctor,
                             isFavorite = false,
-                            onFavoriteClick = { /* Optional: Handle favorites */ },
+                            onFavoriteClick = { doctorListViewModel.toggleFavorite(doctor.id) },
                             onDoctorClick = { /* TODO: Handle doctor click */ }
                         )
                     }
@@ -168,9 +168,9 @@ fun SearchScreen(
             selectedSpecialty = selectedSpecialty,
             onDismiss = { showFilterDialog = false },
             onApplyFilter = {
-                // Apply any additional filter logic here
                 showFilterDialog = false
-            }
+            },
+            doctorListViewModel
         )
     }
 }

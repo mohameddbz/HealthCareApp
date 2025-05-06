@@ -57,9 +57,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
     val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
     val appointmentViewModel: AppointmentViewModel = viewModel()
     val homeViewModel: HomeViewModel = viewModel()
-    val doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
-        initializer { DoctorListViewModel(doctorSearchViewModel) }
-    })
+    val doctorListViewModel: DoctorListViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = PatientRoutes.HomeScreen.route,
@@ -84,7 +82,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(PatientRoutes.HomeScreen.route) {
-            HomeScreen(doctorSearchViewModel,doctorListViewModel,navController,homeViewModel)
+            HomeScreen(
+                doctorSearchViewModel, navController, homeViewModel,
+                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
+            )
                 }
 
         composable(PatientRoutes.PatientDetails.route) {
@@ -226,16 +227,17 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.topDoctors.route) {
             TopDoctorScreen(
-                onBackClick = {  },
-                onDoctorClick = {  },
-                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) }
+                onBackClick = { },
+                onDoctorClick = { },
+                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
+                doctorListViewModel = doctorListViewModel
             )
         }
 
         composable(PatientRoutes.searchDoctor.route) {
             SearchScreen(
                 onBackClick = { navController.popBackStack() },
-                doctorSearchViewModel
+                doctorListViewModel
             )
         }
 

@@ -30,6 +30,7 @@ class HomeViewModel : ViewModel() {
     private val _doctorsState = MutableStateFlow<UiState<List<Doctor>>>(UiState.Loading)
     val doctorsState: StateFlow<UiState<List<Doctor>>> = _doctorsState.asStateFlow()
 
+
     init {
         getCurrentUser()
         loadSpecialties()
