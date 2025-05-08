@@ -240,7 +240,7 @@ class BookAppointmentViewModel : ViewModel() {
 
         // If a date is selected, update available time slots
         if (date != null && _selectedDoctorId.value != null) {
-            fetchSlotsByDoctorIdAndDate(_selectedDoctorId.value!!)
+            //fetchSlotsByDoctorIdAndDate(_selectedDoctorId.value!!)
         } else {
             _availableSlots.value = emptyList()
         }
@@ -316,29 +316,30 @@ class BookAppointmentViewModel : ViewModel() {
             return
         }
 
-        _isLoading.value = true
-        _slotsUiState.value = UiState.Loading
-
         viewModelScope.launch {
+            _isLoading.value = true // Start loading before flow collection
             try {
                 bookAppointmentRepository.getSlotsByDoctorIdAndDate(doctorId, date).collect { result ->
                     _slotsUiState.value = result
-
                     when (result) {
                         is UiState.Success -> {
                             _availableSlots.value = result.data
                             Log.d("BookAppointmentViewModel", "Slots loaded: ${result.data.size}")
+                            _isLoading.value = false
                         }
                         is UiState.Error -> {
                             _availableSlots.value = emptyList()
                             Log.e("BookAppointmentViewModel", "Error loading slots: ${result.message}")
+                            _isLoading.value = false
+                        }
+                        is UiState.Loading -> {
+                            _isLoading.value = true
                         }
                         else -> {
-                            // Do nothing for Loading and Init states
+                            // UiState.Init or other unexpected states
+                            _isLoading.value = false
                         }
                     }
-                    // Update loading state based on the current UiState
-                    _isLoading.value = result is UiState.Loading
                 }
             } catch (e: Exception) {
                 Log.e("BookAppointmentViewModel", "Exception fetching slots", e)
@@ -348,4 +349,5 @@ class BookAppointmentViewModel : ViewModel() {
             }
         }
     }
+
 }

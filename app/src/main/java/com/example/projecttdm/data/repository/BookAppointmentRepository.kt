@@ -3,7 +3,6 @@ package com.example.projecttdm.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.projecttdm.data.endpoint.BookAppointmentEndPoint
-import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentSlot
 import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.Flow
@@ -25,11 +24,10 @@ class BookAppointmentRepository (private  val endpoint: BookAppointmentEndPoint)
     @RequiresApi(Build.VERSION_CODES.O)
     fun getSlotsByDoctorIdAndDate(doctorId: String, workingDate: LocalDate): Flow<UiState<List<AppointmentSlot>>> = flow {
         println("Fetching appointment slots with doctor ID: $doctorId and date: $workingDate")
-        emit(UiState.Loading)
         try {
             val response = endpoint.getSlotsByDoctorIdAndDate(doctorId, workingDate)
-            println("Successfully fetched appointment slots: $response")
             emit(UiState.Success(response))
+            println("Successfully fetched appointment slots: $response")
         } catch (e: Exception) {
             println("Error fetching appointment slots: ${e.message}")
             e.printStackTrace()
@@ -41,3 +39,4 @@ class BookAppointmentRepository (private  val endpoint: BookAppointmentEndPoint)
 
 
 }
+
