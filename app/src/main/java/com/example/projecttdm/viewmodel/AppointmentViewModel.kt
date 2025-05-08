@@ -10,6 +10,7 @@ import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.QRCodeData
 import com.example.projecttdm.data.repository.AppointmentRepository
 import com.example.projecttdm.data.repository.DoctorRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
 import kotlinx.coroutines.flow.*
 import kotlinx.coroutines.launch
 import java.time.LocalDate
@@ -20,7 +21,7 @@ import java.time.format.DateTimeFormatter
 class AppointmentViewModel(
 ) : ViewModel() {
 
-    private val repository = AppointmentRepository()
+    private val repository = RepositoryHolder.appointmentRepository
     private val doctorRepository = DoctorRepository()
 
     private val _selectedTab = MutableStateFlow(AppointmentStatus.PENDING)

@@ -2,11 +2,14 @@ package com.example.projecttdm.data.repository
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.projecttdm.data.endpoint.AppointmentEndPoint
+import com.example.projecttdm.data.endpoint.UserEndPoint
 import com.example.projecttdm.data.local.AppointmentData
 import com.example.projecttdm.data.local.AppointmentsData
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.data.model.NextAppointementResponse
 import com.example.projecttdm.data.model.QRCodeData
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
@@ -18,7 +21,7 @@ import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 
-class AppointmentRepository {
+class AppointmentRepository(private val endpoint: AppointmentEndPoint) {
     // In-memory storage for appointments
     private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
     val appointments: StateFlow<List<Appointment>> = _appointments.asStateFlow()
@@ -31,6 +34,10 @@ class AppointmentRepository {
 
     fun getAppointmentById(appointmentId: String): Flow<Appointment?> {
         return appointments.map { it.find { appt -> appt.id == appointmentId } }
+    }
+
+    suspend fun getNextAppointmentForDoctor() : NextAppointementResponse {
+        return  endpoint.getNextAppointmentForDoctor()
     }
 
     suspend fun getAppointmentQRCode(appointmentId: String): Result<QRCodeData> {
