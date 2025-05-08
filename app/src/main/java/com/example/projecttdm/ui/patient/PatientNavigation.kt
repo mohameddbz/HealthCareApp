@@ -4,8 +4,13 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.MedicalServices
+import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
+import androidx.compose.material.icons.filled.Star
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -41,7 +46,6 @@ import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
 import com.example.projecttdm.ui.screens.AppointmentQRScreen
 import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.CancelReasonViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
@@ -56,12 +60,10 @@ import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PatientNavigation(navController: NavHostController = rememberNavController(),  modifier: Modifier = Modifier) {
-    val doctorSearchViewModel: DoctorSearchViewModel = viewModel()
     val appointmentViewModel: AppointmentViewModel = viewModel()
     val homeViewModel: HomeViewModel = viewModel()
-    val doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
-        initializer { DoctorListViewModel(doctorSearchViewModel) }
-    })
+    val doctorListViewModel: DoctorListViewModel = viewModel()
+    val doctorProfileViewModel: DoctorProfileViewModel = viewModel()
     NavHost(
         navController = navController,
         startDestination = PatientRoutes.HomeScreen.route,
@@ -86,7 +88,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(PatientRoutes.HomeScreen.route) {
-            HomeScreen(doctorSearchViewModel,doctorListViewModel,navController,homeViewModel)
+            HomeScreen(
+                navController, homeViewModel,
+                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
+            )
                 }
 
         composable(PatientRoutes.PatientDetails.route) {
@@ -228,16 +233,19 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
 
         composable(PatientRoutes.topDoctors.route) {
             TopDoctorScreen(
-                onBackClick = {  },
-                onDoctorClick = {  },
-                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) }
+                onBackClick = { navController.popBackStack() },
+                onDoctorClick = { doctorId ->
+                    navController.navigate("${PatientRoutes.doctorProfile.route}/$doctorId")
+                },
+                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
+                doctorListViewModel = doctorListViewModel
             )
         }
 
         composable(PatientRoutes.searchDoctor.route) {
             SearchScreen(
                 onBackClick = { navController.popBackStack() },
-                doctorSearchViewModel
+                doctorListViewModel
             )
         }
 
@@ -259,12 +267,16 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-        composable(PatientRoutes.doctorProfile.route){
-            val doctorProfileViewModel: DoctorProfileViewModel = viewModel()
+        composable(
+            route = "${PatientRoutes.doctorProfile.route}/{doctorId}",
+            arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: ""
             DoctorProfileScreen(
-                viewModel = doctorProfileViewModel ,
-                onBackClick = {navController.popBackStack()},
-                navigateToAllReviews = {}
+                viewModel = doctorProfileViewModel,
+                doctorId = doctorId,
+                onBackClick = { navController.popBackStack() },
+                navigateToAllReviews = { }
             )
         }
 
@@ -301,22 +313,22 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Appointment",
         icon = Icons.Default.Person,
-        route = PatientRoutes.BookAppointment.route
-    ),
-    NavigationItem(
-        title = "History",
-        icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.Prescription.route
-    ),
-    NavigationItem(
-        title = "Articles",
-        icon = Icons.Default.ShoppingCart,
         route = PatientRoutes.Appointment.route
     ),
     NavigationItem(
-        title = "Profile",
-        icon = Icons.Default.ShoppingCart,
-        route = PatientRoutes.PrescriptionCreate.route
+        title = "Top Doctors",
+        icon = Icons.Default.Star,
+        route = PatientRoutes.topDoctors.route
+    ),
+    NavigationItem(
+        title = "Notifications",
+        icon = Icons.Default.Notifications,
+        route = PatientRoutes.NotificationScreen.route
+    ),
+    NavigationItem(
+        title = "Prescriptions",
+        icon = Icons.Default.MedicalServices,
+        route = PatientRoutes.BookAppointment.route
     ),
 )
 

@@ -11,29 +11,58 @@ import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.NextAppointementResponse
 import com.example.projecttdm.data.model.QRCodeData
+import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.asStateFlow
+import kotlinx.coroutines.flow.flow
 import kotlinx.coroutines.flow.map
+import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalTime
 import java.util.UUID
 
-class AppointmentRepository(private val endpoint: AppointmentEndPoint) {
+class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
+
     // In-memory storage for appointments
     private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
     val appointments: StateFlow<List<Appointment>> = _appointments.asStateFlow()
 
+
     fun getAppointments(): Flow<List<Appointment>> = appointments
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getAppointmentsByStatus(status: AppointmentStatus): Flow<List<Appointment>> {
-        return appointments.map { it.filter { appt -> appt.status == status }.sortedWith(compareBy({ it.date }, { it.time }))}
+
+        return appointments.map { list ->
+            println("Filtering appointments by status: $status")
+            val filtered = list.filter { appt ->
+                println("Checking appointment: ${appt.id} with status: ${appt.status}")
+                appt.status == status
+            }
+            val sorted = filtered.sortedWith(compareBy({ it.date }, { it.time }))
+            println("Sorted appointments: ${sorted.map { it.id }}")
+            sorted
+        }
     }
 
-    fun getAppointmentById(appointmentId: String): Flow<Appointment?> {
-        return appointments.map { it.find { appt -> appt.id == appointmentId } }
+
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun getAppointmentById(appointmentId: String): Flow<UiState<Appointment>> = flow {
+        println("Fetching appointment with ID: $appointmentId")
+        emit(UiState.Loading)
+        try {
+            val response = endpoint.getAppointmentById(appointmentId)
+            println("Successfully fetched appointment: $response")
+            emit(UiState.Success(response))
+        } catch (e: Exception) {
+            println("Error fetching appointment: ${e.message}")
+            e.printStackTrace()
+            emit(UiState.Error(e.message ?: "Unknown error occurred"))
+        }
     }
 
     suspend fun getNextAppointmentForDoctor() : NextAppointementResponse {
@@ -106,15 +135,35 @@ class AppointmentRepository(private val endpoint: AppointmentEndPoint) {
 
 
     @RequiresApi(Build.VERSION_CODES.O)
-    suspend fun refreshAppointments(): Result<Unit> {
+    suspend fun refreshAppointments(): Result<Boolean> {
         return try {
-            delay(1000)
-            _appointments.value = getSampleAppointments()
-            Result.success(Unit)
+            val appointmentList = endpoint.getAppointmentsByPatientId()
+            _appointments.value = appointmentList
+            Result.success(true)
         } catch (e: Exception) {
+            println("Error in refreshAppointments: ${e.message}")
+            e.printStackTrace()
             Result.failure(e)
         }
     }
+
+    fun getUpcomingAppointment(): Flow<UiState<Appointment>> = flow {
+        emit(UiState.Loading)
+
+        try {
+            val appointment = endpoint.getfirstUpcomingAppointment()
+
+            if (appointment.status == AppointmentStatus.PENDING) {
+                emit(UiState.Success(appointment))
+            } else {
+                emit(UiState.Error("No upcoming pending appointments found"))
+            }
+        } catch (e: Exception) {
+            emit(UiState.Error("Error: ${e.localizedMessage ?: "Unexpected error occurred"}"))
+        }
+    }
+
+
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun isTimeSlotAvailable(time: LocalTime): Boolean {

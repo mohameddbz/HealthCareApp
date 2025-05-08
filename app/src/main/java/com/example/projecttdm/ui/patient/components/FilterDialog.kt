@@ -13,7 +13,7 @@ import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.data.model.Specialty
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.DoctorListViewModel
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
@@ -21,12 +21,12 @@ fun FilterDialog(
     selectedSpecialty: Specialty,
     onDismiss: () -> Unit,
     onApplyFilter: () -> Unit,
-    doctorSearchViewModel: DoctorSearchViewModel = viewModel()
+    doctorListViewModel: DoctorListViewModel = viewModel()
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState()
-    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
+    val specialties by doctorListViewModel.allSpecialties.collectAsState()
 
-    val selectedRatingVM by doctorSearchViewModel.selectedRating.collectAsState()
+    val selectedRatingVM by doctorListViewModel.selectedRating.collectAsState()
     var selectedRating by remember { mutableStateOf(selectedRatingVM) }
 
     // Apply the custom theme to the ModalBottomSheet
@@ -78,7 +78,7 @@ fun FilterDialog(
                 CategoryFilter(
                     specialties = specialties,
                     selectedSpecialty = selectedSpecialty,
-                    onSpecialtySelected = { doctorSearchViewModel.setSpecialty(it) }
+                    onSpecialtySelected = { doctorListViewModel.setSpecialty(it) }
                 )
             }
 
@@ -90,7 +90,6 @@ fun FilterDialog(
             )
 
             // Rating chips
-            var selectedRating by remember { mutableStateOf("All") }
             val ratingOptions = listOf("All", "5", "4", "3", "2")
 
             Row(
@@ -120,7 +119,9 @@ fun FilterDialog(
             ) {
                 Button(
                     onClick = {
+                        doctorListViewModel.setSpecialty(Specialty(id = "all", name = "All"))
                         selectedRating = "All"
+                        doctorListViewModel.setRating("All")
                         onDismiss()
                     },
                     modifier = Modifier
@@ -141,7 +142,8 @@ fun FilterDialog(
 
                 Button(
                     onClick = {
-                        doctorSearchViewModel.setRating(selectedRating)
+                        doctorListViewModel.setRating(selectedRating)
+                        // The filtering gets applied automatically through the applyFiltering function
                         onApplyFilter()
                     },
                     modifier = Modifier
@@ -157,7 +159,6 @@ fun FilterDialog(
                         color = MaterialTheme.colorScheme.onPrimary
                     )
                 }
-
             }
 
             // Add some padding at the bottom to account for system bars

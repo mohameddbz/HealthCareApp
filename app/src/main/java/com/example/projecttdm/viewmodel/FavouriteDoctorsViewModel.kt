@@ -7,9 +7,10 @@ import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.repository.DoctorRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
 
 class FavoriteDoctorsViewModel : ViewModel() {
-    private val repository = DoctorRepository()
+    private val repository = RepositoryHolder.doctorRepository
 
 
     private val patientId = "patient1"

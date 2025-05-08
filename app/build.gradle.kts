@@ -60,6 +60,7 @@ dependencies {
     implementation(libs.kizitonwose.calendar)
     implementation(libs.androidx.media3.effect)
     implementation(libs.androidx.espresso.core)
+    implementation(libs.androidx.benchmark.common)
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)

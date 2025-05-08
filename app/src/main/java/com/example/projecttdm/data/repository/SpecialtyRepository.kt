@@ -1,16 +1,33 @@
 package com.example.projecttdm.data.repository
 
+import com.example.projecttdm.data.endpoint.ApiClient
+import com.example.projecttdm.data.endpoint.AuthEndPoint
+import com.example.projecttdm.data.endpoint.SpecialtyEndPoint
 import com.example.projecttdm.data.local.DoctorData
 import com.example.projecttdm.data.model.Specialty
+import com.example.projecttdm.state.UiState
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 
-class SpecialtyRepository {
+class SpecialtyRepository (private val endpoint: SpecialtyEndPoint) {
+
     private val allOption = Specialty(id = "all", name = "All")
 
     // Get all specialties including the "All" option
     fun getAllSpecialtiesWithAll(): List<Specialty> = listOf(allOption) + DoctorData.specialties
 
-    // Get only actual specialties without the "All" option
-    fun getAllSpecialties(): List<Specialty> = DoctorData.specialties
+    fun getAllSpecialties(): Flow<UiState<List<Specialty>>> = flow {
+        emit(UiState.Loading)
+        try {
+            val specialtes = endpoint.getSpecialties()
+            println("ddsasds${specialtes}")
+            emit(UiState.Success(specialtes))
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Unknown error"))
+        }
+    }
+
+    //fun getAllSpecialties(): List<Specialty> = DoctorData.specialties
 
     // Get specialty by ID
     fun getSpecialtyById(id: String): Specialty? {

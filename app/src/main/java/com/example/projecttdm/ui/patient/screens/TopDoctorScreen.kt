@@ -17,6 +17,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
+import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.DoctorCard
 import com.example.projecttdm.viewmodel.DoctorListViewModel
@@ -28,14 +30,20 @@ fun TopDoctorScreen(
     onBackClick: () -> Unit,
     onDoctorClick: (String) -> Unit,
     onSearchClick: () -> Unit,
-    doctorSearchViewModel: DoctorSearchViewModel = viewModel(), // No need to pass as argument, use default ViewModel
-    doctorListViewModel: DoctorListViewModel = viewModel(factory = viewModelFactory {
-        initializer { DoctorListViewModel(doctorSearchViewModel) }
-    })
+    doctorListViewModel: DoctorListViewModel
 ) {
-    val doctors by doctorListViewModel.doctors.collectAsState()
-    val selectedSpecialty by doctorSearchViewModel.selectedSpecialty.collectAsState()
-    val specialties by doctorSearchViewModel.allSpecialties.collectAsState()
+
+    LaunchedEffect(true) {
+        doctorListViewModel.loadDoctors()
+        doctorListViewModel.loadSpecialties()
+        doctorListViewModel.setupFiltering()
+    }
+
+    val doctorsState by doctorListViewModel.doctorsState.collectAsState()
+    val filteredDoctors by doctorListViewModel.filteredDoctors.collectAsState()
+    val specialties by doctorListViewModel.allSpecialties.collectAsState()
+    val selectedSpecialty by doctorListViewModel.selectedSpecialty.collectAsState()
+
 
     Scaffold(
         topBar = {
@@ -43,32 +51,19 @@ fun TopDoctorScreen(
                 title = {
                     Text(
                         text = "Top Doctors",
-                        fontWeight = FontWeight.Bold,
-                        style = MaterialTheme.typography.titleLarge // Apply theme typography
+                        style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold)
                     )
                 },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
-                        Icon(imageVector = Icons.Default.ArrowBack, contentDescription = "Back")
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     }
                 },
                 actions = {
                     IconButton(onClick = onSearchClick) {
-                        Icon(
-                            imageVector = Icons.Default.Search,
-                            contentDescription = "Search",
-                            tint = MaterialTheme.colorScheme.onPrimaryContainer
-                        )
+                        Icon(Icons.Default.Search, contentDescription = "Search")
                     }
-                    IconButton(onClick = { /* TODO: Implement more options */ }) {
-                        Text(
-                            text = "⋯",
-                            fontSize = 24.sp,
-                            fontWeight = FontWeight.Bold,
-                            color = MaterialTheme.colorScheme.onPrimaryContainer // Apply theme color for text
-                        )
-                    }
-                },
+                }
             )
         }
     ) { paddingValues ->
@@ -77,42 +72,58 @@ fun TopDoctorScreen(
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // Category Filter
             CategoryFilter(
                 specialties = specialties,
                 selectedSpecialty = selectedSpecialty,
-                onSpecialtySelected = { doctorSearchViewModel.setSpecialty(it) }
+                onSpecialtySelected = { doctorListViewModel.setSpecialty(it) }
             )
 
-            // Doctor List
-            if (doctors.isEmpty()) {
-                Box(
-                    modifier = Modifier.fillMaxSize(),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = "No doctors found.",
-                        style = MaterialTheme.typography.bodyLarge,
-                        color = MaterialTheme.colorScheme.onSurface // Apply theme color for text
-                    )
+            when (val state = doctorsState) {
+                is UiState.Loading -> LoadingView()
+                is UiState.Success -> DoctorList(filteredDoctors, onDoctorClick)
+                is UiState.Error -> ErrorView(message = state.message) {
+                    doctorListViewModel.refreshDoctors()
                 }
-            } else {
-                LazyColumn(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .padding(horizontal = 16.dp),
-                    verticalArrangement = Arrangement.spacedBy(8.dp)
-                ) {
-                    items(doctors) { doctor ->
-                        DoctorCard(
-                            doctor = doctor,
-                            isFavorite = false, // Could be managed via favorites list
-                            onFavoriteClick = { doctorListViewModel.toggleFavorite(doctor.id) },
-                            onDoctorClick = { onDoctorClick(doctor.id) }
-                        )
-                    }
+                is UiState.Init -> {
+                    Text("Initial state. Please wait...", modifier = Modifier.padding(16.dp))
                 }
+
+                is UiState.Error -> TODO()
+                UiState.Init -> TODO()
+                UiState.Loading -> TODO()
+                is UiState.Success -> TODO()
             }
         }
     }
 }
+
+
+@Composable
+fun DoctorList(doctors: List<Doctor>, onDoctorClick: (String) -> Unit) {
+    LazyColumn(
+        modifier = Modifier
+            .fillMaxSize()
+            .padding(horizontal = 16.dp),
+        verticalArrangement = Arrangement.spacedBy(8.dp)
+    ) {
+        items(doctors, key = { it.id }) { doctor ->
+            DoctorCard(
+                doctor = doctor,
+                isFavorite = false, // Update when favorite logic is implemented
+                onFavoriteClick = { /* handle favorite */ },
+                onDoctorClick = { onDoctorClick(doctor.id) }
+            )
+        }
+    }
+}
+
+@Composable
+fun LoadingView() {
+    Box(
+        modifier = Modifier.fillMaxSize(),
+        contentAlignment = Alignment.Center
+    ) {
+        CircularProgressIndicator()
+    }
+}
+

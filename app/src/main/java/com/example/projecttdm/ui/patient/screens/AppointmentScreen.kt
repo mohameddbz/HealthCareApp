@@ -15,6 +15,7 @@ import androidx.compose.material.icons.filled.*
 import androidx.compose.material3.*
 import androidx.compose.material3.TabRowDefaults.tabIndicatorOffset
 import androidx.compose.runtime.*
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.painterResource
@@ -25,6 +26,7 @@ import androidx.navigation.NavController
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.Appointment.EmptyAppointmentsList
 import com.example.projecttdm.ui.patient.components.Appointment.PendingCard
@@ -32,6 +34,7 @@ import com.example.projecttdm.ui.patient.components.Appointment.SearchBar
 import com.example.projecttdm.ui.patient.components.Qr.AppointmentQRDialog
 import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
+import com.example.projecttdm.viewmodel.HomeViewModel
 import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
@@ -42,17 +45,20 @@ import java.time.format.DateTimeFormatter
 fun AppointmentScreen(
     navController: NavController,
     viewModel: AppointmentViewModel,
-    doctorViewModel: DoctorListViewModel
+    doctorViewModel: DoctorListViewModel,
 ) {
+
     val selectedTab by viewModel.selectedTab.collectAsState()
     val appointments by viewModel.appointments.collectAsState()
     val isLoading by viewModel.isLoading.collectAsState()
     val searchQuery by viewModel.searchQuery.collectAsState()
-    val scope = rememberCoroutineScope()
     val snackbarHostState = remember { SnackbarHostState() }
-    val doctors by doctorViewModel.doctors.collectAsState()
+
+    val filteredDoctors by doctorViewModel.filteredDoctors.collectAsState()
     var showSearchBar by remember { mutableStateOf(false) }
     val showDialog by viewModel.showQRCodeDialog.collectAsState()
+
+
     if (showDialog) {
         AppointmentQRDialog(
             viewModel = viewModel,
@@ -60,18 +66,23 @@ fun AppointmentScreen(
         )
     }
 
-    // Collect error messages
+//    LaunchedEffect(true) {
+////        doctorViewModel.loadDoctors()
+////        doctorViewModel.loadSpecialties()
+////        doctorViewModel.setupFiltering()
+//
+//    }
+
     LaunchedEffect(key1 = true) {
+        viewModel.refreshAppointments()
         viewModel.errorMessage.collect { message ->
             snackbarHostState.showSnackbar(message)
         }
     }
 
-    // State for appointment reschedule dialog
     var showRescheduleDialog by remember { mutableStateOf(false) }
     var appointmentToReschedule by remember { mutableStateOf<Appointment?>(null) }
-    var newDate by remember { mutableStateOf(LocalDate.now()) }
-    var newTime by remember { mutableStateOf(LocalTime.of(9, 0)) }
+
 
     Scaffold(
         snackbarHost = { SnackbarHost(hostState = snackbarHostState) },
@@ -90,34 +101,38 @@ fun AppointmentScreen(
                             Image(
                                 painter = painterResource(id = R.drawable.logo),
                                 contentDescription = "App Logo",
-                                modifier = Modifier.size(40.dp) // Adjust size as needed
+                                modifier = Modifier.size(40.dp)
                             )
                         }
                     },
                     actions = {
                         IconButton(onClick = { showSearchBar = !showSearchBar }) {
-                            Icon(imageVector = Icons.Default.Search, contentDescription = "Search", tint =MaterialTheme.colorScheme.onPrimaryContainer)
+                            Icon(
+                                imageVector = Icons.Default.Search,
+                                contentDescription = "Search",
+                                tint = MaterialTheme.colorScheme.onPrimaryContainer
+                            )
                         }
-                        IconButton(onClick = { /* TODO: Implement more options */ }) {
+                        IconButton(onClick = { /* More options if needed */ }) {
                             Text(
                                 text = "⋯",
                                 fontSize = 24.sp,
                                 fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer // Apply theme color for text
+                                color = MaterialTheme.colorScheme.onPrimaryContainer
                             )
                         }
-                    },
+                    }
                 )
 
                 AnimatedVisibility(
                     visible = showSearchBar || searchQuery.isNotEmpty(),
-                    enter = fadeIn(animationSpec = tween(300)),
-                    exit = fadeOut(animationSpec = tween(300)),
+                    enter = fadeIn(tween(300)),
+                    exit = fadeOut(tween(300)),
                 ) {
                     SearchBar(
                         query = searchQuery,
-                        onQueryChange = { },
-                        onClearQuery = { },
+                        onQueryChange = {  },
+                        onClearQuery = {  },
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 16.dp)
@@ -126,20 +141,18 @@ fun AppointmentScreen(
             }
         }
     ) { paddingValues ->
-
         Column(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
         ) {
-            // 👇 Tab Row now placed here, OUTSIDE TopBar
             ScrollableTabRow(
                 selectedTabIndex = AppointmentStatus.values().indexOf(selectedTab),
                 contentColor = MaterialTheme.colorScheme.primary,
                 edgePadding = 16.dp,
                 indicator = { tabPositions ->
                     val index = AppointmentStatus.values().indexOf(selectedTab)
-                    if (index >= 0 && index < tabPositions.size) {
+                    if (index in tabPositions.indices) {
                         TabRowDefaults.Indicator(
                             modifier = Modifier.tabIndicatorOffset(tabPositions[index]),
                             height = 3.dp,
@@ -163,7 +176,6 @@ fun AppointmentScreen(
                 }
             }
 
-            // 👇 Content Area
             if (appointments.isEmpty() && !isLoading) {
                 EmptyAppointmentsList(
                     status = selectedTab,
@@ -178,7 +190,7 @@ fun AppointmentScreen(
                     contentPadding = PaddingValues(vertical = 16.dp)
                 ) {
                     items(appointments, key = { it.id }) { appointment ->
-                        val doctor = doctors.find { it.id == appointment.doctorId }
+                        val doctor = filteredDoctors.find { it.id == appointment.doctorId }
                         PendingCard(
                             onClick = {
                                 navController.navigate(PatientRoutes.AppQR.createRoute(appointment.id))
@@ -187,37 +199,37 @@ fun AppointmentScreen(
                             doctor = doctor,
                             onCardClick = { navController.navigate("appointment_details/${appointment.id}") },
                             onCancelClick = { navController.navigate(PatientRoutes.CancelDialog.route) },
-                            onRescheduleClick = { navController.navigate(PatientRoutes.RescheduleReason.route)}
+                            onRescheduleClick = { navController.navigate(PatientRoutes.RescheduleReason.route) }
                         )
                     }
                 }
             }
 
             if (isLoading) {
-                // TODO: Add loading indicator
+                Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+                    CircularProgressIndicator()
+                }
             }
         }
 
-        // Reschedule Dialog
+        // Future: Reschedule Dialog
         if (showRescheduleDialog && appointmentToReschedule != null) {
-            // DateTimePickerDialog(...)
+            // DateTimePickerDialog(...) - your custom logic here
         }
     }
 }
 
-
-
-
-// Helper functions
+// Helper function to capitalize first letter
 fun String.capitalizeFirst(): String {
     return this.replaceFirstChar { if (it.isLowerCase()) it.titlecase() else it.toString() }
 }
 
-// Extension functions for Appointment to format date and time
+// Extension functions with null checks
 @RequiresApi(Build.VERSION_CODES.O)
 fun Appointment.formattedDate(): String {
     val today = LocalDate.now()
     return when {
+        date == null -> "Date not set"
         date.isEqual(today) -> "Today"
         date.isEqual(today.plusDays(1)) -> "Tomorrow"
         date.isEqual(today.minusDays(1)) -> "Yesterday"
@@ -227,6 +239,9 @@ fun Appointment.formattedDate(): String {
 
 @RequiresApi(Build.VERSION_CODES.O)
 fun Appointment.formattedTime(): String {
-    val formatter = DateTimeFormatter.ofPattern("h:mm a")
-    return time.format(formatter)
+    return if (time == null) {
+        "Time not set"
+    } else {
+        time.format(DateTimeFormatter.ofPattern("h:mm a"))
+    }
 }
