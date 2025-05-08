@@ -313,7 +313,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Prescriptions",
         icon = Icons.Default.MedicalServices,
-        route = PatientRoutes.Prescription.route
+        route = PatientRoutes.BookAppointment.route
     ),
 )
 

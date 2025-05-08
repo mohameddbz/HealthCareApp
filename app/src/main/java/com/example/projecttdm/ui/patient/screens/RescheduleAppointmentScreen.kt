@@ -133,11 +133,11 @@ fun RescheduleAppointmentScreen(
             modifier = Modifier.padding(bottom = 12.dp)
         )
 
-        TimeSlotGrid(
-            selectedTime = selectedTime,
-            onTimeSelected = { time -> viewModel.setSelectedTime(time) },
-            modifier = Modifier.fillMaxWidth()
-        )
+//        TimeSlotGrid(
+//            selectedTime = selectedTime,
+//            onTimeSelected = { time -> viewModel.setSelectedTime(time) },
+//            modifier = Modifier.fillMaxWidth()
+//        )
 
         Spacer(modifier = Modifier.height(16.dp))
 
