@@ -83,14 +83,9 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 navController, homeViewModel,
                 onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
             )
-                }
-
-        composable(PatientRoutes.PatientDetails.route) {
-            PatientDetailsScreen(
-                onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
-                onNextClicked = { navController.navigate(PatientRoutes.PatientSummary.route) }
-            )
         }
+
+
         composable(PatientRoutes.PatientSummary.route) {
             AppointmentReviewScreen(
                 navController = navController,
@@ -293,12 +288,24 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         ) {backStackEntry ->
             val doctorId = backStackEntry.arguments?.getString("doctorId") ?: ""
             BookAppointmentScreen(
-                onNextClicked = {
-                    navController.navigate(PatientRoutes.PinVerification.route)
+                onNextClicked = {  slotId ->
+                    navController.navigate("${PatientRoutes.PatientDetails.route}/$slotId")
                 },
                 doctorId = doctorId,
                 patientId = "defaultPatientId",
                 appointmentViewModel = BookAppointmentViewModel()
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.PatientDetails.route}/{slotId}",
+            arguments = listOf(navArgument("slotId") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val slotId = backStackEntry.arguments?.getString("slotId") ?: ""
+            PatientDetailsScreen(
+                slotId = slotId,
+                onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
+                onNextClicked = { navController.navigate(PatientRoutes.PatientSummary.route) }
             )
         }
 
@@ -336,7 +343,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Prescriptions",
         icon = Icons.Default.MedicalServices,
-        route = PatientRoutes.topDoctors.route
+        route = PatientRoutes.PatientSummary.route
     ),
 )
 

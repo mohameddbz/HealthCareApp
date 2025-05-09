@@ -24,3 +24,19 @@ data class Appointment(
 
     val reason: String = ""
 )
+
+data class AppointmentRequest(
+
+    val slot_id:String,
+
+    val reason: String = "",
+
+    val is_book: Boolean = false
+)
+
+data class AppointementResponse (
+    val success: Boolean ,
+    val message: String ="",
+    val appointment: Appointment
+)
+

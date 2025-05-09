@@ -30,6 +30,7 @@ import com.example.projecttdm.theme.Blue02
 import com.example.projecttdm.theme.Gray01
 import com.example.projecttdm.theme.Gray02
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
+import java.time.LocalDate
 import java.time.LocalTime
 import java.time.format.DateTimeFormatter
 
@@ -39,7 +40,8 @@ fun TimeSlotGrid(
     selectedTime: LocalTime?,
     onTimeSelected: (LocalTime) -> Unit,
     modifier: Modifier = Modifier,
-    viewModel: BookAppointmentViewModel
+    viewModel: BookAppointmentViewModel,
+    onNextClicked: (String) -> Unit
 ) {
     val availableSlots by viewModel.availableSlots.collectAsState()
     val slotsUiState by viewModel.slotsUiState.collectAsState()
@@ -85,9 +87,10 @@ fun TimeSlotGrid(
                 }
             } else {
                 val availableTimes = availableSlots.map { slot ->
-                    Pair(
+                    Triple(
                         LocalTime.parse(slot.start_time.toString(), DateTimeFormatter.ofPattern("HH:mm")),
-                        slot.is_book
+                        slot.is_book,
+                        LocalDate.parse(slot.working_date.toString(), DateTimeFormatter.ofPattern("yyyy-MM-dd"))
                     )
                 }.sortedBy { it.first }
 
@@ -122,7 +125,17 @@ fun TimeSlotGrid(
                     }
 
                     Button(
-                        onClick = { /* TODO: Handle next */ },
+                        onClick = {
+                            selectedTime?.let { selected ->
+                                val selectedSlot = availableSlots.find {
+                                    LocalTime.parse(it.start_time.toString(), DateTimeFormatter.ofPattern("HH:mm")) == selected
+                                }
+                                selectedSlot?.let { slot ->
+                                    //viewModel.bookAppointment(slot_id = slot.slot_id.toString())
+                                    onNextClicked(slot.slot_id.toString())
+                                }
+                            }
+                        },
                         enabled = selectedTime != null,
                         colors = ButtonDefaults.buttonColors(
                             containerColor = Blue01,

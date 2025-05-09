@@ -165,7 +165,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecttdm.data.model.AppointementResponse
 import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentRequest
 import com.example.projecttdm.data.model.AppointmentSlot
 import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.state.UiState
@@ -223,6 +225,9 @@ class BookAppointmentViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _appointmentState = MutableStateFlow<UiState<AppointementResponse>>(UiState.Loading)
+    val appointmentState: StateFlow<UiState<AppointementResponse>> = _appointmentState
+
     private val _slots = MutableStateFlow<List<AppointmentSlot>>(emptyList())
     val slots: StateFlow<List<AppointmentSlot>> = _slots.asStateFlow()
 
@@ -276,32 +281,32 @@ class BookAppointmentViewModel : ViewModel() {
     }
 
     // Function to book an appointment
-    fun bookAppointment(): Boolean {
-        val patientId = _patientId.value
-        val doctorId = _selectedDoctorId.value
-        val date = _selectedDate.value
-        val time = _selectedTime.value
-        val reason = _reason.value
-
-        if (patientId == null || doctorId == null || date == null || time == null) {
-            return false
-        }
-
-        repository.bookAppointment(
-            patientId = patientId,
-            doctorId = doctorId,
-            date = date,
-            time = time,
-            reason = reason
-        )
-
-        // Reset fields after booking
-        _selectedDate.value = null
-        _selectedTime.value = null
-        _reason.value = ""
-
-        return true
-    }
+//    fun bookAppointment(): Boolean {
+//        val patientId = _patientId.value
+//        val doctorId = _selectedDoctorId.value
+//        val date = _selectedDate.value
+//        val time = _selectedTime.value
+//        val reason = _reason.value
+//
+//        if (patientId == null || doctorId == null || date == null || time == null) {
+//            return false
+//        }
+//
+//        repository.bookAppointment(
+//            patientId = patientId,
+//            doctorId = doctorId,
+//            date = date,
+//            time = time,
+//            reason = reason
+//        )
+//
+//        // Reset fields after booking
+//        _selectedDate.value = null
+//        _selectedTime.value = null
+//        _reason.value = ""
+//
+//        return true
+//    }
 
     // Function to get patient's appointments
     fun getPatientAppointments(): List<Appointment> {
@@ -353,4 +358,21 @@ class BookAppointmentViewModel : ViewModel() {
             }
         }
     }
+
+    fun bookAppointment(slot_id:String , reason: String) {
+        val request = AppointmentRequest(
+            slot_id = slot_id,
+            reason = reason ,// Or allow passing a reason as an optional param
+            is_book = true
+        )
+
+        viewModelScope.launch {
+            bookAppointmentRepository.bookAppointment(request).collect { state ->
+                _appointmentState.value = state
+            }
+        }
+    }
+
+
+
 }

@@ -27,7 +27,7 @@ import java.time.LocalDate
 fun BookAppointmentScreen(
     doctorId: String,
     patientId: String,
-    onNextClicked: () -> Unit,
+    onNextClicked: (String) -> Unit,
     appointmentViewModel: BookAppointmentViewModel = viewModel()
 ) {
     val selectedDate by appointmentViewModel.selectedDate.collectAsState()
@@ -123,7 +123,8 @@ fun BookAppointmentScreen(
                     modifier = Modifier
                         .fillMaxWidth()
                         .padding(vertical = 4.dp),
-                    viewModel = appointmentViewModel
+                    viewModel = appointmentViewModel,
+                    onNextClicked = onNextClicked
                 )
 
             }

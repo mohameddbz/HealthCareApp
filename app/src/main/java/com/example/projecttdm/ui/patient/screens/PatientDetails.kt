@@ -1,5 +1,7 @@
 package com.example.projecttdm.ui.patient.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -22,15 +24,19 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.ui.patient.components.BookAppointment.GenderDropdown
 import com.example.projecttdm.ui.patient.components.BookAppointment.LabeledTextField
+import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.PatientDetailsViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientDetailsScreen(
+    slotId: String,
     onBackClicked: () -> Unit,
     onNextClicked: () -> Unit,
     patientId: String? = null,
-    viewModel: PatientDetailsViewModel = viewModel()
+    viewModel: PatientDetailsViewModel = viewModel(),
+    bookviewModel: BookAppointmentViewModel = viewModel()
 ) {
     // Load patient data if ID is provided
     LaunchedEffect(patientId) {
@@ -181,7 +187,7 @@ fun PatientDetailsScreen(
 
         // Next Button
         Button(
-            onClick = { viewModel.savePatient() },
+            onClick = { bookviewModel.bookAppointment(slot_id = slotId, reason = problemDescription) },
             enabled = !isLoading,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Blue01,
@@ -201,6 +207,7 @@ fun PatientDetailsScreen(
                 )
             )
         }
+
 
         // Loading indicator
         if (isLoading) {
