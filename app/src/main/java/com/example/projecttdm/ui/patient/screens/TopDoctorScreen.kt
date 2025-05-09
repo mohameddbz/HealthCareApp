@@ -87,11 +87,6 @@ fun TopDoctorScreen(
                 is UiState.Init -> {
                     Text("Initial state. Please wait...", modifier = Modifier.padding(16.dp))
                 }
-
-                is UiState.Error -> TODO()
-                UiState.Init -> TODO()
-                UiState.Loading -> TODO()
-                is UiState.Success -> TODO()
             }
         }
     }

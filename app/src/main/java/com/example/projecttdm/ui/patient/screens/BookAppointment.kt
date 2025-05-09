@@ -48,7 +48,7 @@ fun BookAppointmentScreen(
     LaunchedEffect(selectedDate) {
         selectedDate?.let {
             Log.d("BookAppointmentScreen", "Fetching slots for date: $it")
-            appointmentViewModel.fetchSlotsByDoctorIdAndDate("2")
+            appointmentViewModel.fetchSlotsByDoctorIdAndDate(doctorId)
         }
     }
 

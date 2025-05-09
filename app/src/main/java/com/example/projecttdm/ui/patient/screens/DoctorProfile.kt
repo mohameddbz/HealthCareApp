@@ -33,7 +33,8 @@ fun DoctorProfileScreen(
     doctorId: String,
     onBackClick: () -> Unit,
     navigateToAllReviews: (String) -> Unit,
-    modifier: Modifier = Modifier
+    modifier: Modifier = Modifier,
+    onBookClick: (String) -> Unit ,
 ) {
     val doctorState by viewModel.doctorState.collectAsState()
     val reviewsState by viewModel.reviewsState.collectAsState()
@@ -58,7 +59,8 @@ fun DoctorProfileScreen(
                 reviewsState = reviewsState,
                 onBackClick = onBackClick,
                 navigateToAllReviews = navigateToAllReviews,
-                modifier = modifier
+                modifier = modifier,
+                onBookClick = onBookClick
             )
         }
 
@@ -85,6 +87,7 @@ fun DoctorProfileContent(
     doctor: Doctor,
     reviewsState: UiState<List<Review>>,
     onBackClick: () -> Unit,
+    onBookClick: (String) -> Unit ,
     navigateToAllReviews: (String) -> Unit,
     modifier: Modifier = Modifier
 ) {
@@ -92,7 +95,7 @@ fun DoctorProfileContent(
 
     Scaffold(
         topBar = {
-            androidx.compose.material3.TopAppBar(
+            TopAppBar(
                 title = {
                     Text(
                         text = "Doctor Profile",
@@ -135,7 +138,7 @@ fun DoctorProfileContent(
                 tonalElevation = 4.dp
             )  {
                 Row(Modifier.padding(16.dp, 8.dp)) {
-                    BookAppointmentButton(onClick = {})
+                    BookAppointmentButton(onClick = { onBookClick(doctor.id) })
                 }
             }
         },

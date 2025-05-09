@@ -273,7 +273,25 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 viewModel = doctorProfileViewModel,
                 doctorId = doctorId,
                 onBackClick = { navController.popBackStack() },
-                navigateToAllReviews = { }
+                navigateToAllReviews = { },
+                onBookClick = { doctorId ->
+                    navController.navigate("${PatientRoutes.doctorProfile.route}/$doctorId")
+                },
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.BookAppointment.route}/{doctorId}",
+            arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: ""
+            BookAppointmentScreen(
+                onNextClicked = {
+                    navController.navigate(PatientRoutes.PinVerification.route)
+                },
+                doctorId = doctorId,
+                patientId = "defaultPatientId",
+                appointmentViewModel = BookAppointmentViewModel()
             )
         }
 
@@ -313,7 +331,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Prescriptions",
         icon = Icons.Default.MedicalServices,
-        route = PatientRoutes.BookAppointment.route
+        route = PatientRoutes.topDoctors.route
     ),
 )
 
