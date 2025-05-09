@@ -9,6 +9,8 @@ import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
+import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
@@ -36,6 +38,7 @@ import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
@@ -43,13 +46,13 @@ import com.example.projecttdm.ui.patient.screens.TopDoctorScreen
 import com.example.projecttdm.ui.screens.AppointmentQRScreen
 import com.example.projecttdm.viewmodel.AppointmentViewModel
 import com.example.projecttdm.viewmodel.DoctorListViewModel
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.CancelReasonViewModel
 import com.example.projecttdm.viewmodel.DoctorProfileViewModel
 import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
 import com.example.projecttdm.viewmodel.HomeViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
+import com.example.projecttdm.viewmodel.PrescriptionContentViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import com.example.projecttdm.viewmodel.ReasonViewModel
 import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
@@ -66,16 +69,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         startDestination = PatientRoutes.HomeScreen.route,
         modifier = modifier
     ) {
-        composable(PatientRoutes.BookAppointment.route) {
-            BookAppointmentScreen(
-                onNextClicked = {
-                    navController.navigate(PatientRoutes.PinVerification.route)
-                },
-                doctorId = "defaultDoctorId",
-                patientId = "defaultPatientId",
-                appointmentViewModel = BookAppointmentViewModel()
-            )
-        }
+
         composable(PatientRoutes.RescheduleAppointment.route) {
             RescheduleAppointmentScreen(
                 appointmentId = "98",
@@ -275,11 +269,24 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 onBackClick = { navController.popBackStack() },
                 navigateToAllReviews = { },
                 onBookClick = { doctorId ->
-                    navController.navigate("${PatientRoutes.doctorProfile.route}/$doctorId")
+                    navController.navigate("${PatientRoutes.BookAppointment.route}/$doctorId")
                 },
             )
         }
 
+        composable(
+            route = PatientRoutes.Prescription.routeWithArgs,
+            arguments = listOf(navArgument("prescriptionId") { type = NavType.StringType }))
+        {
+            backStackEntry ->
+            val prescriptionId = backStackEntry.arguments?.getString("prescriptionId")
+            val prescriptionViewModel: PrescriptionContentViewModel = viewModel()
+
+            PrescriptionScreenContent(
+                prescriptionId = prescriptionId,
+                viewModel = prescriptionViewModel ,
+           )
+        }
         composable(
             route = "${PatientRoutes.BookAppointment.route}/{doctorId}",
             arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
@@ -294,8 +301,6 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 appointmentViewModel = BookAppointmentViewModel()
             )
         }
-
-
 
     }
 }

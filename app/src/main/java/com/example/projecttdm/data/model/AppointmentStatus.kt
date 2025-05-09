@@ -7,6 +7,7 @@ enum class AppointmentStatus {
     CANCELLED,
     RESCHEDULED;
 
+
     // Companion object to safely convert from string
     companion object {
         fun fromString(value: String?): AppointmentStatus {

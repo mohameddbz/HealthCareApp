@@ -51,6 +51,7 @@ import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.auth.AuthRoutes
 import com.example.projecttdm.ui.auth.Util.OrDivider
 import com.example.projecttdm.ui.common.components.showError
+import com.example.projecttdm.ui.doctor.DoctorActivity
 import com.example.projecttdm.ui.patient.PatientActivity
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.viewmodel.AuthViewModel
@@ -172,8 +173,10 @@ fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
             is UiState.Loading -> CircularProgressIndicator()
             is UiState.Error -> showError((authState as UiState.Error).message)
             is UiState.Success -> LaunchedEffect(Unit) {
+                val succesLogin = authState as UiState.Success<AuthResponse>
+                val role = succesLogin.data.role
+                ApiClient.setTokenProvider { succesLogin.data.token }
                 withContext(Dispatchers.IO) {
-                    val succesLogin = authState as UiState.Success<AuthResponse>
                     val sharedPreferences =
                         context.getSharedPreferences("doctor_prefs", Context.MODE_PRIVATE)
                     with(sharedPreferences.edit()) {
@@ -182,13 +185,20 @@ fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
                         putString("role", succesLogin.data.role)
                         apply()
                     }
-                    ApiClient.setTokenProvider { succesLogin.data.token }
 
                 }
-                val intent = Intent(context, PatientActivity::class.java)
-                context.startActivity(intent)
-                val activity = context as? Activity
-                activity?.finish()
+                if(role=="doctor"){
+                    val intent = Intent(context, DoctorActivity::class.java)
+                    context.startActivity(intent)
+                    val activity = context as? Activity
+                    activity?.finish()
+                }else if (role=="patient"){
+                    val intent = Intent(context, PatientActivity::class.java)
+                    context.startActivity(intent)
+                    val activity = context as? Activity
+                    activity?.finish()
+                }
+
             }
 
 

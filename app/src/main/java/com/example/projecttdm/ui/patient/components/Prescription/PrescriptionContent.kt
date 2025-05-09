@@ -13,7 +13,7 @@ import androidx.compose.ui.unit.sp
 import com.example.projecttdm.data.model.*
 
 @Composable
-fun PrescriptionContent(prescription: Prescription) {
+fun PrescriptionContent(prescription: FullPrescription) {
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -29,7 +29,7 @@ fun PrescriptionContent(prescription: Prescription) {
                 .fillMaxWidth()
         ) {
             // Header section with gradient
-            PrescriptionHeader(prescription.doctor)
+            PrescriptionHeader(prescription.Doctor)
 
             Column(
                 modifier = Modifier
@@ -37,7 +37,7 @@ fun PrescriptionContent(prescription: Prescription) {
                     .padding(horizontal = 20.dp, vertical = 16.dp)
             ) {
                 // Patient information
-                PatientInfoSection(prescription.patient)
+                PatientInfoSection(prescription.Patient)
 
                 Spacer(modifier = Modifier.height(24.dp))
 
@@ -66,7 +66,7 @@ fun PrescriptionContent(prescription: Prescription) {
                 Spacer(modifier = Modifier.height(20.dp))
 
                 // Medications list
-                MedicationsList(prescription.medications)
+                MedicationsList(prescription.MEDICATIONs)
 
                 Spacer(modifier = Modifier.height(20.dp))
 

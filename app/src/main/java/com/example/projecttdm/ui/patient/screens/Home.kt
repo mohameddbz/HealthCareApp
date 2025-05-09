@@ -25,7 +25,6 @@ import com.example.projecttdm.ui.common.components.DeconnectionButton
 import com.example.projecttdm.ui.common.components.UserProfileImage
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.*
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.HomeViewModel
 
 class WindowSize(val width: WindowType, val height: WindowType)

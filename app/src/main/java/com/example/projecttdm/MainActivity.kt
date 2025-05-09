@@ -19,6 +19,7 @@ import com.example.projecttdm.data.endpoint.ApiClient
 import com.example.projecttdm.theme.ProjectTDMTheme
 import com.example.projecttdm.ui.auth.AuthActivity
 import com.example.projecttdm.ui.auth.AuthNavigation
+import com.example.projecttdm.ui.doctor.DoctorActivity
 import com.example.projecttdm.ui.doctor.DoctorNavigation
 import com.example.projecttdm.ui.patient.PatientActivity
 import kotlinx.coroutines.Dispatchers
@@ -49,6 +50,8 @@ class MainActivity : ComponentActivity() {
             val sharedPreferences = getSharedPreferences("doctor_prefs", MODE_PRIVATE)
             val token = sharedPreferences.getString("auth_token", null)
             val userConnected = sharedPreferences.getBoolean("user_connected", false)
+            val role = sharedPreferences.getString("role",null)
+
 
             // Switch back to main thread to navigate
             withContext(Dispatchers.Main) {
@@ -57,7 +60,12 @@ class MainActivity : ComponentActivity() {
                     navigateToAuth()
                 } else {
                     ApiClient.setTokenProvider { token }
-                    navigateToPatient()
+                    if(role =="doctor") {
+                        navigateToDoctor()
+                    }else if (role == "patient") {
+                        navigateToPatient()
+                    }
+
                 }
             }
         }
@@ -65,6 +73,11 @@ class MainActivity : ComponentActivity() {
 
     private fun navigateToAuth() {
         val intent = Intent(this, AuthActivity::class.java)
+        startActivity(intent)
+        finish()
+    }
+    private fun navigateToDoctor(){
+        val intent = Intent(this,DoctorActivity::class.java)
         startActivity(intent)
         finish()
     }

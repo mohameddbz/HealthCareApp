@@ -8,6 +8,8 @@ import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.QRCodeData
+import com.example.projecttdm.data.repository.AppointmentRepository
+import com.example.projecttdm.data.repository.DoctorRepository
 import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.*
@@ -66,11 +68,8 @@ class AppointmentViewModel(
     private fun loadAppointments(status: AppointmentStatus) {
         viewModelScope.launch {
             _isLoading.value = true
-
             try {
                 repository.getAppointmentsByStatus(status).collect { appointmentList ->
-                    appointmentList.forEach { appt ->
-                    }
                     _appointments.value = appointmentList
                     _isLoading.value = false
                 }
@@ -219,7 +218,6 @@ class AppointmentViewModel(
             }
         }
     }
-
 
     fun closeQRCodeDialog() {
         _showQRCodeDialog.value = false

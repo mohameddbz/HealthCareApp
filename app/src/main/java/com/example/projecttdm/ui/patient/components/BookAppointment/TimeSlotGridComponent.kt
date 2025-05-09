@@ -177,38 +177,38 @@ fun TimeSlotItem(
     onSelected: () -> Unit,
     modifier: Modifier = Modifier
 )
- {
+{
     val formatter = DateTimeFormatter.ofPattern("HH:mm")
     val formattedTime = time.format(formatter)
 
-     val backgroundColor = when {
-         isBooked -> Gray01
-         isSelected -> Blue01
-         else -> Blue02
-     }
+    val backgroundColor = when {
+        isBooked -> Gray01
+        isSelected -> Blue01
+        else -> Blue02
+    }
     val textColor = if (isSelected) Color.White else Gray02
     val borderColor = if (isSelected) Blue01 else Gray01
 
-     Surface(
-         color = backgroundColor,
-         shape = MaterialTheme.shapes.small,
-         modifier = modifier
-             .height(44.dp)
-             .border(1.dp, borderColor, MaterialTheme.shapes.small)
-             .then(
-                 if (!isBooked) Modifier.clickable { onSelected() } else Modifier
-             )
-     ) {
-         Box(
-             contentAlignment = Alignment.Center
-         ) {
-             Text(
-                 text = formattedTime,
-                 color = textColor,
-                 fontWeight = FontWeight.Medium,
-                 fontSize = 14.sp,
-                 textAlign = TextAlign.Center
-             )
-         }
-     }
+    Surface(
+        color = backgroundColor,
+        shape = MaterialTheme.shapes.small,
+        modifier = modifier
+            .height(44.dp)
+            .border(1.dp, borderColor, MaterialTheme.shapes.small)
+            .then(
+                if (!isBooked) Modifier.clickable { onSelected() } else Modifier
+            )
+    ) {
+        Box(
+            contentAlignment = Alignment.Center
+        ) {
+            Text(
+                text = formattedTime,
+                color = textColor,
+                fontWeight = FontWeight.Medium,
+                fontSize = 14.sp,
+                textAlign = TextAlign.Center
+            )
+        }
+    }
 }

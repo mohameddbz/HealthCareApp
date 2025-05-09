@@ -223,6 +223,10 @@ class BookAppointmentViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _slots = MutableStateFlow<List<AppointmentSlot>>(emptyList())
+    val slots: StateFlow<List<AppointmentSlot>> = _slots.asStateFlow()
+
+
     // Function to set the patient ID
     fun setPatientId(id: String) {
         _patientId.value = id
@@ -240,7 +244,7 @@ class BookAppointmentViewModel : ViewModel() {
 
         // If a date is selected, update available time slots
         if (date != null && _selectedDoctorId.value != null) {
-            //fetchSlotsByDoctorIdAndDate(_selectedDoctorId.value!!)
+            fetchSlotsByDoctorIdAndDate(_selectedDoctorId.value!!)
         } else {
             _availableSlots.value = emptyList()
         }
@@ -349,5 +353,4 @@ class BookAppointmentViewModel : ViewModel() {
             }
         }
     }
-
 }

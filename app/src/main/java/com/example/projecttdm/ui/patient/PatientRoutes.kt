@@ -24,7 +24,10 @@ sealed class PatientRoutes(val route: String) {
     object CancelReason : PatientRoutes("cancelReason")
     object RescheduleAppointment : PatientRoutes("rescheduleAppointment")
     object CancelDialog : PatientRoutes("cancelDialog")
-    object Prescription : PatientRoutes("prescription")
+    object Prescription : PatientRoutes("prescription"){
+        const val routeWithArgs = "prescription-id/{prescriptionId}"
+        fun createRoute(prescriptionId: String) = "prescription-id/$prescriptionId"
+    }
     object FavoriteDoctors : PatientRoutes("favorite_doctors")
     object PrescriptionCreate : PatientRoutes("prescriptionCreate")
 }

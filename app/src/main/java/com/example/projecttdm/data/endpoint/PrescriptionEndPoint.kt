@@ -1,6 +1,7 @@
 package com.example.projecttdm.data.endpoint
 
 
+import com.example.projecttdm.data.model.FullPrescription
 import com.example.projecttdm.data.model.PrescriptionRequest
 import com.example.projecttdm.data.model.PrescriptionResponse
 import com.example.projecttdm.data.model.Prescriptions
@@ -16,7 +17,7 @@ interface PrescriptionEndPoint {
     suspend fun getAllPrescriptions(): List<Prescriptions>
 
     @GET("prescriptions/{id}")
-    suspend fun getPrescriptionById(@Path("id") id: String): Prescriptions
+    suspend fun getPrescriptionById(@Path("id") id: String): PrescriptionResponse
 
     @GET("prescriptions/doctor/{doctorId}")
     suspend fun getPrescriptionsByDoctor(@Path("doctorId") doctorId: String): List<Prescriptions>
