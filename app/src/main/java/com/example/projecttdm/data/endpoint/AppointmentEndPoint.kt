@@ -1,6 +1,7 @@
 package com.example.projecttdm.data.endpoint
 
 import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentReviewData
 import com.example.projecttdm.data.model.NextAppointementResponse
 import com.example.projecttdm.data.model.auth.AuthResponse
 import com.example.projecttdm.data.model.auth.LoginRequest
@@ -27,4 +28,7 @@ interface AppointmentEndPoint {
 
     @GET("appointments/first-upcoming")
     suspend fun getfirstUpcomingAppointment(): Appointment
+
+    @GET("appointments/appointment/{id}")
+    suspend fun getAppointmentDetails(@Path("id") appointmentId: String): AppointmentReviewData
 }

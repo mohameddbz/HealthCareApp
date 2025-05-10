@@ -7,6 +7,7 @@ import com.example.projecttdm.data.endpoint.UserEndPoint
 import com.example.projecttdm.data.local.AppointmentData
 import com.example.projecttdm.data.local.AppointmentsData
 import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentReviewData
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.NextAppointementResponse
@@ -149,10 +150,8 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
 
     fun getUpcomingAppointment(): Flow<UiState<Appointment>> = flow {
         emit(UiState.Loading)
-
         try {
             val appointment = endpoint.getfirstUpcomingAppointment()
-
             if (appointment.status == AppointmentStatus.PENDING) {
                 emit(UiState.Success(appointment))
             } else {
@@ -163,6 +162,16 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
         }
     }
 
+
+    fun getAppointmentDetailsById(appointmentId: String): Flow<UiState<AppointmentReviewData>> = flow {
+        emit(UiState.Loading)
+        try {
+            val appointmentDetails = endpoint.getAppointmentDetails(appointmentId)
+            emit(UiState.Success(appointmentDetails))
+        } catch (e: Exception) {
+            emit(UiState.Error("Error: ${e.localizedMessage ?: "Unexpected error occurred"}"))
+        }
+    }
 
 
     @RequiresApi(Build.VERSION_CODES.O)

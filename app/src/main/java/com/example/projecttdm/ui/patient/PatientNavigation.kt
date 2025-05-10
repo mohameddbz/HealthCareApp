@@ -7,17 +7,13 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -86,15 +82,6 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
 
-        composable(PatientRoutes.PatientSummary.route) {
-            AppointmentReviewScreen(
-                navController = navController,
-                onBackPressed = { navController.popBackStack() },
-                onNextPressed = {
-                    navController.navigate(PatientRoutes.PinVerification.route)
-                }
-            )
-        }
         composable(PatientRoutes.RescheduleReason.route)
         {
             val reasonViewModel: ReasonViewModel = viewModel(factory = ReasonViewModel.Factory(LocalContext.current))
@@ -168,12 +155,12 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 messageText = "Appointment successfully booked.\nYou will receive a notification and the\ndoctor you selected will contact you.",
                 buttonText = "View Appointment", // Primary button text
                 onPrimaryAction = {
-                    navController.navigate(PatientRoutes.PatientDetails.route) {
+                    navController.navigate(PatientRoutes.PatientSummary.route) {
                         popUpTo(0)
                     }
                 },
                 onDismiss = {
-                    navController.navigate(PatientRoutes.BookAppointment.route) {
+                    navController.navigate(PatientRoutes.Appointment.route) {
                         popUpTo(0)
                     }
                 },
@@ -305,7 +292,24 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             PatientDetailsScreen(
                 slotId = slotId,
                 onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
-                onNextClicked = { navController.navigate(PatientRoutes.PatientSummary.route) }
+                onNextClicked = { appointmentId ->
+                    navController.navigate("${PatientRoutes.PatientSummary.route}/$appointmentId")
+                },
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.PatientSummary.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            AppointmentReviewScreen(
+                appointmentId =appointmentid,
+                navController = navController,
+                onBackPressed = { navController.popBackStack() },
+                onNextPressed = {
+                    navController.navigate(PatientRoutes.PinVerification.route)
+                }, viewModel = appointmentViewModel
             )
         }
 
@@ -343,7 +347,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Prescriptions",
         icon = Icons.Default.MedicalServices,
-        route = PatientRoutes.PatientSummary.route
+        route = PatientRoutes.topDoctors.route
     ),
 )
 

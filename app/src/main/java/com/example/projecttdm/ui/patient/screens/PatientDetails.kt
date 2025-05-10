@@ -21,6 +21,9 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.projecttdm.data.model.AppointementResponse
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.ui.patient.components.BookAppointment.GenderDropdown
 import com.example.projecttdm.ui.patient.components.BookAppointment.LabeledTextField
@@ -33,7 +36,7 @@ import com.example.projecttdm.viewmodel.PatientDetailsViewModel
 fun PatientDetailsScreen(
     slotId: String,
     onBackClicked: () -> Unit,
-    onNextClicked: () -> Unit,
+    onNextClicked: (Any?) -> Unit,
     patientId: String? = null,
     viewModel: PatientDetailsViewModel = viewModel(),
     bookviewModel: BookAppointmentViewModel = viewModel()
@@ -53,11 +56,25 @@ fun PatientDetailsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val isSuccess by viewModel.isSuccess.collectAsState()
+    val appointmentState by bookviewModel.appointmentState.collectAsState()
+    val navController = rememberNavController() // Or use the one passed as a parameter
+
+    LaunchedEffect(appointmentState) {
+        println("Appointment State: $appointmentState")
+        if (appointmentState is UiState.Success) {
+            val response = (appointmentState as UiState.Success<AppointementResponse>).data
+            println("Booking Success: ${response.success}")
+            if (response.success) {
+                onNextClicked((appointmentState as UiState.Success<AppointementResponse>).data.appointment.id)
+            }
+        }
+    }
+
 
     // Handle successful save
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
-            onNextClicked()
+           // onNextClicked()
         }
     }
 

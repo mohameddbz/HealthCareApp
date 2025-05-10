@@ -17,12 +17,11 @@ import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import com.example.projecttdm.R
-import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.data.model.doctor2
 
 @Composable
-fun DoctorInfoCard(doctor: Doctor) {
+fun DoctorInfoCard(doctor: doctor2) {
     val lightGrayBackground = Color(0xFFF5F5F5)
 
     Surface(
@@ -57,7 +56,7 @@ fun DoctorInfoCard(doctor: Doctor) {
                 ) {
                     if (doctor.imageResId != null) {
                         Image(
-                            painter = painterResource(id = doctor.imageResId),
+                            painter = painterResource(id = R.drawable.doctor_image),
                             contentDescription = "Doctor",
                             contentScale = ContentScale.Crop,
                             modifier = Modifier.fillMaxSize()

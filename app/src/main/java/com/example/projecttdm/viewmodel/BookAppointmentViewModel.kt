@@ -359,19 +359,25 @@ class BookAppointmentViewModel : ViewModel() {
         }
     }
 
-    fun bookAppointment(slot_id:String , reason: String) {
+
+
+
+    fun bookAppointment(slot_id: String, reason: String) {
         val request = AppointmentRequest(
             slot_id = slot_id,
-            reason = reason ,// Or allow passing a reason as an optional param
+            reason = reason,
             is_book = true
         )
 
         viewModelScope.launch {
-            bookAppointmentRepository.bookAppointment(request).collect { state ->
-                _appointmentState.value = state
-            }
+            bookAppointmentRepository.bookAppointment(request)
+                .collect { state ->
+                    _appointmentState.value = state
+                }
         }
     }
+
+
 
 
 

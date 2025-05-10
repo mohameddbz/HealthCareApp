@@ -6,6 +6,7 @@ import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentReviewData
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.QRCodeData
 import com.example.projecttdm.data.repository.AppointmentRepository
@@ -51,6 +52,9 @@ class AppointmentViewModel(
     // For Dialog state
     private val _showQRCodeDialog = MutableStateFlow(false)
     val showQRCodeDialog: StateFlow<Boolean> = _showQRCodeDialog.asStateFlow()
+
+    val _appointmentState = MutableStateFlow<UiState<AppointmentReviewData>>(UiState.Loading)
+    val appointmentState: StateFlow<UiState<AppointmentReviewData>> = _appointmentState.asStateFlow()
 
 
 
@@ -284,6 +288,15 @@ class AppointmentViewModel(
             doctor?.name ?: "Unknown Doctor"
         } catch (e: Exception) {
             "Error: ${e.message}"
+        }
+    }
+
+    fun fetchAppointmentDetails(appointmentId: String) {
+        viewModelScope.launch {
+            repository.getAppointmentDetailsById(appointmentId)
+                .collect { uiState ->
+                    _appointmentState.value = uiState
+                }
         }
     }
 
