@@ -6,6 +6,7 @@ import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.UserEndPoint
 import com.example.projecttdm.data.local.AppointmentData
 import com.example.projecttdm.data.local.AppointmentsData
+import com.example.projecttdm.data.model.AppointementResponse
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentReviewData
 import com.example.projecttdm.data.model.AppointmentStatus
@@ -179,30 +180,6 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
         return AppointmentData.isTimeSlotAvailable(time)
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun bookAppointment(
-        patientId: String,
-        doctorId: String,
-        date: LocalDate,
-        time: LocalTime,
-        reason: String = ""
-    ): Appointment {
-        val appointment = Appointment(
-            id = UUID.randomUUID().toString(),
-            patientId = patientId,
-            doctorId = doctorId,
-            date = date,
-            time = time,
-            status = AppointmentStatus.PENDING,
-            reason = reason
-        )
-
-
-        _appointments.value = _appointments.value + appointment
-        AppointmentData.bookTimeSlot(time)
-
-        return appointment
-    }
 
     @RequiresApi(Build.VERSION_CODES.O)
     fun rescheduleAppointment(
@@ -241,33 +218,42 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
         }
     }
 
-    suspend fun cancelAppointment(appointmentId: String): Result<Unit> {
-        return try {
-            delay(500) // Simule un petit délai
-            _appointments.value = _appointments.value.map { appointment ->
-                if (appointment.id == appointmentId) {
-                    appointment.copy(status = AppointmentStatus.CANCELLED)
-                } else {
-                    appointment
-                }
-            }
-            Result.success(Unit)
-        } catch (e: Exception) {
-            Result.failure(e)
-        }
-    }
+//    suspend fun cancelAppointment(appointmentId: String): Result<Unit> {
+//        return try {
+//            delay(500) // Simule un petit délai
+//            _appointments.value = _appointments.value.map { appointment ->
+//                if (appointment.id == appointmentId) {
+//                    appointment.copy(status = AppointmentStatus.CANCELLED)
+//                } else {
+//                    appointment
+//                }
+//            }
+//            Result.success(Unit)
+//        } catch (e: Exception) {
+//            Result.failure(e)
+//        }
+//    }
 
     fun getPatientAppointments(patientId: String): List<Appointment> {
         return _appointments.value.filter { it.patientId == patientId }
     }
 
-    @RequiresApi(Build.VERSION_CODES.O)
-    private fun getSampleAppointments(): List<Appointment>{
-        return AppointmentsData.Appointments;
-    }
+//    @RequiresApi(Build.VERSION_CODES.O)
+//    private fun getSampleAppointments(): List<Appointment>{
+//        return AppointmentsData.Appointments;
+//    }
+//
+//    fun getDoctorAppointments(doctorId: String): List<Appointment> {
+//        return _appointments.value.filter { it.doctorId == doctorId }
+//    }
 
-    fun getDoctorAppointments(doctorId: String): List<Appointment> {
-        return _appointments.value.filter { it.doctorId == doctorId }
+    suspend fun cancelAppointment(appointmentId: String): UiState<AppointementResponse> {
+        return try {
+            val response = endpoint.cancelAppointment(appointmentId)
+            UiState.Success(response)
+        } catch (e: Exception) {
+            UiState.Error(e.localizedMessage ?: "An unknown error occurred")
+        }
     }
 
 }

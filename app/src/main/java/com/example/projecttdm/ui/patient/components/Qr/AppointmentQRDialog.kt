@@ -63,7 +63,7 @@ fun AppointmentQRDialog(
                         qrCodeContent = qrCodeData!!.content,
                         viewModel = viewModel,
                         onCancelClick = {
-                            viewModel.cancelAppointment(appointment!!.id)
+                            //viewModel.cancelAppointment(appointment!!.id)
                             onDismiss()
                         }
                     )

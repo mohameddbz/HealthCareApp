@@ -1,5 +1,7 @@
 package com.example.projecttdm.ui.patient.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.verticalScroll
@@ -18,12 +20,14 @@ import com.example.projecttdm.ui.patient.components.Appointment.RadioGroupOption
 import com.example.projecttdm.ui.patient.components.BookAppointment.MultilineTextField
 import com.example.projecttdm.viewmodel.CancelReasonViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CancelReasonScreen(
-    viewModel: CancelReasonViewModel = viewModel(factory = CancelReasonViewModel.Factory(LocalContext.current)),
+    viewModel: CancelReasonViewModel = viewModel(),
     onNavigateBack: () -> Unit,
-    onNext: () -> Unit
+    onNext: () -> Unit,
+    appointmentId: String
 ) {
     // Collect the state flows from the ViewModel
     val reasons by viewModel.reasons.collectAsState()
@@ -44,8 +48,7 @@ fun CancelReasonScreen(
 
     // Callback to handle navigation and saving data
     val handleNext = {
-        // Save any custom reason before navigating
-        viewModel.saveOtherReasonIfNeeded()
+        viewModel.cancelAppointment(appointmentId = appointmentId)
         onNext()
     }
 
@@ -82,7 +85,9 @@ fun CancelReasonScreen(
             RadioGroupOptions(
                 options = reasons,
                 selectedOption = selectedReason,
-                onOptionSelected = { viewModel.onReasonSelected(it) }
+                onOptionSelected = {
+                    viewModel.onReasonSelected(it)
+                }
             )
 
             // Display the multiline text field only when "Others" is selected
@@ -90,7 +95,9 @@ fun CancelReasonScreen(
                 MultilineTextField(
                     label = "Please specify",
                     value = additionalInfo,
-                    onValueChange = { viewModel.onAdditionalInfoChanged(it) }
+                    onValueChange = {
+                       // viewModel.onAdditionalInfoChanged(it)
+                    }
                 )
 
                 // Inform the user that their reason will be saved

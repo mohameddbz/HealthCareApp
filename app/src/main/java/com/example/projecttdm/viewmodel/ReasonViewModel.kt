@@ -31,45 +31,45 @@ class ReasonViewModel(
     }
 
     private fun loadReasons() {
-        _reasons.value = repository.getRescheduleReasons()
+       // _reasons.value = repository.getRescheduleReasons()
     }
 
-    fun onReasonSelected(reason: String) {
-        _selectedReason.value = reason
-        if (reason != "others") {
-            _additionalInfo.value = ""
-        } else {
-            // Load the last used custom reason if available
-            _additionalInfo.value = repository.getLastCustomReason()
-        }
-    }
+//    fun onReasonSelected(reason: String) {
+//        _selectedReason.value = reason
+//        if (reason != "others") {
+//            _additionalInfo.value = ""
+//        } else {
+//            // Load the last used custom reason if available
+//            _additionalInfo.value = repository.getLastCustomReason()
+//        }
+//    }
+//
+//    fun onAdditionalInfoChanged(info: String) {
+//        _additionalInfo.value = info
+//
+//        // Save as last used custom reason for convenience
+//        if (_selectedReason.value == "others") {
+//            repository.saveLastCustomReason(info)
+//        }
+//    }
 
-    fun onAdditionalInfoChanged(info: String) {
-        _additionalInfo.value = info
-
-        // Save as last used custom reason for convenience
-        if (_selectedReason.value == "others") {
-            repository.saveLastCustomReason(info)
-        }
-    }
-
-    fun saveOtherReasonIfNeeded() {
-        if (_selectedReason.value == "others" && _additionalInfo.value.isNotBlank()) {
-            _isSaving.value = true
-
-            viewModelScope.launch {
-                try {
-                    // Save the custom reason
-                    repository.saveOtherReason(_additionalInfo.value)
-
-                    // Refresh reasons list
-                    loadReasons()
-                } finally {
-                    _isSaving.value = false
-                }
-            }
-        }
-    }
+//    fun saveOtherReasonIfNeeded() {
+//        if (_selectedReason.value == "others" && _additionalInfo.value.isNotBlank()) {
+//            _isSaving.value = true
+//
+//            viewModelScope.launch {
+//                try {
+//                    // Save the custom reason
+//                    repository.saveOtherReason(_additionalInfo.value)
+//
+//                    // Refresh reasons list
+//                    loadReasons()
+//                } finally {
+//                    _isSaving.value = false
+//                }
+//            }
+//        }
+//    }
 
     // Factory to provide dependencies
     class Factory(private val context: Context) : ViewModelProvider.Factory {

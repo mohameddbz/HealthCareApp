@@ -94,24 +94,6 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-        composable(PatientRoutes.CancelReason.route)
-        {
-            val reasonViewModel: CancelReasonViewModel = viewModel(factory = CancelReasonViewModel.Factory(LocalContext.current))
-            CancelReasonScreen (
-                viewModel = reasonViewModel,
-                onNavigateBack = { navController.popBackStack() },
-                onNext = {navController.navigate(PatientRoutes.SuccessCancel.route) }
-            )
-        }
-
-        composable(PatientRoutes.CancelDialog.route)
-        {
-            CancelDialog(
-                onBackClick = { navController.popBackStack() },
-                onConfirmClick = { navController.navigate(PatientRoutes.CancelReason.route) },
-                onDismiss = {navController.popBackStack()}
-            )
-        }
 
         composable(PatientRoutes.PinVerification.route) {
             PinVerificationScreen(
@@ -175,7 +157,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 titleText = "Cancel Appointment\nSuccess!",
                 messageText = "We are very sad that you have canceled your appointment. We will always improve our service to satisfy you in the next appointment.",
                 buttonText = "OK",
-                onPrimaryAction = { /* dismiss */ },
+                onPrimaryAction = { navController.navigate(PatientRoutes.Appointment.route) },
                 onDismiss = { /* dismiss */ },
                 showSecondaryButton = false // 👈 hides the second button
             )
@@ -310,6 +292,37 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 onNextPressed = {
                     navController.navigate(PatientRoutes.PinVerification.route)
                 }, viewModel = appointmentViewModel
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.CancelReason.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        )
+        {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            val reasonViewModel: CancelReasonViewModel = viewModel()
+            CancelReasonScreen (
+                viewModel = reasonViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNext = {navController.navigate(PatientRoutes.SuccessCancel.route) },
+                appointmentId = appointmentid
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.CancelDialog.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        )
+        {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            CancelDialog(
+                onBackClick = { navController.popBackStack() },
+                onConfirmClick = { appointmentId ->
+                    navController.navigate("${PatientRoutes.CancelReason.route}/$appointmentId")
+                },
+                onDismiss = {navController.popBackStack()},
+                appointmentid = appointmentid
             )
         }
 

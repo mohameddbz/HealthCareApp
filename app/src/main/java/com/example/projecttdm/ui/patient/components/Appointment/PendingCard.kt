@@ -38,6 +38,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -71,7 +72,7 @@ fun PendingCard(
     appointment: Appointment,
     doctor: Doctor?,
     onCardClick: () -> Unit,
-    onCancelClick: () -> Unit,
+    onCancelClick: (String) -> Unit,
     onRescheduleClick: () -> Unit
 ) {
 
@@ -316,7 +317,7 @@ fun PendingCard(
                         }
 
                         Button(
-                            onClick = onCancelClick,
+                            onClick = {onCancelClick(appointment.id)},
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.error,
