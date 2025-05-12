@@ -121,6 +121,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
         password: String,
         phone: String,
         role: String,
+        sexe : String ,
+        date_birthday : String,
         imageUri: Uri?,
         context : Context
     ) {
@@ -134,6 +136,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                 val passwordPart = password.toRequestBody("text/plain".toMediaTypeOrNull())
                 val phonePart = phone.toRequestBody("text/plain".toMediaTypeOrNull())
                 val rolePart = role.toRequestBody("text/plain".toMediaTypeOrNull())
+                val sexePart = sexe.toRequestBody("text/plain".toMediaTypeOrNull())
+                val birthdayPart = date_birthday.toRequestBody("text/plain".toMediaTypeOrNull())
 
                 // Traitement de l'image
                 val imagePart = imageUri?.let { uri ->
@@ -157,7 +161,9 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
                     emailPart,
                     passwordPart,
                     phonePart,
-                    rolePart
+                    rolePart,
+                    sexePart,
+                    birthdayPart
                 )
 
                 _authState.value = UiState.Success(response)

@@ -4,8 +4,10 @@ import android.app.Activity
 import android.content.Context
 import android.content.Intent
 import android.net.Uri
+import android.os.Build
 import androidx.activity.compose.rememberLauncherForActivityResult
 import androidx.activity.result.contract.ActivityResultContracts
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -48,6 +50,7 @@ import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.*
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class, ExperimentalComposeUiApi::class)
 @Composable
 fun FillProfileScreen(authViewModel: AuthViewModel) {
@@ -239,7 +242,7 @@ fun FillProfileScreen(authViewModel: AuthViewModel) {
                         onDismissRequest = { expanded = false },
                         modifier = Modifier.fillMaxWidth(0.9f)
                     ) {
-                        listOf("Male", "Female", "Other").forEach { option ->
+                        listOf("male", "female").forEach { option ->
                             DropdownMenuItem(
                                 text = { Text(option) },
                                 onClick = {
@@ -251,7 +254,6 @@ fun FillProfileScreen(authViewModel: AuthViewModel) {
                     }
                 }
             }
-
             item {
                 Spacer(modifier = Modifier.height(20.dp))
 
@@ -286,7 +288,7 @@ fun FillProfileScreen(authViewModel: AuthViewModel) {
                         keyboardController?.hide()
                         // Handle continue logic
                         scope.launch {
-                            authViewModel.registerUser(firstName,lastName,email,password,phone,"patient",imageUri,context)
+                            authViewModel.registerUser(firstName,lastName,email,password,phone,"patient",gender, date_birthday = birthDate,imageUri,context)
                         }
                     },
                     modifier = Modifier

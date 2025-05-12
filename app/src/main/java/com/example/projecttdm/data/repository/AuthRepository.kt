@@ -29,8 +29,10 @@ class AuthRepository(private val endpoint: AuthEndPoint) {
         emailPart: RequestBody,
         passwordPart: RequestBody,
         phonePart: RequestBody,
-        rolePart: RequestBody
+        rolePart: RequestBody,
+        sexe : RequestBody,
+        date_birthday : RequestBody
     ):AuthResponse {
-        return  endpoint.register(imagePart,firstNamePart,lastNamePart,emailPart,passwordPart,phonePart,rolePart)
+        return  endpoint.register(imagePart,firstNamePart,lastNamePart,emailPart,passwordPart,phonePart,sexe,date_birthday,rolePart)
     }
 }
