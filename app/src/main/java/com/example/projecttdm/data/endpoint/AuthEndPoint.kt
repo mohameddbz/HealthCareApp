@@ -2,6 +2,7 @@ package com.example.projecttdm.data.endpoint
 
 import com.example.projecttdm.data.model.auth.AuthResponse
 import com.example.projecttdm.data.model.auth.LoginRequest
+import com.example.projecttdm.data.model.auth.LogoutResponse
 import com.example.projecttdm.data.model.auth.RegisterRequest
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
@@ -16,6 +17,9 @@ interface AuthEndPoint {
 
     @POST("auth/login")
     suspend fun login(@Body request: LoginRequest): AuthResponse
+
+    @GET("fcm/logout")
+    suspend fun logout() : LogoutResponse
 
     @Multipart
     @POST("auth/register")

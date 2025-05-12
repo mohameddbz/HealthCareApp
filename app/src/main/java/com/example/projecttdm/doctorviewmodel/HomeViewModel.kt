@@ -11,6 +11,7 @@ import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.NextAppointementResponse
+import com.example.projecttdm.data.model.NextAppointementsResponse
 import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.data.model.User
 import com.example.projecttdm.data.repository.RepositoryHolder
@@ -34,6 +35,10 @@ class DoctorHomeViewModel : ViewModel() {
     private val _currentUser = MutableStateFlow<UiState<User>>(UiState.Init)
     val currentUser: StateFlow<UiState<User>> = _currentUser.asStateFlow()
 
+
+    private val _todaysAppointments = MutableStateFlow<UiState<NextAppointementsResponse>>(UiState.Init)
+    val toDaysAppointment : StateFlow<UiState<NextAppointementsResponse>> = _todaysAppointments.asStateFlow()
+
     private val _nextAppointemnt = MutableStateFlow<UiState<NextAppointementResponse>>(UiState.Init)
     val nextAppointment: StateFlow<UiState<NextAppointementResponse>> = _nextAppointemnt.asStateFlow()
 
@@ -47,6 +52,26 @@ class DoctorHomeViewModel : ViewModel() {
                e: Exception
             ){
                 _nextAppointemnt.value = UiState.Error(e.message ?: "Erreur inconnue")
+            }
+        }
+    }
+
+    fun getTodaysAppointment (){
+        viewModelScope.launch {
+            _todaysAppointments.value =UiState.Loading
+            try {
+                val response = appointementRepo.getTodaysAppointmentsForDoctor()
+
+
+                if (response.success) {
+                    _todaysAppointments.value = UiState.Success(response)
+                } else {
+                    _todaysAppointments.value = UiState.Error(response.message)
+                }
+            }catch (
+                e: Exception
+            ){
+                _todaysAppointments.value = UiState.Error(e.message ?: "Erreur inconnue")
             }
         }
     }
@@ -66,6 +91,7 @@ class DoctorHomeViewModel : ViewModel() {
     init {
         getCurrentUser()
         getNextAppoitmentForDoctor()
+        getTodaysAppointment()
     }
 
 }

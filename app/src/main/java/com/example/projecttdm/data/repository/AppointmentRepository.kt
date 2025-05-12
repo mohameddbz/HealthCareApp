@@ -10,6 +10,7 @@ import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.NextAppointementResponse
+import com.example.projecttdm.data.model.NextAppointementsResponse
 import com.example.projecttdm.data.model.QRCodeData
 import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.delay
@@ -67,6 +68,10 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
 
     suspend fun getNextAppointmentForDoctor() : NextAppointementResponse {
         return  endpoint.getNextAppointmentForDoctor()
+    }
+
+    suspend fun getTodaysAppointmentsForDoctor():NextAppointementsResponse {
+        return  endpoint.getTodaysAppointmentsForDoctor()
     }
 
     suspend fun getAppointmentQRCode(appointmentId: String): Result<QRCodeData> {

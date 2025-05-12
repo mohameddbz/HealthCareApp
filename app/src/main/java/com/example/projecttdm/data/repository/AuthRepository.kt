@@ -7,6 +7,7 @@ import com.example.projecttdm.data.local.StaticData
 import com.example.projecttdm.data.model.User
 import com.example.projecttdm.data.model.auth.AuthResponse
 import com.example.projecttdm.data.model.auth.LoginRequest
+import com.example.projecttdm.data.model.auth.LogoutResponse
 import okhttp3.MultipartBody
 import okhttp3.RequestBody
 
@@ -15,6 +16,10 @@ class AuthRepository(private val endpoint: AuthEndPoint) {
 
     suspend fun login(loginRequest: LoginRequest): AuthResponse {
         return endpoint.login(loginRequest)
+    }
+
+    suspend fun  logout(): LogoutResponse {
+        return endpoint.logout()
     }
 
     suspend fun  register (

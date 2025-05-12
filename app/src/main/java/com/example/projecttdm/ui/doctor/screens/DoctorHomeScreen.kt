@@ -66,6 +66,8 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
 
     val nextAppointment by doctorHomeViewModel.nextAppointment.collectAsState()
 
+    val todayAppointment by doctorHomeViewModel.toDaysAppointment.collectAsState()
+
     val lazyListState = rememberLazyListState()
     val coroutineScope = rememberCoroutineScope()
     var selectedTabIndex by remember { mutableStateOf(0) }
@@ -117,7 +119,10 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
                             UserProfileImage(user.image)
                         },
                         actions = {
-                            IconButton(onClick = { /* navController.navigate(PatientRoutes.NotificationScreen.route) */}) {
+                            IconButton(onClick = {
+                            /* navController.navigate(PatientRoutes.NotificationScreen.route) */
+                                doctorHomeViewModel.getTodaysAppointment()
+                            }) {
                                 Icon(
                                     imageVector = Icons.Outlined.Notifications,
                                     contentDescription = "Notifications",
@@ -279,15 +284,41 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
                 Spacer(modifier = Modifier.height(8.dp))
             }
 
-            // Liste des rendez-vous
-            items(appointmentSamples) { appointment ->
-                AppointmentItem(
-                    name = appointment.name,
-                    time = appointment.time,
-                    type = appointment.type,
-                    imageRes = appointment.imageRes
-                )
-            }
+          item{
+              when (todayAppointment) {
+                  is UiState.Init -> {
+                      // Ne rien afficher ou un écran vide
+                  }
+                  is UiState.Loading -> {
+                      CircularProgressIndicator()
+                  }
+                  is UiState.Success -> {
+                      val appointmentDays = (todayAppointment as UiState.Success).data
+                      Text(
+                          "HELLO WORLD WE ARE FINE "
+                      )
+                      // Liste des rendez-vous
+                      /*     items(appointmentSamples) { appointment ->
+                               AppointmentItem(
+                                   name = appointment.name,
+                                   time = appointment.time,
+                                   type = appointment.type,
+                                   imageRes = appointment.imageRes
+                               )
+                           } */
+                  }
+                  is UiState.Error -> {
+                    /*  val errorMessage = (todayAppointment as UiState.Error).message
+                      Text("Erreur : $errorMessage", color = Color.Red) */
+                      val message = (todayAppointment as UiState.Error).message
+                      // Afficher un message d'erreur
+                      Text(text = message)
+                  }
+
+              }
+
+          }
+
 
             // Espace en bas pour éviter que le dernier élément soit caché par la barre de navigation
             item {

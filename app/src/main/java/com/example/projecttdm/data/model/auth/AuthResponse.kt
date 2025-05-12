@@ -5,3 +5,8 @@ data class AuthResponse(
     val userId: Int,
     val role: String
 )
+
+
+data class LogoutResponse (
+    val message : String
+)

@@ -24,3 +24,9 @@ data class NextAppointementResponse (
     val message: String ="",
     val nextAppointment : NextAppointment
 )
+
+data class NextAppointementsResponse(
+    val success: Boolean,
+    val message: String ="",
+    val nextAppointments : List<NextAppointment>
+)

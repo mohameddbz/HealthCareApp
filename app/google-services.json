@@ -1,0 +1,29 @@
+{
+  "project_info": {
+    "project_number": "988234135723",
+    "project_id": "doctor-app-tdm2",
+    "storage_bucket": "doctor-app-tdm2.firebasestorage.app"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:988234135723:android:37f3c0d268e5bc7b5cdfee",
+        "android_client_info": {
+          "package_name": "com.example.projecttdm"
+        }
+      },
+      "oauth_client": [],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDunTJ6w1PsWawYQWWi8hAVfsr6xmC-Yb8"
+        }
+      ],
+      "services": {
+        "appinvite_service": {
+          "other_platform_oauth_client": []
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

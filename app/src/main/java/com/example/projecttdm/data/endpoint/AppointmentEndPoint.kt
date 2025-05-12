@@ -2,6 +2,7 @@ package com.example.projecttdm.data.endpoint
 
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.NextAppointementResponse
+import com.example.projecttdm.data.model.NextAppointementsResponse
 import com.example.projecttdm.data.model.auth.AuthResponse
 import com.example.projecttdm.data.model.auth.LoginRequest
 import okhttp3.MultipartBody
@@ -14,6 +15,10 @@ interface AppointmentEndPoint {
 
     @GET("appointments/doctor/my-next-appointments")
     suspend fun getNextAppointmentForDoctor(): NextAppointementResponse
+
+
+    @GET("appointments/doctor/todays-appointments")
+    suspend fun getTodaysAppointmentsForDoctor(): NextAppointementsResponse
 
     @GET("appointments/{id}")
     suspend fun getAppointmentById(@Path("id") appointmentId: String): Appointment
