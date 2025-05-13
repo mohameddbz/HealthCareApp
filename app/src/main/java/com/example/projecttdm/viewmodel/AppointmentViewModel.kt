@@ -3,6 +3,8 @@ package com.example.projecttdm.viewmodel
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.lifecycle.LiveData
+import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.AppointementResponse
@@ -42,13 +44,12 @@ class AppointmentViewModel(
     private val _searchQuery = MutableStateFlow("")
     val searchQuery: StateFlow<String> = _searchQuery.asStateFlow()
 
+    private val _qrCodeData = MutableLiveData<Result<QRCodeData>>()
+    val qrCodeData: LiveData<Result<QRCodeData>> = _qrCodeData
+
     // For appointment details
     private val _selectedAppointment = MutableStateFlow<Appointment?>(null)
     val selectedAppointment: StateFlow<Appointment?> = _selectedAppointment.asStateFlow()
-
-    // For QR code data
-    private val _qrCodeData = MutableStateFlow<QRCodeData?>(null)
-    val qrCodeData: StateFlow<QRCodeData?> = _qrCodeData.asStateFlow()
 
     // For Dialog state
     private val _showQRCodeDialog = MutableStateFlow(false)
@@ -144,70 +145,50 @@ class AppointmentViewModel(
     }
 
 
-    fun showAppointmentQRCode(appointmentId: String) {
+    fun fetchQRCode(appointmentId: String) {
         viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                // First get the appointment details
-                repository.getAppointmentById(appointmentId).collect { appointment ->
-                    //_selectedAppointment.value = appointment
-
-                    // Then fetch the QR code data
-                    if (appointment != null) {
-                        val result = repository.getAppointmentQRCode(appointmentId)
-                        if (result.isSuccess) {
-                            _qrCodeData.value = result.getOrNull()
-                            _showQRCodeDialog.value = true
-                            _isLoading.value = false
-                        } else {
-                            _errorMessage.emit("Failed to generate QR code: ${result.exceptionOrNull()?.message}")
-                        }
-                    } else {
-                        _errorMessage.emit("Appointment not found")
-                    }
-                }
-            } catch (e: Exception) {
-                _errorMessage.emit("Error showing QR code: ${e.message}")
-            } finally {
-                _isLoading.value = false
-            }
+            val result = repository.getQRCodeForAppointment(appointmentId)
+            _qrCodeData.postValue(result)
+            println("================= ${result}")
         }
     }
+
+
 
     // New method to load latest appointment for QR display
-    fun loadLatestAppointment() {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                // Get the first pending appointment
-                repository.getAppointmentsByStatus(AppointmentStatus.PENDING).collect { appointments ->
-                    if (appointments.isNotEmpty()) {
-                        val latestAppointment = appointments.first()
-                        _selectedAppointment.value = latestAppointment
-
-                        // Get QR code for this appointment
-                        val result = repository.getAppointmentQRCode(latestAppointment.id)
-                        if (result.isSuccess) {
-                            _qrCodeData.value = result.getOrNull()
-                            _showQRCodeDialog.value = true
-                        } else {
-                            _errorMessage.emit("Failed to generate QR code: ${result.exceptionOrNull()?.message}")
-                        }
-                    } else {
-                        _errorMessage.emit("No pending appointments found")
-                    }
-                    _isLoading.value = false
-                }
-            } catch (e: Exception) {
-                _errorMessage.emit("Error loading appointment: ${e.message}")
-                _isLoading.value = false
-            }
-        }
-    }
+//    fun loadLatestAppointment() {
+//        viewModelScope.launch {
+//            _isLoading.value = true
+//            try {
+//                // Get the first pending appointment
+//                repository.getAppointmentsByStatus(AppointmentStatus.PENDING).collect { appointments ->
+//                    if (appointments.isNotEmpty()) {
+//                        val latestAppointment = appointments.first()
+//                        _selectedAppointment.value = latestAppointment
+//
+//                        // Get QR code for this appointment
+//                        val result = repository.getAppointmentQRCode(latestAppointment.id)
+//                        if (result.isSuccess) {
+//                            _qrCodeData.value = result.getOrNull()
+//                            _showQRCodeDialog.value = true
+//                        } else {
+//                            _errorMessage.emit("Failed to generate QR code: ${result.exceptionOrNull()?.message}")
+//                        }
+//                    } else {
+//                        _errorMessage.emit("No pending appointments found")
+//                    }
+//                    _isLoading.value = false
+//                }
+//            } catch (e: Exception) {
+//                _errorMessage.emit("Error loading appointment: ${e.message}")
+//                _isLoading.value = false
+//            }
+//        }
+//    }
 
     fun closeQRCodeDialog() {
         _showQRCodeDialog.value = false
-        _qrCodeData.value = null
+       // _qrCodeData.value = null
     }
 
     @RequiresApi(Build.VERSION_CODES.O)
@@ -263,5 +244,6 @@ class AppointmentViewModel(
                 }
         }
     }
+
 
 }

@@ -210,20 +210,6 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             AppointmentScreen(navController,appointmentViewModel,doctorListViewModel)
         }
 
-
-        // For the AppointmentQR route, update the composable:
-        composable(
-            route = PatientRoutes.AppQR.routeWithArgs,
-            arguments = listOf(navArgument("appointmentId") { type = NavType.StringType })
-        ) { backStackEntry ->
-            val appointmentId = backStackEntry.arguments?.getString("appointmentId")
-            AppointmentQRScreen(
-                viewModel = appointmentViewModel,
-                appointmentId = appointmentId,
-                onDismiss = { navController.popBackStack() }
-            )
-        }
-
         composable(
             route = "${PatientRoutes.doctorProfile.route}/{doctorId}",
             arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
@@ -325,6 +311,18 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 },
                 onDismiss = {navController.popBackStack()},
                 appointmentid = appointmentid
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.AppointmentQR.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        ) { backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            AppointmentQRScreen(
+                viewModel = appointmentViewModel,
+                appointmentId = appointmentid,
+                onDismiss = { navController.popBackStack() }
             )
         }
 

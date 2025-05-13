@@ -68,7 +68,7 @@ import com.example.projecttdm.ui.patient.screens.formattedTime
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PendingCard(
-    onClick: () -> Unit,
+    onClick: (String) -> Unit,
     appointment: Appointment,
     doctor: Doctor?,
     onCardClick: () -> Unit,
@@ -390,9 +390,10 @@ fun PendingCard(
                 }
 
             }
-            if (appointment.status == AppointmentStatus.CONFIRMED) {
+            if (appointment.status == AppointmentStatus.CONFIRMED
+                || appointment.status == AppointmentStatus.PENDING) {
                 IconButton(
-                    onClick = { onClick() },
+                    onClick = { onClick(appointment.id) },
                     modifier = Modifier
                         .align(Alignment.CenterEnd)
                         .padding(end = 12.dp)

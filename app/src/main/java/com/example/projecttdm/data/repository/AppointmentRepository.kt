@@ -76,20 +76,11 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
         return  endpoint.getTodaysAppointmentsForDoctor()
     }
 
-    suspend fun getAppointmentQRCode(appointmentId: String): Result<QRCodeData> {
+    suspend fun getQRCodeForAppointment(appointmentId: String): Result<QRCodeData> {
         return try {
-            delay(500) // Simulate network delay for QR code generation
-            val appointment = _appointments.value.find { it.id == appointmentId }
-                ?: return Result.failure(Exception("Appointment not found"))
-
-            // Generate QR code data for the appointment
-            val qrCodeData = QRCodeData(
-                id = appointmentId,
-                content = "APPT:${appointment.id}:${appointment.doctorId}:${appointment.date}:${appointment.time}",
-                timestamp = System.currentTimeMillis()
-            )
-
-            Result.success(qrCodeData)
+            val response = endpoint.getQRCodeForAppointment(appointmentId)
+            println("--------------- ${response}")
+            Result.success(response)
         } catch (e: Exception) {
             Result.failure(e)
         }
