@@ -19,6 +19,7 @@ import com.example.projecttdm.data.endpoint.ApiClient
 import com.example.projecttdm.data.local.PatientData
 import com.example.projecttdm.data.local.SampleDataProvider
 import com.example.projecttdm.data.model.Patient
+import com.example.projecttdm.data.repository.DoctorRepository
 import com.example.projecttdm.theme.ProjectTDMTheme
 import com.example.projecttdm.ui.auth.AuthActivity
 import com.example.projecttdm.ui.auth.AuthNavigation
@@ -32,49 +33,25 @@ import kotlinx.coroutines.withContext
 import java.time.LocalDate
 
 
+
+
 class MainActivity : ComponentActivity() {
+
     @RequiresApi(Build.VERSION_CODES.O)
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
-        enableEdgeToEdge() // Enable edge-to-edge display
 
-        // Show a splash screen while checking authentication
+        
+
         setContent {
             ProjectTDMTheme {
-//                Surface(modifier = Modifier.fillMaxSize()) {
-//                    Box(contentAlignment = Alignment.Center) {
-//                        CircularProgressIndicator()
-//                    }
-//                }
-                val selectedDate = LocalDate.now()
-                val appointments = SampleDataProvider.getAppointmentsByDate(selectedDate)
-
-                // Convert the sample patients list to a map for easier lookup
-                val patientsMap = PatientData.samplePatients.associateBy { it.id }
-
-                // Create a map linking patientId from appointments to actual patient objects
-                val appointmentPatientMap = appointments.associate { appointment ->
-                    val patientId = appointment.patientId
-                    val matchingPatient = patientsMap[patientId] ?:
-                    // Fallback to find a patient by index if IDs don't match directly
-                    PatientData.samplePatients.getOrNull(patientId.toIntOrNull()?.minus(1) ?: 0)
-                    ?: Patient(id = patientId, fullName = "Unknown Patient")
-
-                    appointment.patientId to matchingPatient
-                }
-
-                AppointmentOfWeekScreen(
-                    appointments = appointments,
-                    patients = appointmentPatientMap,
-                    onBrowseDoctors = { /* Handle browsing doctors */ },
-                    onAppointmentClick = { appointmentId ->
-                        /* Handle appointment click */
-                    },
+                DoctorNavigation(
                 )
             }
         }
     }
 }
+
 
 //        // Check authentication status in a background thread
 //        lifecycleScope.launch(Dispatchers.IO) {

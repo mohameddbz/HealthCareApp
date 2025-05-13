@@ -2,6 +2,8 @@ package com.example.projecttdm.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.auth.AuthResponse
@@ -20,8 +22,10 @@ import java.io.File
 
 
 class AuthViewModel : ViewModel() {
+    @RequiresApi(Build.VERSION_CODES.O)
     private val authRepository = RepositoryHolder.authRepository
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getUsers() = authRepository.getUsers()
 
     private val _authState = MutableStateFlow<UiState<AuthResponse>>(UiState.Init)
@@ -45,6 +49,7 @@ class AuthViewModel : ViewModel() {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun login(email: String, password: String) {
         val request = LoginRequest(email, password)
 
@@ -60,7 +65,8 @@ class AuthViewModel : ViewModel() {
     }
 
     // Dans votre ViewModel ou repository
-     fun registerUser(
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun registerUser(
         firstName: String,
         lastName: String,
         email: String,

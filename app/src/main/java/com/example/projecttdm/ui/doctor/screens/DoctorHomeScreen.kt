@@ -43,6 +43,7 @@ import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.common.components.DeconnectionButton
 import com.example.projecttdm.ui.common.components.UserProfileImage
+import com.example.projecttdm.ui.doctor.DoctorRoutes
 import com.example.projecttdm.ui.doctor.components.DateText
 import com.example.projecttdm.ui.doctor.components.NextAppointmentCard
 import com.example.projecttdm.ui.doctor.components.StatCard
@@ -156,7 +157,13 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
                         },
                         label = { Text(item.title) },
                         selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
+                        onClick = {
+                            selectedTabIndex = index
+                            // If "Calendar" is clicked, navigate to AppointmentOfWeekScreen
+                            if (index == 1) {
+                                navController.navigate("${DoctorRoutes.AppointmentOfWeek.route}/1")  // Navigate to AppointmentOfWeekScreen with doctorId "1"
+                            }
+                        },
                         colors = NavigationBarItemDefaults.colors(
                             selectedIconColor = PrimaryColor,
                             selectedTextColor = PrimaryColor,

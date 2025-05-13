@@ -27,22 +27,21 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.example.projecttdm.R
-import com.example.projecttdm.data.model.Appointment
-import com.example.projecttdm.data.model.Patient
-import java.time.format.DateTimeFormatter
+import com.example.projecttdm.data.model.AppointmentWeekResponse
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppointmentItemAffichage(
-    appointment: Appointment,
-    patient: Patient,
+    appointment: AppointmentWeekResponse,
     onAppointmentClick: () -> Unit
 ) {
+    val slot = appointment.slot_info
+    val patient = appointment.patient_info
+
     Card(
         modifier = Modifier
             .fillMaxWidth()
@@ -56,53 +55,31 @@ fun AppointmentItemAffichage(
                 .padding(16.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Time indicator
-            Column(
-                horizontalAlignment = Alignment.CenterHorizontally
+            // Affichage amélioré de l'heure
+            Box(
+                modifier = Modifier
+                    .size(width = 60.dp, height = 40.dp)
+                    .clip(RoundedCornerShape(8.dp))
+                    .background(Color.Blue),
+                contentAlignment = Alignment.Center
             ) {
-                Box(
-                    modifier = Modifier
-                        .size(32.dp)
-                        .clip(RoundedCornerShape(4.dp))
-                        .background(Color.Blue),
-                    contentAlignment = Alignment.Center
-                ) {
-                    Text(
-                        text = appointment.time.format(DateTimeFormatter.ofPattern("HH:mm")),
-                        color = Color.White,
-                        fontSize = 12.sp
-                    )
-                }
+                Text(
+                    text = slot?.start_time?.substring(0, 5) ?: "--:--",
+                    color = Color.White,
+                    fontSize = 14.sp,
+                    fontWeight = FontWeight.Medium,
+                    textAlign = TextAlign.Center
+                )
             }
 
             Spacer(modifier = Modifier.width(16.dp))
 
-            // Patient info
-            Column(
-                modifier = Modifier.weight(1f)
-            ) {
+            Column(modifier = Modifier.weight(1f)) {
                 Text(
-                    text = patient.fullName,
+                    text = patient?.name ?: "Unknown",
                     fontWeight = FontWeight.Bold,
                     fontSize = 16.sp
                 )
-
-                Row(
-                    verticalAlignment = Alignment.CenterVertically
-                ) {
-                    Icon(
-                        painter = painterResource(id = R.drawable.ic_age),
-                        contentDescription = "Age",
-                        modifier = Modifier.size(16.dp),
-                        tint = Color.Gray
-                    )
-
-                    Text(
-                        text = "Age: ${patient.age} Yo",
-                        fontSize = 14.sp,
-                        color = Color.Gray
-                    )
-                }
 
                 Spacer(modifier = Modifier.height(4.dp))
 
@@ -112,9 +89,7 @@ fun AppointmentItemAffichage(
                         .padding(horizontal = 8.dp, vertical = 4.dp)
                 ) {
                     Text(
-                        text = "${appointment.time.format(DateTimeFormatter.ofPattern("HH:mm"))} - ${appointment.time.plusMinutes(30).format(
-                            DateTimeFormatter.ofPattern("HH:mm")
-                        )}",
+                        text = "${slot?.start_time?.substring(0, 5)} - ${slot?.end_time?.substring(0, 5)}",
                         fontSize = 12.sp,
                         color = Color.Gray
                     )

@@ -44,15 +44,17 @@ import androidx.compose.ui.unit.sp
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentStatus
+import com.example.projecttdm.data.model.AppointmentWeekResponse
 import com.example.projecttdm.data.model.Patient
 import java.time.DayOfWeek
 import java.time.LocalDate
 import java.time.format.DateTimeFormatter
+
+
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppointmentsList(
-    appointments: List<Appointment>,
-    patients: Map<String, Patient>, // Added a map to look up patients by appointment ID or patient ID
+    appointments: List<AppointmentWeekResponse>,
     onAppointmentClick: (String) -> Unit
 ) {
     Column(
@@ -67,28 +69,15 @@ fun AppointmentsList(
             horizontalArrangement = Arrangement.SpaceBetween,
             verticalAlignment = Alignment.CenterVertically
         ) {
-            Text(
-                text = "Upcoming Appointments",
-                fontSize = 18.sp,
-                fontWeight = FontWeight.Bold
-            )
-
-            Text(
-                text = "Newest First",
-                fontSize = 14.sp,
-                color = Color.Gray
-            )
+            Text("Upcoming Appointments", fontSize = 18.sp, fontWeight = FontWeight.Bold)
+            Text("Newest First", fontSize = 14.sp, color = Color.Gray)
         }
 
         LazyColumn {
             items(appointments) { appointment ->
-                // Get the corresponding patient for this appointment
-                val patient = patients[appointment.patientId] ?: Patient(fullName = "Unknown Patient")
-
                 AppointmentItemAffichage(
                     appointment = appointment,
-                    patient = patient, // Pass the patient to the AppointmentItemAffichage
-                    onAppointmentClick = { onAppointmentClick(appointment.id) }
+                    onAppointmentClick = { onAppointmentClick(appointment.appointment_id) }
                 )
                 Spacer(modifier = Modifier.height(16.dp))
             }
