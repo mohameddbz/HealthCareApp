@@ -198,7 +198,8 @@ fun AppointmentScreen(
                             appointment = appointment,
                             doctor = doctor,
                             onCardClick = { navController.navigate("appointment_details/${appointment.id}") },
-                            onCancelClick = { navController.navigate(PatientRoutes.CancelDialog.route) },
+                            onCancelClick = { appointmentId ->
+                                navController.navigate("${PatientRoutes.CancelReason.route}/$appointmentId") },
                             onRescheduleClick = { navController.navigate(PatientRoutes.RescheduleReason.route) }
                         )
                     }

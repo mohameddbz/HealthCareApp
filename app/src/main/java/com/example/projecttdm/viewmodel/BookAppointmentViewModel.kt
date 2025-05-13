@@ -165,7 +165,9 @@ import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecttdm.data.model.AppointementResponse
 import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentRequest
 import com.example.projecttdm.data.model.AppointmentSlot
 import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.state.UiState
@@ -223,6 +225,13 @@ class BookAppointmentViewModel : ViewModel() {
     private val _isLoading = MutableStateFlow(false)
     val isLoading: StateFlow<Boolean> = _isLoading.asStateFlow()
 
+    private val _appointmentState = MutableStateFlow<UiState<AppointementResponse>>(UiState.Loading)
+    val appointmentState: StateFlow<UiState<AppointementResponse>> = _appointmentState
+
+    private val _slots = MutableStateFlow<List<AppointmentSlot>>(emptyList())
+    val slots: StateFlow<List<AppointmentSlot>> = _slots.asStateFlow()
+
+
     // Function to set the patient ID
     fun setPatientId(id: String) {
         _patientId.value = id
@@ -272,32 +281,32 @@ class BookAppointmentViewModel : ViewModel() {
     }
 
     // Function to book an appointment
-    fun bookAppointment(): Boolean {
-        val patientId = _patientId.value
-        val doctorId = _selectedDoctorId.value
-        val date = _selectedDate.value
-        val time = _selectedTime.value
-        val reason = _reason.value
-
-        if (patientId == null || doctorId == null || date == null || time == null) {
-            return false
-        }
-
-        repository.bookAppointment(
-            patientId = patientId,
-            doctorId = doctorId,
-            date = date,
-            time = time,
-            reason = reason
-        )
-
-        // Reset fields after booking
-        _selectedDate.value = null
-        _selectedTime.value = null
-        _reason.value = ""
-
-        return true
-    }
+//    fun bookAppointment(): Boolean {
+//        val patientId = _patientId.value
+//        val doctorId = _selectedDoctorId.value
+//        val date = _selectedDate.value
+//        val time = _selectedTime.value
+//        val reason = _reason.value
+//
+//        if (patientId == null || doctorId == null || date == null || time == null) {
+//            return false
+//        }
+//
+//        repository.bookAppointment(
+//            patientId = patientId,
+//            doctorId = doctorId,
+//            date = date,
+//            time = time,
+//            reason = reason
+//        )
+//
+//        // Reset fields after booking
+//        _selectedDate.value = null
+//        _selectedTime.value = null
+//        _reason.value = ""
+//
+//        return true
+//    }
 
     // Function to get patient's appointments
     fun getPatientAppointments(): List<Appointment> {
@@ -316,29 +325,30 @@ class BookAppointmentViewModel : ViewModel() {
             return
         }
 
-        _isLoading.value = true
-        _slotsUiState.value = UiState.Loading
-
         viewModelScope.launch {
+            _isLoading.value = true // Start loading before flow collection
             try {
                 bookAppointmentRepository.getSlotsByDoctorIdAndDate(doctorId, date).collect { result ->
                     _slotsUiState.value = result
-
                     when (result) {
                         is UiState.Success -> {
                             _availableSlots.value = result.data
                             Log.d("BookAppointmentViewModel", "Slots loaded: ${result.data.size}")
+                            _isLoading.value = false
                         }
                         is UiState.Error -> {
                             _availableSlots.value = emptyList()
                             Log.e("BookAppointmentViewModel", "Error loading slots: ${result.message}")
+                            _isLoading.value = false
+                        }
+                        is UiState.Loading -> {
+                            _isLoading.value = true
                         }
                         else -> {
-                            // Do nothing for Loading and Init states
+                            // UiState.Init or other unexpected states
+                            _isLoading.value = false
                         }
                     }
-                    // Update loading state based on the current UiState
-                    _isLoading.value = result is UiState.Loading
                 }
             } catch (e: Exception) {
                 Log.e("BookAppointmentViewModel", "Exception fetching slots", e)
@@ -348,4 +358,27 @@ class BookAppointmentViewModel : ViewModel() {
             }
         }
     }
+
+
+
+
+    fun bookAppointment(slot_id: String, reason: String) {
+        val request = AppointmentRequest(
+            slot_id = slot_id,
+            reason = reason,
+            is_book = true
+        )
+
+        viewModelScope.launch {
+            bookAppointmentRepository.bookAppointment(request)
+                .collect { state ->
+                    _appointmentState.value = state
+                }
+        }
+    }
+
+
+
+
+
 }

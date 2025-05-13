@@ -2,10 +2,19 @@ package com.example.projecttdm.ui.patient.screens
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.BorderStroke
+import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.foundation.rememberScrollState
+import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.verticalScroll
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.CalendarMonth
+import androidx.compose.material.icons.filled.Schedule
+import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
@@ -16,106 +25,109 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
-import androidx.compose.ui.tooling.preview.Preview
+import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
+import coil.compose.rememberAsyncImagePainter
+import com.example.projecttdm.R
 import com.example.projecttdm.data.model.AppointmentReviewData
-import com.example.projecttdm.data.repository.AppointmentSummaryRepository
-import com.example.projecttdm.ui.patient.components.AppointmentDetailsCard
-import com.example.projecttdm.ui.patient.components.DoctorInfoCard
-import com.example.projecttdm.ui.patient.components.PatientDetailsCard
-import com.example.projecttdm.viewmodel.AppointmentSummaryViewModel
-
+import com.example.projecttdm.data.model.doctor2
+import com.example.projecttdm.data.model.patient2
+import com.example.projecttdm.state.UiState
+import com.example.projecttdm.viewmodel.AppointmentViewModel
 import kotlinx.coroutines.launch
+import java.time.LocalDate
+import java.time.LocalTime
+import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppointmentReviewScreen(
-    appointmentId: String = "APT-123456",
+    appointmentId: String,
     navController: NavController = rememberNavController(),
-    viewModel: AppointmentSummaryViewModel = AppointmentSummaryViewModel(repository =  AppointmentSummaryRepository()  ),
+    viewModel: AppointmentViewModel = viewModel(),
     onBackPressed: () -> Unit = {},
     onNextPressed: () -> Unit = {}
 ) {
-    val viewModel: AppointmentSummaryViewModel = androidx.lifecycle.viewmodel.compose.viewModel {
-        AppointmentSummaryViewModel(repository = AppointmentSummaryRepository())
-    }
-
     val scope = rememberCoroutineScope()
-    val uiState by viewModel.uiState.collectAsState()
+    val uiState by viewModel.appointmentState.collectAsState()
+    val scrollState = rememberScrollState()
 
     // Load data when the screen is first composed
     LaunchedEffect(appointmentId) {
-        viewModel.loadAppointmentReviewData(appointmentId)
+        viewModel.fetchAppointmentDetails(appointmentId)
     }
 
-    Surface(
-        modifier = Modifier.fillMaxSize(),
-        color = MaterialTheme.colorScheme.background
-    ) {
-        Column(
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Appointment Summary",
+                        style = MaterialTheme.typography.titleLarge.copy(
+                            fontWeight = FontWeight.SemiBold
+                        )
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = { scope.launch { onBackPressed() } }) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface
+                )
+            )
+        }
+    ) { paddingValues ->
+        Surface(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(16.dp)
+                .padding(paddingValues),
+            color = MaterialTheme.colorScheme.background
         ) {
-            // Top bar with back button and title
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .padding(vertical = 8.dp),
-                verticalAlignment = Alignment.CenterVertically
-            ) {
-                IconButton(onClick = {
-                    scope.launch {
-                        onBackPressed()
-                    }
-                }) {
-                    Icon(
-                        imageVector = Icons.Default.ArrowBack,
-                        contentDescription = "Back"
-                    )
-                }
-                Text(
-                    text = "Review Summary",
-                    style = MaterialTheme.typography.titleLarge,
-                    fontWeight = FontWeight.SemiBold
-                )
-            }
-
-            // Content based on UI state
+            // Handle UI state
             when (uiState) {
-                is AppointmentSummaryViewModel.AppointmentUiState.Loading -> {
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                is UiState.Loading -> {
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         CircularProgressIndicator()
                     }
                 }
 
-                is AppointmentSummaryViewModel.AppointmentUiState.Error -> {
-                    val errorMessage = (uiState as AppointmentSummaryViewModel.AppointmentUiState.Error).message
-                    Box(
-                        modifier = Modifier.fillMaxSize(),
-                        contentAlignment = Alignment.Center
-                    ) {
+                is UiState.Error -> {
+                    val errorMessage = (uiState as UiState.Error).message
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
                         Column(horizontalAlignment = Alignment.CenterHorizontally) {
+                            Icon(
+                                imageVector = Icons.Outlined.ErrorOutline,
+                                contentDescription = "Error",
+                                tint = MaterialTheme.colorScheme.error,
+                                modifier = Modifier.size(48.dp)
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
                             Text(
-                                text = "Error",
-                                style = MaterialTheme.typography.titleLarge,
-                                color = MaterialTheme.colorScheme.error
+                                text = "Unable to load appointment details",
+                                style = MaterialTheme.typography.titleMedium,
+                                color = MaterialTheme.colorScheme.onSurface
                             )
                             Text(
                                 text = errorMessage,
                                 style = MaterialTheme.typography.bodyMedium,
-                                color = MaterialTheme.colorScheme.error
+                                color = MaterialTheme.colorScheme.onSurfaceVariant
                             )
                             Spacer(modifier = Modifier.height(16.dp))
                             Button(onClick = {
-                                viewModel.loadAppointmentReviewData(appointmentId)
+                                viewModel.fetchAppointmentDetails(appointmentId)
                             }) {
                                 Text("Retry")
                             }
@@ -123,12 +135,13 @@ fun AppointmentReviewScreen(
                     }
                 }
 
-                is AppointmentSummaryViewModel.AppointmentUiState.Success -> {
-                    val data = (uiState as AppointmentSummaryViewModel.AppointmentUiState.Success).data
-                    AppointmentReviewContent(
-                        data = data,
-                        onNextPressed = onNextPressed
-                    )
+                is UiState.Success -> {
+                    val data = (uiState as UiState.Success<AppointmentReviewData>).data
+                    AppointmentReviewContent(data = data, scrollState = scrollState)
+                }
+
+                UiState.Init -> {
+                    // Initial state - no UI needed
                 }
             }
         }
@@ -139,55 +152,340 @@ fun AppointmentReviewScreen(
 @Composable
 private fun AppointmentReviewContent(
     data: AppointmentReviewData,
-    onNextPressed: () -> Unit
+    scrollState: androidx.compose.foundation.ScrollState
 ) {
-    val scope = rememberCoroutineScope()
+    Column(
+        modifier = Modifier
+            .fillMaxSize()
+            .verticalScroll(scrollState)
+            .padding(16.dp),
+        verticalArrangement = Arrangement.spacedBy(16.dp)
+    ) {
+        // Appointment date and time card
+        AppointmentScheduleCard(date = data.appointment.date.toString(), time = data.appointment.time.toString())
 
-    Column(modifier = Modifier.fillMaxSize()) {
-        // Doctor information card
-        DoctorInfoCard(doctor = data.doctor)
+        DoctorCard(doctor = data.doctor)
 
-        // Appointment details card
-        AppointmentDetailsCard(appointment = data.appointment)
+        Divider(
+            modifier = Modifier.padding(vertical = 8.dp),
+            thickness = 1.dp,
+            color = MaterialTheme.colorScheme.outlineVariant
+        )
 
-        // Patient details card
-        PatientDetailsCard(patient = data.patient)
+        AppointmentDetailsCard(appointmentReason = data.appointment.reason)
 
-        Spacer(modifier = Modifier.weight(1f))
+        PatientInfoCard(patient = data.patient)
 
-        // Bottom button
-        Button(
-            onClick = {
-                scope.launch {
-                    onNextPressed()
-                }
-            },
-            modifier = Modifier
-                .fillMaxWidth()
-                .height(56.dp)
-                .clip(RoundedCornerShape(28.dp)),
-            colors = ButtonDefaults.buttonColors(
-                containerColor = Color(0xFF3D7BF6)
-            )
+        Spacer(modifier = Modifier.height(16.dp))
+    }
+}
+
+@RequiresApi(Build.VERSION_CODES.O)
+@Composable
+fun AppointmentScheduleCard(date: String, time: String) {
+    val formattedDate = try {
+        val parsedDate = LocalDate.parse(date)
+        parsedDate.format(DateTimeFormatter.ofPattern("EEEE, MMMM d, yyyy"))
+    } catch (e: Exception) {
+        date
+    }
+
+    val formattedTime = try {
+        val parsedTime = LocalTime.parse(time)
+        parsedTime.format(DateTimeFormatter.ofPattern("h:mm a"))
+    } catch (e: Exception) {
+        time
+    }
+
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.primaryContainer,
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
         ) {
             Text(
-                text = "Next",
-                color = Color.White,
-                fontWeight = FontWeight.Bold,
-                fontSize = 16.sp
+                text = "Scheduled Appointment",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = MaterialTheme.colorScheme.onPrimaryContainer
+            )
+
+            Spacer(modifier = Modifier.height(12.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.CalendarMonth,
+                    contentDescription = "Date",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = formattedDate,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+
+            Spacer(modifier = Modifier.height(8.dp))
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Default.Schedule,
+                    contentDescription = "Time",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+                Spacer(modifier = Modifier.width(8.dp))
+                Text(
+                    text = formattedTime,
+                    style = MaterialTheme.typography.bodyLarge,
+                    color = MaterialTheme.colorScheme.onPrimaryContainer
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun DoctorCard(doctor: doctor2) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        elevation = CardDefaults.cardElevation(
+            defaultElevation = 2.dp
+        )
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp)
+        ) {
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                // Doctor image
+                Box(
+                    modifier = Modifier
+                        .size(72.dp)
+                        .clip(CircleShape)
+                ) {
+                    if (doctor.imageResId != null) {
+                        // If image is available from network
+                        Image(
+                            painter = rememberAsyncImagePainter(doctor.imageResId),
+                            contentDescription = "Doctor ${doctor.name}",
+                            modifier = Modifier.fillMaxSize(),
+                            contentScale = ContentScale.Crop
+                        )
+                    } else {
+                        // Placeholder for doctor image
+                        Box(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .background(MaterialTheme.colorScheme.secondaryContainer),
+                            contentAlignment = Alignment.Center
+                        ) {
+                            Icon(
+                                imageVector = Icons.Outlined.Person,
+                                contentDescription = "Doctor",
+                                tint = MaterialTheme.colorScheme.onSecondaryContainer,
+                                modifier = Modifier.size(36.dp)
+                            )
+                        }
+                    }
+                }
+
+                Spacer(modifier = Modifier.width(16.dp))
+
+                Column {
+                    Text(
+                        text = doctor.name,
+                        style = MaterialTheme.typography.titleMedium.copy(
+                            fontWeight = FontWeight.Bold
+                        ),
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    Text(
+                        text = doctor.specialty.name ?: "Specialist",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.primary
+                    )
+
+                    Spacer(modifier = Modifier.height(4.dp))
+
+                    // Hospital info
+                    Text(
+                        text = doctor.hospital ?: "Private Practice",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant,
+                        maxLines = 1,
+                        overflow = TextOverflow.Ellipsis
+                    )
+                }
+            }
+
+            Spacer(modifier = Modifier.height(16.dp))
+
+            // Rating information
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                RatingBar(rating = doctor.rating)
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Text(
+                    text = "${doctor.rating} (${doctor.reviewCount} reviews)",
+                    style = MaterialTheme.typography.bodySmall,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun RatingBar(rating: Float, maxRating: Int = 5) {
+    Row {
+        repeat(maxRating) { index ->
+            val starIcon = if (index < rating) {
+                Icons.Outlined.Star
+            } else if (index < rating + 0.5 && index >= rating) {
+                Icons.Outlined.StarHalf
+            } else {
+                Icons.Outlined.StarOutline
+            }
+
+            Icon(
+                imageVector = starIcon,
+                contentDescription = "Rating star",
+                tint = Color(0xFFFFB800),
+                modifier = Modifier.size(16.dp)
             )
         }
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Preview(showBackground = true)
 @Composable
-fun AppointmentReview() {
-    val navController = rememberNavController()
-    AppointmentReviewScreen(
-        navController = navController,
-        onBackPressed = {  },
-        onNextPressed = { }
-    )
+fun AppointmentDetailsCard(appointmentReason: String) {
+    Column {
+        Text(
+            text = "Appointment Reason",
+            style = MaterialTheme.typography.titleMedium.copy(
+                fontWeight = FontWeight.Bold
+            ),
+            color = MaterialTheme.colorScheme.onSurface
+        )
+
+        Spacer(modifier = Modifier.height(8.dp))
+
+        Card(
+            modifier = Modifier.fillMaxWidth(),
+            colors = CardDefaults.cardColors(
+                containerColor = MaterialTheme.colorScheme.surfaceVariant
+            ),
+            shape = RoundedCornerShape(12.dp)
+        ) {
+            Column(
+                modifier = Modifier.padding(16.dp)
+            ) {
+                Text(
+                    text = appointmentReason,
+                    style = MaterialTheme.typography.bodyMedium,
+                    color = MaterialTheme.colorScheme.onSurfaceVariant
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun PatientInfoCard(patient: patient2) {
+    Card(
+        modifier = Modifier.fillMaxWidth(),
+        colors = CardDefaults.cardColors(
+            containerColor = MaterialTheme.colorScheme.surface
+        ),
+        border = BorderStroke(1.dp, MaterialTheme.colorScheme.outlineVariant)
+    ) {
+        Column(
+            modifier = Modifier.padding(16.dp),
+            verticalArrangement = Arrangement.spacedBy(12.dp)
+        ) {
+            Text(
+                text = "Patient Information",
+                style = MaterialTheme.typography.titleMedium.copy(
+                    fontWeight = FontWeight.Bold
+                ),
+                color = MaterialTheme.colorScheme.onSurface
+            )
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = Icons.Outlined.Person,
+                    contentDescription = "Patient",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column {
+                    Text(
+                        text = "Full Name",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = patient.fullName,
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+
+            Row(
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Icon(
+                    imageVector = if (patient.gender?.toLowerCase() == "female")
+                        Icons.Outlined.Female else Icons.Outlined.Male,
+                    contentDescription = "Gender",
+                    tint = MaterialTheme.colorScheme.primary,
+                    modifier = Modifier.size(20.dp)
+                )
+
+                Spacer(modifier = Modifier.width(8.dp))
+
+                Column {
+                    Text(
+                        text = "Gender/Age",
+                        style = MaterialTheme.typography.bodySmall,
+                        color = MaterialTheme.colorScheme.onSurfaceVariant
+                    )
+
+                    Text(
+                        text = "${patient.gender ?: "Not specified"}, ${patient.age ?: "-"} years",
+                        style = MaterialTheme.typography.bodyMedium,
+                        color = MaterialTheme.colorScheme.onSurface
+                    )
+                }
+            }
+        }
+    }
 }

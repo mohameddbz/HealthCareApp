@@ -12,12 +12,12 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.appointment2
 import com.example.projecttdm.ui.patient.components.Appointment.DetailRow
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun AppointmentDetailsCard(appointment: Appointment) {
+fun AppointmentDetailsCard(appointment: appointment2) {
     val lightGrayBackground = Color(0xFFF5F5F5)
 
     Surface(

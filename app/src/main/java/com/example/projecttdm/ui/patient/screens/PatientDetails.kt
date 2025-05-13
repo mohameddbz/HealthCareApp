@@ -1,5 +1,7 @@
 package com.example.projecttdm.ui.patient.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.rememberScrollState
@@ -19,18 +21,25 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
+import com.example.projecttdm.data.model.AppointementResponse
+import com.example.projecttdm.state.UiState
 import com.example.projecttdm.theme.Blue01
 import com.example.projecttdm.ui.patient.components.BookAppointment.GenderDropdown
 import com.example.projecttdm.ui.patient.components.BookAppointment.LabeledTextField
+import com.example.projecttdm.viewmodel.BookAppointmentViewModel
 import com.example.projecttdm.viewmodel.PatientDetailsViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PatientDetailsScreen(
+    slotId: String,
     onBackClicked: () -> Unit,
-    onNextClicked: () -> Unit,
+    onNextClicked: (Any?) -> Unit,
     patientId: String? = null,
-    viewModel: PatientDetailsViewModel = viewModel()
+    viewModel: PatientDetailsViewModel = viewModel(),
+    bookviewModel: BookAppointmentViewModel = viewModel()
 ) {
     // Load patient data if ID is provided
     LaunchedEffect(patientId) {
@@ -47,11 +56,25 @@ fun PatientDetailsScreen(
     val isLoading by viewModel.isLoading.collectAsState()
     val errorMessage by viewModel.errorMessage.collectAsState()
     val isSuccess by viewModel.isSuccess.collectAsState()
+    val appointmentState by bookviewModel.appointmentState.collectAsState()
+    val navController = rememberNavController() // Or use the one passed as a parameter
+
+    LaunchedEffect(appointmentState) {
+        println("Appointment State: $appointmentState")
+        if (appointmentState is UiState.Success) {
+            val response = (appointmentState as UiState.Success<AppointementResponse>).data
+            println("Booking Success: ${response.success}")
+            if (response.success) {
+                onNextClicked((appointmentState as UiState.Success<AppointementResponse>).data.appointment.id)
+            }
+        }
+    }
+
 
     // Handle successful save
     LaunchedEffect(isSuccess) {
         if (isSuccess) {
-            onNextClicked()
+           // onNextClicked()
         }
     }
 
@@ -181,7 +204,7 @@ fun PatientDetailsScreen(
 
         // Next Button
         Button(
-            onClick = { viewModel.savePatient() },
+            onClick = { bookviewModel.bookAppointment(slot_id = slotId, reason = problemDescription) },
             enabled = !isLoading,
             colors = ButtonDefaults.buttonColors(
                 containerColor = Blue01,
@@ -201,6 +224,7 @@ fun PatientDetailsScreen(
                 )
             )
         }
+
 
         // Loading indicator
         if (isLoading) {

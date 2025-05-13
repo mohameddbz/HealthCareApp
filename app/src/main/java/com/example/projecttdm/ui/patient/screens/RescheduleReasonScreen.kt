@@ -43,7 +43,7 @@ fun RescheduleReasonScreen(
     // Callback to handle navigation and saving data
     val handleNext = {
         // Save any custom reason before navigating
-        viewModel.saveOtherReasonIfNeeded()
+        //viewModel.saveOtherReasonIfNeeded()
         onNext()
     }
 
@@ -80,7 +80,9 @@ fun RescheduleReasonScreen(
             RadioGroupOptions(
                 options = reasons,
                 selectedOption = selectedReason,
-                onOptionSelected = { viewModel.onReasonSelected(it) }
+                onOptionSelected = {
+                    //viewModel.onReasonSelected(it)
+                }
             )
 
             // Display the multiline text field only when "Others" is selected
@@ -88,7 +90,9 @@ fun RescheduleReasonScreen(
                 MultilineTextField(
                     label = "Please specify",
                     value = additionalInfo,
-                    onValueChange = { viewModel.onAdditionalInfoChanged(it) }
+                    onValueChange = {
+                        //viewModel.onAdditionalInfoChanged(it)
+                    }
                 )
 
                 // Inform the user that their reason will be saved

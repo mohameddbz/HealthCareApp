@@ -16,11 +16,13 @@ import androidx.compose.ui.unit.sp
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun CancelDialog(
-    onConfirmClick: () -> Unit,
+    onConfirmClick: (String) -> Unit,
     onBackClick: () -> Unit,
-    onDismiss: () -> Unit
+    onDismiss: () -> Unit,
+    appointmentid: String
 ) {
     val modalBottomSheetState = rememberModalBottomSheetState()
+
 
     // Apply the custom theme to the ModalBottomSheet
     ModalBottomSheet(
@@ -93,7 +95,7 @@ fun CancelDialog(
 
                 // Confirm cancel button
                 Button(
-                    onClick = onConfirmClick,
+                    onClick = {onConfirmClick(appointmentid)},
                     modifier = Modifier
                         .weight(1f)
                         .height(50.dp),

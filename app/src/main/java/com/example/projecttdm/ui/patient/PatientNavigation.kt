@@ -7,17 +7,14 @@ import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
-import androidx.compose.material.icons.filled.ShoppingCart
 import androidx.compose.material.icons.filled.Star
-import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+
 
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.ui.platform.LocalContext
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.lifecycle.viewmodel.initializer
-import androidx.lifecycle.viewmodel.viewModelFactory
 import androidx.navigation.NavHostController
 import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
@@ -38,6 +35,7 @@ import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
@@ -69,16 +67,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         startDestination = PatientRoutes.HomeScreen.route,
         modifier = modifier
     ) {
-        composable(PatientRoutes.BookAppointment.route) {
-            BookAppointmentScreen(
-                onNextClicked = {
-                    navController.navigate(PatientRoutes.PinVerification.route)
-                },
-                doctorId = "defaultDoctorId",
-                patientId = "defaultPatientId",
-                appointmentViewModel = BookAppointmentViewModel()
-            )
-        }
+
         composable(PatientRoutes.RescheduleAppointment.route) {
             RescheduleAppointmentScreen(
                 appointmentId = "98",
@@ -92,23 +81,9 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 navController, homeViewModel,
                 onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
             )
-                }
+        }
 
-        composable(PatientRoutes.PatientDetails.route) {
-            PatientDetailsScreen(
-                onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
-                onNextClicked = { navController.navigate(PatientRoutes.PatientSummary.route) }
-            )
-        }
-        composable(PatientRoutes.PatientSummary.route) {
-            AppointmentReviewScreen(
-                navController = navController,
-                onBackPressed = { navController.popBackStack() },
-                onNextPressed = {
-                    navController.navigate(PatientRoutes.PinVerification.route)
-                }
-            )
-        }
+
         composable(PatientRoutes.RescheduleReason.route)
         {
             val reasonViewModel: ReasonViewModel = viewModel(factory = ReasonViewModel.Factory(LocalContext.current))
@@ -121,24 +96,6 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
-        composable(PatientRoutes.CancelReason.route)
-        {
-            val reasonViewModel: CancelReasonViewModel = viewModel(factory = CancelReasonViewModel.Factory(LocalContext.current))
-            CancelReasonScreen (
-                viewModel = reasonViewModel,
-                onNavigateBack = { navController.popBackStack() },
-                onNext = {navController.navigate(PatientRoutes.SuccessCancel.route) }
-            )
-        }
-
-        composable(PatientRoutes.CancelDialog.route)
-        {
-            CancelDialog(
-                onBackClick = { navController.popBackStack() },
-                onConfirmClick = { navController.navigate(PatientRoutes.CancelReason.route) },
-                onDismiss = {navController.popBackStack()}
-            )
-        }
 
         composable(PatientRoutes.PinVerification.route) {
             PinVerificationScreen(
@@ -182,12 +139,12 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 messageText = "Appointment successfully booked.\nYou will receive a notification and the\ndoctor you selected will contact you.",
                 buttonText = "View Appointment", // Primary button text
                 onPrimaryAction = {
-                    navController.navigate(PatientRoutes.PatientDetails.route) {
+                    navController.navigate(PatientRoutes.PatientSummary.route) {
                         popUpTo(0)
                     }
                 },
                 onDismiss = {
-                    navController.navigate(PatientRoutes.BookAppointment.route) {
+                    navController.navigate(PatientRoutes.Appointment.route) {
                         popUpTo(0)
                     }
                 },
@@ -202,7 +159,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 titleText = "Cancel Appointment\nSuccess!",
                 messageText = "We are very sad that you have canceled your appointment. We will always improve our service to satisfy you in the next appointment.",
                 buttonText = "OK",
-                onPrimaryAction = { /* dismiss */ },
+                onPrimaryAction = { navController.navigate(PatientRoutes.Appointment.route) },
                 onDismiss = { /* dismiss */ },
                 showSecondaryButton = false // 👈 hides the second button
             )
@@ -276,7 +233,98 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 viewModel = doctorProfileViewModel,
                 doctorId = doctorId,
                 onBackClick = { navController.popBackStack() },
-                navigateToAllReviews = { }
+                navigateToAllReviews = { },
+                onBookClick = { doctorId ->
+                    navController.navigate("${PatientRoutes.BookAppointment.route}/$doctorId")
+                },
+            )
+        }
+
+        composable(
+            route = PatientRoutes.Prescription.routeWithArgs,
+            arguments = listOf(navArgument("prescriptionId") { type = NavType.StringType }))
+        {
+            backStackEntry ->
+            val prescriptionId = backStackEntry.arguments?.getString("prescriptionId")
+            val prescriptionViewModel: PrescriptionContentViewModel = viewModel()
+
+            PrescriptionScreenContent(
+                prescriptionId = prescriptionId,
+                viewModel = prescriptionViewModel ,
+           )
+        }
+        composable(
+            route = "${PatientRoutes.BookAppointment.route}/{doctorId}",
+            arguments = listOf(navArgument("doctorId") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: ""
+            BookAppointmentScreen(
+                onNextClicked = {  slotId ->
+                    navController.navigate("${PatientRoutes.PatientDetails.route}/$slotId")
+                },
+                doctorId = doctorId,
+                patientId = "defaultPatientId",
+                appointmentViewModel = BookAppointmentViewModel()
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.PatientDetails.route}/{slotId}",
+            arguments = listOf(navArgument("slotId") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val slotId = backStackEntry.arguments?.getString("slotId") ?: ""
+            PatientDetailsScreen(
+                slotId = slotId,
+                onBackClicked = { navController.popBackStack() },  // Navigate back to the previous screen
+                onNextClicked = { appointmentId ->
+                    navController.navigate("${PatientRoutes.PatientSummary.route}/$appointmentId")
+                },
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.PatientSummary.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            AppointmentReviewScreen(
+                appointmentId =appointmentid,
+                navController = navController,
+                onBackPressed = { navController.popBackStack() },
+                onNextPressed = {
+                    navController.navigate(PatientRoutes.PinVerification.route)
+                }, viewModel = appointmentViewModel
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.CancelReason.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        )
+        {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            val reasonViewModel: CancelReasonViewModel = viewModel()
+            CancelReasonScreen (
+                viewModel = reasonViewModel,
+                onNavigateBack = { navController.popBackStack() },
+                onNext = {navController.navigate(PatientRoutes.SuccessCancel.route) },
+                appointmentId = appointmentid
+            )
+        }
+
+        composable(
+            route = "${PatientRoutes.CancelDialog.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        )
+        {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            CancelDialog(
+                onBackClick = { navController.popBackStack() },
+                onConfirmClick = { appointmentId ->
+                    navController.navigate("${PatientRoutes.CancelReason.route}/$appointmentId")
+                },
+                onDismiss = {navController.popBackStack()},
+                appointmentid = appointmentid
             )
         }
 
@@ -328,7 +376,7 @@ val navigationItems = listOf(
     NavigationItem(
         title = "Prescriptions",
         icon = Icons.Default.MedicalServices,
-        route = PatientRoutes.BookAppointment.route
+        route = PatientRoutes.topDoctors.route
     ),
 )
 

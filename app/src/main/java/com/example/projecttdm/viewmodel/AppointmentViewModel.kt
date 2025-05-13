@@ -5,7 +5,9 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
+import com.example.projecttdm.data.model.AppointementResponse
 import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentReviewData
 import com.example.projecttdm.data.model.AppointmentStatus
 import com.example.projecttdm.data.model.QRCodeData
 import com.example.projecttdm.data.repository.AppointmentRepository
@@ -51,6 +53,11 @@ class AppointmentViewModel(
     // For Dialog state
     private val _showQRCodeDialog = MutableStateFlow(false)
     val showQRCodeDialog: StateFlow<Boolean> = _showQRCodeDialog.asStateFlow()
+
+    val _appointmentState = MutableStateFlow<UiState<AppointmentReviewData>>(UiState.Loading)
+    val appointmentState: StateFlow<UiState<AppointmentReviewData>> = _appointmentState.asStateFlow()
+
+
 
 
 
@@ -107,28 +114,6 @@ class AppointmentViewModel(
         loadAppointments(_selectedTab.value)
     }
 
-    fun cancelAppointment(appointmentId: String) {
-        viewModelScope.launch {
-            _isLoading.value = true
-            try {
-                val result = repository.cancelAppointment(appointmentId)
-                if (result.isSuccess) {
-                    loadAppointments(_selectedTab.value)
-                    // If we're showing QR for this appointment, close the dialog
-                    if (_selectedAppointment.value?.id == appointmentId) {
-                        closeQRCodeDialog()
-                    }
-                } else {
-                    _errorMessage.emit("Failed to cancel appointment: ${result.exceptionOrNull()?.message}")
-                }
-            } catch (e: Exception) {
-                _errorMessage.emit("Error cancelling appointment: ${e.message}")
-            } finally {
-                _isLoading.value = false
-            }
-        }
-    }
-
 
     fun getAppointmentDetails(appointmentId: String) {
         viewModelScope.launch {
@@ -157,6 +142,7 @@ class AppointmentViewModel(
             }
         }
     }
+
 
     fun showAppointmentQRCode(appointmentId: String) {
         viewModelScope.launch {
@@ -245,24 +231,6 @@ class AppointmentViewModel(
     }
 
 
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun formatTime(time: LocalTime): String {
-        val formatter = DateTimeFormatter.ofPattern("h:mm a")
-        return time.format(formatter)
-    }
-
-    @RequiresApi(Build.VERSION_CODES.O)
-    fun formatDate(date: LocalDate): String {
-        val today = LocalDate.now()
-        return when {
-            date.isEqual(today) -> "Today"
-            date.isEqual(today.plusDays(1)) -> "Tomorrow"
-            date.isEqual(today.minusDays(1)) -> "Yesterday"
-            else -> date.format(DateTimeFormatter.ofPattern("MMM d, yyyy"))
-        }
-    }
-
     fun updateAppointmentNotes(appointmentId: String, notes: String) {
         viewModelScope.launch {
             try {
@@ -284,6 +252,15 @@ class AppointmentViewModel(
             doctor?.name ?: "Unknown Doctor"
         } catch (e: Exception) {
             "Error: ${e.message}"
+        }
+    }
+
+    fun fetchAppointmentDetails(appointmentId: String) {
+        viewModelScope.launch {
+            repository.getAppointmentDetailsById(appointmentId)
+                .collect { uiState ->
+                    _appointmentState.value = uiState
+                }
         }
     }
 

@@ -10,11 +10,11 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import com.example.projecttdm.data.model.Patient
+import com.example.projecttdm.data.model.patient2
 import com.example.projecttdm.ui.patient.components.Appointment.DetailRow
 
 @Composable
-fun PatientDetailsCard(patient: Patient) {
+fun PatientDetailsCard(patient: patient2) {
     val lightGrayBackground = Color(0xFFF5F5F5)
 
     Surface(

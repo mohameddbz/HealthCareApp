@@ -5,10 +5,10 @@ import java.time.LocalDate
 import java.time.LocalTime
 
 data class Appointment(
-    @SerializedName("appointment_id")
+    @SerializedName("id")
     val id: String,
 
-    @SerializedName("patient_id")
+    @SerializedName("patientId")
     val patientId: String,
 
     @SerializedName("APPOINTMENT_SLOT.DOCTOR_SCHEDULE.doctor_id")
@@ -24,3 +24,19 @@ data class Appointment(
 
     val reason: String = ""
 )
+
+data class AppointmentRequest(
+
+    val slot_id:String,
+
+    val reason: String = "",
+
+    val is_book: Boolean = false
+)
+
+data class AppointementResponse (
+    val success: Boolean ,
+    val message: String ="",
+    val appointment: Appointment
+)
+
