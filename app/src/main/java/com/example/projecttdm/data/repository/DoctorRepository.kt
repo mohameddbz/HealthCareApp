@@ -1,5 +1,7 @@
 package com.example.projecttdm.data.repository
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import com.example.projecttdm.R
 import com.example.projecttdm.data.endpoint.DoctorEndPoint
 import com.example.projecttdm.data.local.DoctorData
@@ -8,6 +10,12 @@ import com.example.projecttdm.data.model.Specialty
 import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import com.example.projecttdm.data.model.Appointment
+import com.example.projecttdm.data.model.AppointmentWeekApiResponse
+import com.example.projecttdm.data.model.AppointmentWeekResponse
+import com.example.projecttdm.utils.AppointmentMapper
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.flowOn
 
 class DoctorRepository (private val endpoint: DoctorEndPoint) {
 
@@ -22,6 +30,21 @@ class DoctorRepository (private val endpoint: DoctorEndPoint) {
 
 
     fun getDoctors(): List<Doctor> = DoctorData.listDcctors
+    @RequiresApi(Build.VERSION_CODES.O)
+
+    fun getAppointmentsByDate(
+        doctorId: String,
+        date: String
+    ): Flow<UiState<List<AppointmentWeekResponse>>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = endpoint.getAppointmentsByDate(doctorId, date)
+            emit(UiState.Success(response.data)) // on ne garde que la liste d'appels
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Erreur lors du chargement des rendez-vous"))
+        }
+    }.flowOn(Dispatchers.IO)
+
 
 
     //fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors

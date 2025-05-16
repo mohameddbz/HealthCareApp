@@ -14,8 +14,8 @@ import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
 import com.example.projecttdm.ui.doctor.components.BottomNavigationBar
 import com.example.projecttdm.ui.doctor.screens.CalendarApp
 import com.example.projecttdm.ui.doctor.screens.CalendarScreen
+import com.example.projecttdm.ui.doctor.screens.AppointmentOfWeekScreen
 import com.example.projecttdm.ui.doctor.screens.DoctorHomeScreen
-import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
 
 
@@ -59,7 +59,7 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
             composable(DoctorRoutes.SuccesRefuse.route) {
                 SuccessPopup(
                     titleText = "Refuse Appointment\nSuccess!",
-                    messageText = "The appointment has been confirmed. A notification will be sent to the patient",
+                    messageText = "The appointment has been refused. A notification will be sent to the patient",
                     buttonText = "OK",
                     onPrimaryAction = { navController.popBackStack() },
                     onDismiss = { /* dismiss */ },
@@ -67,8 +67,19 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                 )
             }
 
-        }
-    }
+
+        composable("${DoctorRoutes.AppointmentOfWeek.route}/{doctorId}") { backStackEntry ->
+            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: "1"  // Default to "1"
+            AppointmentOfWeekScreen(
+                doctorId = doctorId,
+                onBrowseDoctors = {
+                    navController.navigate(DoctorRoutes.HomeScreen.route)
+                },
+                onAppointmentClick = { appointmentId ->
+                    // Handle appointment click
+                }
+            )
+        }}}}
 
 
-}
+

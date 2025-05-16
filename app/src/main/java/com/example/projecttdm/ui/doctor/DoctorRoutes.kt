@@ -5,4 +5,5 @@ sealed class DoctorRoutes(val route: String) {
     object AppointmentValidationScreen : DoctorRoutes("appointment_validation")
     object SuccessConfirm : DoctorRoutes("succes_confirm")
     object SuccesRefuse : DoctorRoutes("succes_refuse")
+    object AppointmentOfWeek : DoctorRoutes("AppointmentOfWeek")
 }

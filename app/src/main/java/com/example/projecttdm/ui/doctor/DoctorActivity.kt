@@ -15,7 +15,7 @@ class DoctorActivity : ComponentActivity() {
         enableEdgeToEdge()
         setContent {
             ProjectTDMTheme{
-                DoctorNavigation()
+               // DoctorNavigation()
             }
         }
     }

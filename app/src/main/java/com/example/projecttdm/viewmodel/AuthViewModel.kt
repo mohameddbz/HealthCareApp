@@ -7,7 +7,7 @@ import android.os.Build
 import android.util.Log
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.AndroidViewModel
-import androidx.lifecycle.ViewModel
+
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.auth.AuthResponse
 import com.example.projecttdm.data.model.auth.LoginRequest
@@ -27,9 +27,10 @@ import java.io.File
 
 
 class AuthViewModel(application: Application) : AndroidViewModel(application) {
+    @RequiresApi(Build.VERSION_CODES.O)
     private val authRepository = RepositoryHolder.authRepository
 
-
+    @RequiresApi(Build.VERSION_CODES.O)
     fun getUsers() = authRepository.getUsers()
 
     private val _authState = MutableStateFlow<UiState<AuthResponse>>(UiState.Init)
@@ -53,6 +54,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun login(email: String, password: String) {
         val request = LoginRequest(email, password)
 
@@ -95,6 +97,7 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
 
+    @RequiresApi(Build.VERSION_CODES.O)
     fun logout() {
         viewModelScope.launch {
 
@@ -114,7 +117,8 @@ class AuthViewModel(application: Application) : AndroidViewModel(application) {
     }
 
     // Dans votre ViewModel ou repository
-     fun registerUser(
+    @RequiresApi(Build.VERSION_CODES.O)
+    fun registerUser(
         firstName: String,
         lastName: String,
         email: String,
