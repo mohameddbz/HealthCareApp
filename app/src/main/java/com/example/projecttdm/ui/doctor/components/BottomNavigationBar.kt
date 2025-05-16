@@ -57,7 +57,7 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: 
     object Home : BottomNavItem(DoctorRoutes.HomeScreen.route, Icons.Default.Home, "Accueil")
     object Favorites : BottomNavItem(DoctorRoutes.AppointmentValidationScreen.route, Icons.Default.Favorite, "Favoris")
     object Profile : BottomNavItem(DoctorRoutes.HomeScreen.route, Icons.Default.Person, "Profil")
-    object Settings : BottomNavItem(DoctorRoutes.AppointmentValidationScreen.route, Icons.Default.Settings, "Paramètres")
+    object Settings : BottomNavItem(DoctorRoutes.AppointmentOfWeek.createRoute("1"), Icons.Default.Settings, "Paramètres")
 }
 
 // Les éléments de navigation disponibles
