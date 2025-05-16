@@ -16,7 +16,9 @@ import com.example.projecttdm.ui.doctor.screens.CalendarApp
 import com.example.projecttdm.ui.doctor.screens.CalendarScreen
 import com.example.projecttdm.ui.doctor.screens.AppointmentOfWeekScreen
 import com.example.projecttdm.ui.doctor.screens.DoctorHomeScreen
+import com.example.projecttdm.ui.doctor.screens.QrScannerScreen
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
+import com.example.projecttdm.viewmodel.QrViewModel
 
 
 @SuppressLint("UnusedMaterial3ScaffoldPaddingParameter")
@@ -67,8 +69,14 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                 )
             }
 
+            composable(DoctorRoutes.QrScanner.route) {
+                val viewModel  : QrViewModel = viewModel();
+                QrScannerScreen(viewModel)
+            }
 
-        composable("${DoctorRoutes.AppointmentOfWeek.route}/{doctorId}") { backStackEntry ->
+
+
+            composable("${DoctorRoutes.AppointmentOfWeek.route}/{doctorId}") { backStackEntry ->
             val doctorId = backStackEntry.arguments?.getString("doctorId") ?: "1"  // Default to "1"
             AppointmentOfWeekScreen(
                 doctorId = doctorId,
