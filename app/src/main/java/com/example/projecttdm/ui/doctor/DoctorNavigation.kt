@@ -7,9 +7,11 @@ import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
+import androidx.navigation.NavType
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
+import androidx.navigation.navArgument
 import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
 import com.example.projecttdm.ui.doctor.components.BottomNavigationBar
 import com.example.projecttdm.ui.doctor.screens.CalendarApp
@@ -17,7 +19,12 @@ import com.example.projecttdm.ui.doctor.screens.CalendarScreen
 import com.example.projecttdm.ui.doctor.screens.AppointmentOfWeekScreen
 import com.example.projecttdm.ui.doctor.screens.DoctorHomeScreen
 import com.example.projecttdm.ui.doctor.screens.QrScannerScreen
+import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
+import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
+import com.example.projecttdm.viewmodel.AppointmentViewModel
+import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import com.example.projecttdm.viewmodel.QrViewModel
 
 
@@ -29,6 +36,8 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
     Scaffold (
         bottomBar = { BottomNavigationBar(navController) }
     ){   innerPadding ->
+
+        val appointmentViewModel: AppointmentViewModel = viewModel()
         NavHost(
             navController = navController,
             startDestination = DoctorRoutes.HomeScreen.route,
@@ -71,10 +80,33 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
 
             composable(DoctorRoutes.QrScanner.route) {
                 val viewModel  : QrViewModel = viewModel();
-                QrScannerScreen(viewModel)
+                QrScannerScreen(viewModel,navController)
+            }
+
+            composable(
+                route = "${PatientRoutes.PatientSummary.route}/{appointmentid}",
+                arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+            ) {backStackEntry ->
+                val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+                AppointmentReviewScreen(
+                    appointmentId =appointmentid,
+                    navController = navController,
+                    onBackPressed = { navController.popBackStack() },
+                    onNextPressed = {
+                        navController.navigate(PatientRoutes.PinVerification.route)
+                    }, viewModel = appointmentViewModel,
+                    canAddPrescription = true
+                )
             }
 
 
+            composable(PatientRoutes.PrescriptionCreate.route){
+                val prescriptionViewModel = PrescriptionViewModel()
+                PrescriptionCreateScreen(
+                    onNavigateBack = {navController.popBackStack()},
+                    prescriptionViewModel
+                )
+            }
 
             composable("${DoctorRoutes.AppointmentOfWeek.route}/{doctorId}") { backStackEntry ->
             val doctorId = backStackEntry.arguments?.getString("doctorId") ?: "1"  // Default to "1"

@@ -2,7 +2,9 @@ package com.example.projecttdm.viewmodel
 
 import android.content.Context
 import android.net.Uri
+import android.os.Build
 import android.view.View
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.FullPrescription
@@ -20,6 +22,7 @@ import kotlinx.coroutines.launch
 import kotlinx.coroutines.withContext
 import java.util.UUID
 
+@RequiresApi(Build.VERSION_CODES.O)
 class PrescriptionViewModel : ViewModel() {
     private val prescriptionRepository = RepositoryHolder.prescriptionRepository
 

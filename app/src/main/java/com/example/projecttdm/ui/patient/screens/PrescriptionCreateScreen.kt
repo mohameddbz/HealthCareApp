@@ -1,7 +1,9 @@
 package com.example.projecttdm.ui.patient.screens
 
 import android.app.DatePickerDialog
+import android.os.Build
 import android.widget.Toast
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
 import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
@@ -30,6 +32,7 @@ import com.example.projecttdm.state.UiState
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import java.util.*
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrescriptionCreateScreen(

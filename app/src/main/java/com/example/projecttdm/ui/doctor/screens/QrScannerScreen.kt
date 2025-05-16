@@ -10,15 +10,19 @@ import androidx.camera.lifecycle.ProcessCameraProvider
 import androidx.camera.view.PreviewView
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material.Button
 import androidx.compose.material.Text
 import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.*
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.viewinterop.AndroidView
 import androidx.core.content.ContextCompat
+import androidx.navigation.NavController
+import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.viewmodel.QrViewModel
 import com.google.mlkit.vision.barcode.BarcodeScanning
 import com.google.mlkit.vision.common.InputImage
@@ -26,7 +30,10 @@ import com.google.mlkit.vision.common.InputImage
 
 @OptIn(ExperimentalGetImage::class)
 @Composable
-fun QrScannerScreen(viewModel: QrViewModel) {
+fun QrScannerScreen(
+    viewModel: QrViewModel,
+    navController: NavController
+) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
     val qrData by viewModel.qrData.observeAsState()
@@ -46,6 +53,13 @@ fun QrScannerScreen(viewModel: QrViewModel) {
     LaunchedEffect(Unit) {
         if (!hasPermission) {
             launcher.launch(android.Manifest.permission.CAMERA)
+        }
+    }
+
+    LaunchedEffect(qrData?.id) {
+        qrData?.id?.let { id ->
+            navController.navigate("${PatientRoutes.PatientSummary.route}/$id")
+            viewModel.clearQrData()
         }
     }
 
@@ -81,9 +95,6 @@ fun QrScannerScreen(viewModel: QrViewModel) {
                                             viewModel.updateQrCode(rawJson)
                                         }
                                     }
-                                    .addOnFailureListener {
-                                        Log.e("QR_SCAN", "Failed to scan QR", it)
-                                    }
                                     .addOnCompleteListener {
                                         imageProxy.close()
                                     }
@@ -107,10 +118,11 @@ fun QrScannerScreen(viewModel: QrViewModel) {
             )
         }
 
-        // Show scanned data if available
+        // Overlay for scanned data
         qrData?.let { data ->
             Column(
                 modifier = Modifier
+                    .align(Alignment.TopStart)
                     .padding(16.dp)
                     .background(Color.Black.copy(alpha = 0.7f))
                     .padding(12.dp)
@@ -118,9 +130,22 @@ fun QrScannerScreen(viewModel: QrViewModel) {
                 Text("ID: ${data.id}", color = Color.White)
                 Text("Content: ${data.content}", color = Color.White)
                 Text("Timestamp: ${data.timestamp}", color = Color.White)
-                Text("Image: ${data.image}", color = Color.White)
+            }
+
+            // 🩺 "Add Prescription" Button
+            Button (
+                onClick = {
+                    // TODO: Handle your prescription logic here
+                },
+                modifier = Modifier
+                    .align(Alignment.BottomCenter)
+                    .padding(16.dp)
+            ) {
+                Text("Add Prescription")
             }
         }
     }
 }
+
+
 

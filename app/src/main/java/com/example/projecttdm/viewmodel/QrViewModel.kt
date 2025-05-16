@@ -21,10 +21,8 @@ class QrViewModel : ViewModel() {
         }
     }
 
-    private val _qrDataa = MutableLiveData<QRCodeData>()
-    val qrDataa: LiveData<QRCodeData> get() = _qrDataa
-
-    fun setQRData(data: QRCodeData) {
-        _qrData.value = data
+    fun clearQrData() {
+        _qrData.value = null
     }
+
 }
