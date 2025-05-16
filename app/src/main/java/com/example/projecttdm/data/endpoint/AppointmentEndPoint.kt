@@ -10,6 +10,7 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import com.example.projecttdm.data.model.AppointmentReviewData
+import com.example.projecttdm.data.model.QRCodeData
 import com.example.projecttdm.data.model.DateRequest
 import retrofit2.http.GET
 import retrofit2.http.PATCH
@@ -47,6 +48,9 @@ interface AppointmentEndPoint {
 
     @PATCH("appointments/cancel/{id}")
     suspend fun cancelAppointment(@Path("id") appointmentId: String): AppointementResponse
+
+    @GET("qrcode/{id}/")
+    suspend fun getQRCodeForAppointment(@Path("id") appointmentId: String): QRCodeData
 
     @PATCH("appointments/confirm/{id}")
     suspend fun confirmAppointement(@Path("id") appointmentId: String): AppointementResponse

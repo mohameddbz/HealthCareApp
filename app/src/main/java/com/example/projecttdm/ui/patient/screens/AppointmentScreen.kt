@@ -59,12 +59,15 @@ fun AppointmentScreen(
     val showDialog by viewModel.showQRCodeDialog.collectAsState()
 
 
-    if (showDialog) {
-        AppointmentQRDialog(
-            viewModel = viewModel,
-            onDismiss = { viewModel.closeQRCodeDialog() }
-        )
-    }
+//    if (showDialog && viewModel.selectedAppointment.value != null) {
+//        AppointmentQRDialog(
+//            appointment = viewModel.selectedAppointment.value!!,
+//            qrCodeContent = viewModel.qrCodeContent.value ?: "",
+//            viewModel = viewModel,
+//            onDismiss = { viewModel.closeQRCodeDialog() }
+//        )
+//    }
+
 
 //    LaunchedEffect(true) {
 ////        doctorViewModel.loadDoctors()
@@ -192,9 +195,8 @@ fun AppointmentScreen(
                     items(appointments, key = { it.id }) { appointment ->
                         val doctor = filteredDoctors.find { it.id == appointment.doctorId }
                         PendingCard(
-                            onClick = {
-                                navController.navigate(PatientRoutes.AppQR.createRoute(appointment.id))
-                            },
+                            onClick = { appointmentId ->
+                                navController.navigate("${PatientRoutes.AppointmentQR.route}/$appointmentId") },
                             appointment = appointment,
                             doctor = doctor,
                             onCardClick = { navController.navigate("appointment_details/${appointment.id}") },
