@@ -43,6 +43,7 @@ import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.common.components.DeconnectionButton
 import com.example.projecttdm.ui.common.components.UserProfileImage
+import com.example.projecttdm.ui.doctor.DoctorRoutes
 import com.example.projecttdm.ui.doctor.components.DateText
 import com.example.projecttdm.ui.doctor.components.NextAppointmentCard
 import com.example.projecttdm.ui.doctor.components.StatCard
@@ -53,7 +54,6 @@ import kotlinx.coroutines.launch
 // Palette de couleurs moderne et professionnelle
 val PrimaryColor = Color(0xFF4285F4)  // Bleu Google
 val SecondaryColor = Color(0xFF34A853)  // Vert Google
-val TertiaryColor = Color(0xFF1A73E8)  // Bleu plus foncé
 val LightBackgroundColor = Color(0xFFF8F9FF)
 val CardBackgroundColor = Color.White
 val GrayTextColor = Color(0xFF5F6368)
@@ -141,36 +141,7 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
                 }
             }
         },
-        bottomBar = {
-            NavigationBar(
-                containerColor = Color.White,
-                tonalElevation = 8.dp
-            ) {
-                val navItems = listOf(
-                    NavigationItem("Home", Icons.Filled.Home),
-                    NavigationItem("Calendar", Icons.Filled.DateRange),
-                    NavigationItem("Patients", Icons.Filled.Groups),
-                    NavigationItem("Chat", Icons.Filled.Chat),
-                    NavigationItem("Profile", Icons.Filled.Person)
-                )
 
-                navItems.forEachIndexed { index, item ->
-                    NavigationBarItem(
-                        icon = {
-                            Icon(item.icon, contentDescription = item.title)
-                        },
-                        label = { Text(item.title) },
-                        selected = selectedTabIndex == index,
-                        onClick = { selectedTabIndex = index },
-                        colors = NavigationBarItemDefaults.colors(
-                            selectedIconColor = PrimaryColor,
-                            selectedTextColor = PrimaryColor,
-                            indicatorColor = PrimaryColor.copy(alpha = 0.1f)
-                        )
-                    )
-                }
-            }
-        },
         containerColor = LightBackgroundColor
     ) { paddingValues ->
         LazyColumn(

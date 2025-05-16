@@ -5,6 +5,14 @@ import com.example.projecttdm.state.UiState
 import com.google.gson.annotations.SerializedName
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Date
+
+
+data class DateRequest(
+    val date: Date  // ou LocalDate si tu veux, mais String c'est plus simple ici
+)
+
+
 
 data class NextAppointment(
 
@@ -14,7 +22,8 @@ data class NextAppointment(
     val fullname : String ,
     val reason: String = "",
     val start_time : String,
-    val numberOfVisit : Int = 0
+    val numberOfVisit : Int = 0,
+    val imageUrl: ImageBlob? = null, // For network images
 )
 
 

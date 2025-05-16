@@ -10,9 +10,12 @@ import okhttp3.MultipartBody
 import okhttp3.RequestBody
 import retrofit2.http.Body
 import com.example.projecttdm.data.model.AppointmentReviewData
+import com.example.projecttdm.data.model.DateRequest
 import retrofit2.http.GET
 import retrofit2.http.PATCH
+import retrofit2.http.POST
 import retrofit2.http.Path
+import java.util.Date
 
 interface AppointmentEndPoint {
 
@@ -39,7 +42,14 @@ interface AppointmentEndPoint {
     @GET("appointments/appointment/{id}")
     suspend fun getAppointmentDetails(@Path("id") appointmentId: String): AppointmentReviewData
 
+    @POST("appointments/doctor/day")
+    suspend fun  getAppointmentOfDoctorOfDay(@Body date : DateRequest) : NextAppointementsResponse
+
     @PATCH("appointments/cancel/{id}")
     suspend fun cancelAppointment(@Path("id") appointmentId: String): AppointementResponse
+
+    @PATCH("appointments/confirm/{id}")
+    suspend fun confirmAppointement(@Path("id") appointmentId: String): AppointementResponse
+
 
 }

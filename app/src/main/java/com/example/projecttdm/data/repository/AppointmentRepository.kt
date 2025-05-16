@@ -10,6 +10,7 @@ import com.example.projecttdm.data.model.AppointementResponse
 import com.example.projecttdm.data.model.Appointment
 import com.example.projecttdm.data.model.AppointmentReviewData
 import com.example.projecttdm.data.model.AppointmentStatus
+import com.example.projecttdm.data.model.DateRequest
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.NextAppointementResponse
 import com.example.projecttdm.data.model.NextAppointementsResponse
@@ -25,6 +26,7 @@ import kotlinx.coroutines.flow.map
 import kotlinx.coroutines.runBlocking
 import java.time.LocalDate
 import java.time.LocalTime
+import java.util.Date
 import java.util.UUID
 
 class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
@@ -74,6 +76,12 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
 
     suspend fun getTodaysAppointmentsForDoctor():NextAppointementsResponse {
         return  endpoint.getTodaysAppointmentsForDoctor()
+    }
+
+
+    suspend fun getAppointmentOfDoctorOfDay(date: Date) :NextAppointementsResponse{
+        val localDate = DateRequest(date)
+        return endpoint.getAppointmentOfDoctorOfDay(localDate)
     }
 
     suspend fun getAppointmentQRCode(appointmentId: String): Result<QRCodeData> {
@@ -260,5 +268,17 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
             UiState.Error(e.localizedMessage ?: "An unknown error occurred")
         }
     }
+
+    suspend fun confirmAppointment(appointmentId: String): UiState<AppointementResponse> {
+        return try {
+            val response = endpoint.confirmAppointement(appointmentId)
+            UiState.Success(response)
+        } catch (e: Exception) {
+            UiState.Error(e.localizedMessage ?: "An unknown error occurred")
+        }
+    }
+
+
+
 
 }
