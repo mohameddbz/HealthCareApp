@@ -56,7 +56,7 @@ fun BottomNavigationBar(navController: NavController) {
 sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: String) {
     object Home : BottomNavItem(DoctorRoutes.HomeScreen.route, Icons.Default.Home, "Accueil")
     object Favorites : BottomNavItem(DoctorRoutes.AppointmentValidationScreen.route, Icons.Default.Favorite, "Favoris")
-    object Profile : BottomNavItem(DoctorRoutes.HomeScreen.route, Icons.Default.Person, "Profil")
+    object Profile : BottomNavItem(DoctorRoutes.QrScanner.route, Icons.Default.Person, "Profil")
     object Settings : BottomNavItem(DoctorRoutes.AppointmentOfWeek.createRoute("1"), Icons.Default.Settings, "Paramètres")
 }
 
