@@ -16,6 +16,7 @@ class DoctorActivity : ComponentActivity() {
         setContent {
             ProjectTDMTheme{
                // DoctorNavigation()
+                DoctorNavigation()
             }
         }
     }
