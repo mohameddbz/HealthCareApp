@@ -16,6 +16,7 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.lifecycle.lifecycleScope
 import com.example.projecttdm.data.endpoint.ApiClient
+import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.theme.ProjectTDMTheme
 import com.example.projecttdm.ui.auth.AuthActivity
 import com.example.projecttdm.ui.auth.AuthNavigation
@@ -32,6 +33,7 @@ class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
         enableEdgeToEdge() // Enable edge-to-edge display
+        RepositoryHolder.init(applicationContext) // ← 🔥 tu DOIS l'appeler ici avant tout accès aux repositories
 
         // Show a splash screen while checking authentication
         setContent {

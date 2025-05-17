@@ -1,7 +1,10 @@
 package com.example.projecttdm.data.repository
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.room.Room
+import com.example.projecttdm.data.db.AppDatabase
 import com.example.projecttdm.data.endpoint.ApiClient
 import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.AuthEndPoint
@@ -15,6 +18,18 @@ import com.example.projecttdm.data.endpoint.UserEndPoint
 
 @RequiresApi(Build.VERSION_CODES.O)
 object RepositoryHolder {
+
+
+    private lateinit var database: AppDatabase
+
+    fun init(context: Context) {
+        database = Room.databaseBuilder(
+            context.applicationContext,
+            AppDatabase::class.java,
+            "tdm_db"
+        ).fallbackToDestructiveMigration()
+            .build()
+    }
 
     val authRepository by lazy {
         AuthRepository(ApiClient.create(AuthEndPoint::class.java))
@@ -35,7 +50,7 @@ object RepositoryHolder {
         ReviewRepository(ApiClient.create(ReviewEndPoint::class.java))
     }
     val appointmentRepository by lazy {
-        AppointmentRepository(ApiClient.create(AppointmentEndPoint::class.java))
+        AppointmentRepository(ApiClient.create(AppointmentEndPoint::class.java), database.appointmentDao())
     }
     val bookAppointmentRepository by lazy {
         BookAppointmentRepository(ApiClient.create(BookAppointmentEndPoint::class.java))

@@ -2,8 +2,11 @@ package com.example.projecttdm.data.repository
 
 import android.os.Build
 import androidx.annotation.RequiresApi
+import com.example.projecttdm.data.dao.AppointmentDao
 import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.UserEndPoint
+import com.example.projecttdm.data.entity.toEntity
+import com.example.projecttdm.data.entity.toModel
 import com.example.projecttdm.data.local.AppointmentData
 import com.example.projecttdm.data.local.AppointmentsData
 import com.example.projecttdm.data.model.AppointementResponse
@@ -29,7 +32,7 @@ import java.time.LocalTime
 import java.util.Date
 import java.util.UUID
 
-class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
+class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private val appointmentDao: AppointmentDao) {
 
     // In-memory storage for appointments
     private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
@@ -134,7 +137,7 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
     }
 
 
-    @RequiresApi(Build.VERSION_CODES.O)
+ /*   @RequiresApi(Build.VERSION_CODES.O)
     suspend fun refreshAppointments(): Result<Boolean> {
         return try {
             val appointmentList = endpoint.getAppointmentsByPatientId()
@@ -145,7 +148,44 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint) {
             e.printStackTrace()
             Result.failure(e)
         }
+    } */
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun refreshAppointments(): Result<Boolean> {
+        return try {
+            val appointmentList = endpoint.getAppointmentsByPatientId()
+           println("-----------------------------------------------")
+            println("-----------------------------------------------")
+            println("-----------------------------------------------")
+            println("-----------------------------------------------")
+            println(appointmentList)
+            // update in-memory
+            _appointments.value = appointmentList
+            println("-----------------------------------------------")
+            println("-----------------------------------------------")
+            println("-----------------------------------------------")
+            println("-----------------------------------------------")
+
+
+            // save to local DB
+            appointmentDao.clearAppointments()
+            appointmentDao.insertAppointments(appointmentList.map { it.toEntity() })
+
+            Result.success(true)
+        } catch (e: Exception) {
+            println("Remote fetch failed: ${e.message}, using local data")
+
+            return try {
+                val localData = appointmentDao.getAllAppointments().map { it.toModel() }
+                _appointments.value = localData
+                Result.success(true)
+            } catch (localException: Exception) {
+                println("Local fallback failed: ${localException.message}")
+                Result.failure(localException)
+            }
+        }
     }
+
 
     fun getUpcomingAppointment(): Flow<UiState<Appointment>> = flow {
         emit(UiState.Loading)

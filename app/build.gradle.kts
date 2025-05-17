@@ -2,7 +2,7 @@ plugins {
     alias(libs.plugins.android.application)
     alias(libs.plugins.kotlin.android)
     alias(libs.plugins.kotlin.compose)
-    id("com.google.gms.google-services")
+    id("com.google.devtools.ksp")
 }
 
 android {
@@ -41,6 +41,15 @@ android {
 }
 
 dependencies {
+    val room_version = "2.6.0"
+    implementation ("androidx.room:room-runtime:$room_version")
+    ksp("androidx.room:room-compiler:$room_version")
+    implementation ("androidx.room:room-ktx:$room_version")
+    testImplementation ("androidx.room:room-testing:$room_version")
+
+
+
+
     implementation("io.coil-kt:coil-compose:2.4.0")
     implementation("androidx.compose.material:material-icons-extended:1.5.0")
     implementation("androidx.navigation:navigation-compose:2.7.4")
@@ -63,6 +72,7 @@ dependencies {
     implementation(libs.androidx.espresso.core)
     implementation(libs.androidx.benchmark.common)
     implementation(libs.firebase.messaging.ktx)
+
     testImplementation(libs.junit)
     androidTestImplementation(libs.androidx.junit)
     androidTestImplementation(libs.androidx.espresso.core)
