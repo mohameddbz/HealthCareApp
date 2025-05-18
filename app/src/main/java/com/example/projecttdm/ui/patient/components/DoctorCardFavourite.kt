@@ -52,16 +52,30 @@ fun DoctorCardFavourite(
                 .padding(12.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
-            // Doctor Image (Rectangle)
             Box(
                 modifier = Modifier
                     .height(80.dp)
                     .width(80.dp)
                     .clip(RoundedCornerShape(8.dp))
-                    .background(MaterialTheme.colorScheme.surfaceVariant)
+                    .background(MaterialTheme.colorScheme.surfaceVariant),
+                contentAlignment = Alignment.Center
             ) {
+                doctor.image?.let { imageBlob ->
+                    val byteArray = imageBlob.data.map { it.toByte() }.toByteArray()
 
+                    val imageBitmap = remember(byteArray) {
+                        BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)?.asImageBitmap()
+                    }
 
+                    imageBitmap?.let {
+                        Image(
+                            bitmap = it,
+                            contentDescription = "Doctor ${doctor.name}",
+                            contentScale = ContentScale.Crop,
+                            modifier = Modifier.fillMaxSize()
+                        )
+                    }
+                }
             }
 
             // Doctor Info
