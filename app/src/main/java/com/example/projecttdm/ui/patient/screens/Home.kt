@@ -138,7 +138,6 @@ fun HomeScreen(
                     onFilterClick = { println("Filter clicked") },
                     navController = navController,
                 )
-
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -149,7 +148,6 @@ fun HomeScreen(
                     onClick = { },
                     appointmentState = appointmentState
                 )
-
             }
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
@@ -160,6 +158,9 @@ fun HomeScreen(
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
+
+
+            // Top Doctors Section
             item {
                 Row(
                     modifier = Modifier.fillMaxWidth(),
@@ -185,6 +186,7 @@ fun HomeScreen(
                 }
             }
 
+            // List of Doctors
             when (doctorsState) {
                 is UiState.Loading -> {
                     item {
@@ -221,7 +223,7 @@ fun HomeScreen(
             }
 
             item { Spacer(modifier = Modifier.height(8.dp)) }
-            item {  DeconnectionButton() }
+            item { DeconnectionButton() }
         }
     }
 }

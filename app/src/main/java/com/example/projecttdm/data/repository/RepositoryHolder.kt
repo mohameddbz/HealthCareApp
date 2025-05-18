@@ -7,6 +7,7 @@ import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.AuthEndPoint
 import com.example.projecttdm.data.endpoint.BookAppointmentEndPoint
 import com.example.projecttdm.data.endpoint.DoctorEndPoint
+import com.example.projecttdm.data.endpoint.FavoriteEndPoint
 import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
 import com.example.projecttdm.data.endpoint.ReviewEndPoint
 import com.example.projecttdm.data.endpoint.SpecialtyEndPoint
@@ -39,6 +40,9 @@ object RepositoryHolder {
     }
     val bookAppointmentRepository by lazy {
         BookAppointmentRepository(ApiClient.create(BookAppointmentEndPoint::class.java))
+    }
+    val favoriteRepository: FavoriteRepository by lazy {
+        FavoriteRepository(ApiClient.create(FavoriteEndPoint::class.java))
     }
 
 

@@ -117,10 +117,8 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
         composable(PatientRoutes.FavoriteDoctors.route) {
-            val favoriteDoctorsViewModel: FavoriteDoctorsViewModel = viewModel()
             FavoriteDoctorsScreen(
-                viewModel = favoriteDoctorsViewModel,
-                onBackClick = { navController.popBackStack() }
+                onBackClick = { navController.popBackStack() },
 
             )
         }

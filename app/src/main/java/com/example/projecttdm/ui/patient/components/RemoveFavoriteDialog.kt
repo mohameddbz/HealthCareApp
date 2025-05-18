@@ -24,12 +24,13 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projecttdm.R
 import com.example.projecttdm.data.model.Doctor
+import com.example.projecttdm.data.model.FavoriteDoctorResponse
 import kotlinx.coroutines.launch
 
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun RemoveFavoriteDialog(
-    doctor: Doctor,
+    doctor: FavoriteDoctorResponse,
     onConfirm: () -> Unit,
     onDismiss: () -> Unit
 ) {
@@ -73,32 +74,8 @@ fun RemoveFavoriteDialog(
                     .padding(bottom = 24.dp),
                 verticalAlignment = Alignment.CenterVertically
             ) {
-                // Doctor Image
-                Box(
-                    modifier = Modifier
-                        .size(56.dp)
-                        .clip(CircleShape)
-                        .background(Color.LightGray)
-                ) {
-                    if (doctor.imageResId != null) {
-                        Image(
-                            painter = painterResource(id = doctor.imageResId),
-                            contentDescription = "Doctor image",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
-                    } else {
-                        // Placeholder if no image
-                        Icon(
-                            imageVector = Icons.Outlined.FavoriteBorder,
-                            contentDescription = null,
-                            modifier = Modifier
-                                .size(36.dp)
-                                .align(Alignment.Center),
-                            tint = Color.Gray
-                        )
-                    }
-                }
+
+
 
                 // Doctor Info
                 Column(
@@ -113,7 +90,7 @@ fun RemoveFavoriteDialog(
                     )
                     Spacer(modifier = Modifier.height(4.dp))
                     Text(
-                        text = "${doctor.specialty.name} | ${doctor.hospital}",
+                        text = "${doctor.specialty} | ${doctor.clinique_name}",
                         color = Color.Gray,
                         fontSize = 14.sp
                     )

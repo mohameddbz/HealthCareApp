@@ -1,47 +1,49 @@
 package com.example.projecttdm.ui.patient.screens
 
-
-
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.ArrowBack
+import androidx.compose.material.icons.filled.Refresh
 import androidx.compose.material3.*
-import androidx.compose.runtime.Composable
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.*
 import androidx.compose.runtime.livedata.observeAsState
-import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.remember
-import androidx.compose.runtime.setValue
+import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import com.example.projecttdm.data.model.Doctor
-import com.example.projecttdm.ui.patient.components.DoctorCard
+import com.example.projecttdm.data.model.FavoriteDoctorResponse
+import com.example.projecttdm.ui.patient.components.DoctorCardFavourite
 import com.example.projecttdm.ui.patient.components.RemoveFavoriteDialog
 import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
+import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModelFactory
+import kotlinx.coroutines.delay
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun FavoriteDoctorsScreen(
     onBackClick: () -> Unit,
-    viewModel: FavoriteDoctorsViewModel = viewModel()
+    viewModel: FavoriteDoctorsViewModel = viewModel(factory = FavoriteDoctorsViewModelFactory())
 ) {
     val favoriteDoctors by viewModel.favoriteDoctors.observeAsState(emptyList())
-
+    val isLoading by viewModel.isLoading.observeAsState(false)
+    val error by viewModel.error.observeAsState(null)
 
     var showRemoveDialog by remember { mutableStateOf(false) }
-    var selectedDoctor by remember { mutableStateOf<Doctor?>(null) }
+    var selectedDoctor by remember { mutableStateOf<FavoriteDoctorResponse?>(null) }
 
     Surface(
         modifier = Modifier.fillMaxSize(),
         color = MaterialTheme.colorScheme.background
     ) {
         Column(modifier = Modifier.fillMaxSize()) {
-            // TopAppBar
             TopAppBar(
-                title = { Text("My Favorite Doctor") },
+                title = { Text("My Favorite Doctors") },
                 navigationIcon = {
                     IconButton(onClick = onBackClick) {
                         Icon(
@@ -49,43 +51,86 @@ fun FavoriteDoctorsScreen(
                             contentDescription = "Back"
                         )
                     }
+                },
+                actions = {
+                    IconButton(onClick = { viewModel.refreshFavorites() }) {
+                        Icon(
+                            imageVector = Icons.Default.Refresh,
+                            contentDescription = "Refresh"
+                        )
+                    }
                 }
             )
 
-
-
-            LazyColumn(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .padding(horizontal = 16.dp),
-                verticalArrangement = Arrangement.spacedBy(16.dp),
-                contentPadding = PaddingValues(vertical = 16.dp)
-            ) {
-                items(favoriteDoctors) { doctor ->
-                    DoctorCard(
-                        doctor = doctor,
-                        isFavorite = true, // Since this is the favorites screen
-                        onFavoriteClick = {
-                            // We don't need separate handling for favorite icon here
-                            // as clicking anywhere on the card will show remove dialog
-                        },
-                        onDoctorClick = {
-                            // Show dialog when clicking on doctor card
-                            selectedDoctor = doctor
-                            showRemoveDialog = true
+            Box(modifier = Modifier.fillMaxSize()) {
+                when {
+                    isLoading -> {
+                        CircularProgressIndicator(
+                            modifier = Modifier.align(Alignment.Center)
+                        )
+                    }
+                    error != null -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "Error: $error",
+                                color = MaterialTheme.colorScheme.error,
+                                textAlign = TextAlign.Center
+                            )
+                            Spacer(modifier = Modifier.height(16.dp))
+                            Button(onClick = { viewModel.refreshFavorites() }) {
+                                Text("Retry")
+                            }
                         }
-                    )
+                    }
+                    favoriteDoctors.isEmpty() -> {
+                        Column(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(16.dp),
+                            horizontalAlignment = Alignment.CenterHorizontally,
+                            verticalArrangement = Arrangement.Center
+                        ) {
+                            Text(
+                                text = "You don't have any favorite doctors yet",
+                                textAlign = TextAlign.Center
+                            )
+                        }
+                    }
+                    else -> {
+                        LazyColumn(
+                            modifier = Modifier
+                                .fillMaxSize()
+                                .padding(horizontal = 16.dp),
+                            verticalArrangement = Arrangement.spacedBy(16.dp),
+                            contentPadding = PaddingValues(vertical = 16.dp)
+                        ) {
+                            items(favoriteDoctors) { favoriteDoctor ->
+                                DoctorCardFavourite(
+                                    doctor = favoriteDoctor,
+                                    onDoctorClick = {
+                                        selectedDoctor = favoriteDoctor
+                                        showRemoveDialog = true
+                                    }
+                                )
+                            }
+                        }
+                    }
                 }
             }
         }
     }
 
-    // Dialog for removing a doctor from favorites
     if (showRemoveDialog && selectedDoctor != null) {
         RemoveFavoriteDialog(
             doctor = selectedDoctor!!,
             onConfirm = {
-                viewModel.toggleFavorite(selectedDoctor!!.id)
+                viewModel.toggleFavorite(selectedDoctor!!.doctor_id)
                 showRemoveDialog = false
                 selectedDoctor = null
             },
@@ -94,5 +139,12 @@ fun FavoriteDoctorsScreen(
                 selectedDoctor = null
             }
         )
+    }
+
+    error?.let {
+        LaunchedEffect(error) {
+            delay(3000)
+            viewModel.clearError()
+        }
     }
 }
