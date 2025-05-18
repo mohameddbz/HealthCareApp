@@ -44,13 +44,13 @@ object RepositoryHolder {
         SpecialtyRepository(ApiClient.create(SpecialtyEndPoint::class.java))
     }
     val doctorRepository by lazy {
-        DoctorRepository(ApiClient.create(DoctorEndPoint::class.java))
+        DoctorRepository(ApiClient.create(DoctorEndPoint::class.java), database)
     }
     val reviewRepository by lazy {
         ReviewRepository(ApiClient.create(ReviewEndPoint::class.java))
     }
     val appointmentRepository by lazy {
-        AppointmentRepository(ApiClient.create(AppointmentEndPoint::class.java), database.appointmentDao())
+        AppointmentRepository(ApiClient.create(AppointmentEndPoint::class.java), database)
     }
     val bookAppointmentRepository by lazy {
         BookAppointmentRepository(ApiClient.create(BookAppointmentEndPoint::class.java))

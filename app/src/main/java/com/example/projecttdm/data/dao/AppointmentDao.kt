@@ -17,4 +17,8 @@ interface AppointmentDao {
 
     @Query("DELETE FROM appointments")
     suspend fun clearAppointments()
+
+    @Query("DELETE FROM appointments WHERE id IN (:appointmentIds)")
+    suspend fun deleteAppointments(appointmentIds: List<String>)
+
 }

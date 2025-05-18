@@ -3,7 +3,10 @@ package com.example.projecttdm.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.projecttdm.R
+import com.example.projecttdm.data.db.AppDatabase
 import com.example.projecttdm.data.endpoint.DoctorEndPoint
+import com.example.projecttdm.data.entity.toEntity
+import com.example.projecttdm.data.entity.toModel
 import com.example.projecttdm.data.local.DoctorData
 import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.data.model.Specialty
@@ -17,7 +20,7 @@ import com.example.projecttdm.utils.AppointmentMapper
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.flow.flowOn
 
-class DoctorRepository (private val endpoint: DoctorEndPoint) {
+class DoctorRepository (private val endpoint: DoctorEndPoint,private val localDB: AppDatabase) {
 
     private val patientFavorites = mapOf(
         "patient1" to listOf("1", "3", "5"),
@@ -48,13 +51,28 @@ class DoctorRepository (private val endpoint: DoctorEndPoint) {
 
 
     //fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors
-    fun getTopDoctors(): Flow<UiState<List<Doctor>>> = flow {
+   /* fun getTopDoctors(): Flow<UiState<List<Doctor>>> = flow {
         emit(UiState.Loading) // Emit loading first
         try {
             val doctorsList = endpoint.getDoctors() // Fetch data
             emit(UiState.Success(doctorsList))      // Emit success
         } catch (e: Exception) {
             emit(UiState.Error(e.message ?: "Unknown error")) // Emit error
+        }
+    }*/
+    fun getTopDoctors(): Flow<UiState<List<Doctor>>> = flow {
+        emit(UiState.Loading)
+        try {
+            val doctorsList = endpoint.getDoctors()
+            localDB.doctorDao().insertDoctors(doctorsList.map { it.toEntity() })
+            emit(UiState.Success(doctorsList))
+        } catch (e: Exception) {
+            val cachedDoctors = localDB.doctorDao().getAllDoctors().map { it.toModel() }
+            if (cachedDoctors.isNotEmpty()) {
+                emit(UiState.Success(cachedDoctors))
+            } else {
+                emit(UiState.Error(e.message ?: "Erreur inconnue"))
+            }
         }
     }
 

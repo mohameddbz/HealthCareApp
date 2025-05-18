@@ -3,10 +3,12 @@ package com.example.projecttdm.data.repository
 import android.os.Build
 import androidx.annotation.RequiresApi
 import com.example.projecttdm.data.dao.AppointmentDao
+import com.example.projecttdm.data.db.AppDatabase
 import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.UserEndPoint
 import com.example.projecttdm.data.entity.toEntity
 import com.example.projecttdm.data.entity.toModel
+import com.example.projecttdm.data.entity.toQRCodeData
 import com.example.projecttdm.data.local.AppointmentData
 import com.example.projecttdm.data.local.AppointmentsData
 import com.example.projecttdm.data.model.AppointementResponse
@@ -32,7 +34,7 @@ import java.time.LocalTime
 import java.util.Date
 import java.util.UUID
 
-class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private val appointmentDao: AppointmentDao) {
+class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private val localDB: AppDatabase) {
 
     // In-memory storage for appointments
     private val _appointments = MutableStateFlow<List<Appointment>>(emptyList())
@@ -81,7 +83,7 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private 
         return  endpoint.getTodaysAppointmentsForDoctor()
     }
 
-    suspend fun getQRCodeForAppointment(appointmentId: String): Result<QRCodeData> {
+  /*  suspend fun getQRCodeForAppointment(appointmentId: String): Result<QRCodeData> {
         return try {
             val response = endpoint.getQRCodeForAppointment(appointmentId)
             println("--------------- ${response}")
@@ -90,6 +92,25 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private 
             Result.failure(e)
         }
     }
+    */
+
+    suspend fun getQRCodeForAppointment(appointmentId: String): Result<QRCodeData> {
+        // D'abord, on cherche en local
+        val localData = localDB.qrCodeDataDao().getByAppointmentId(appointmentId)
+        if (localData != null) {
+            return Result.success(localData.toQRCodeData())
+        }
+
+        // Sinon, on fait la requête réseau, et on sauvegarde en local
+        return try {
+            val response = endpoint.getQRCodeForAppointment(appointmentId)
+            localDB.qrCodeDataDao().insert(response.toEntity(appointmentId))
+            Result.success(response)
+        } catch (e: Exception) {
+            Result.failure(e)
+        }
+    }
+
 
     fun searchAppointments(query: String, doctors: List<Doctor>): Flow<List<Appointment>> {
         return appointments.map { appointmentList ->
@@ -149,7 +170,7 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private 
             Result.failure(e)
         }
     } */
-
+  /*
     @RequiresApi(Build.VERSION_CODES.O)
     suspend fun refreshAppointments(): Result<Boolean> {
         return try {
@@ -168,15 +189,51 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private 
 
 
             // save to local DB
-            appointmentDao.clearAppointments()
-            appointmentDao.insertAppointments(appointmentList.map { it.toEntity() })
+            localDB.appointmentDao().clearAppointments()
+            localDB.appointmentDao().insertAppointments(appointmentList.map { it.toEntity() })
 
             Result.success(true)
         } catch (e: Exception) {
             println("Remote fetch failed: ${e.message}, using local data")
 
             return try {
-                val localData = appointmentDao.getAllAppointments().map { it.toModel() }
+                val localData = localDB.appointmentDao().getAllAppointments().map { it.toModel() }
+                _appointments.value = localData
+                Result.success(true)
+            } catch (localException: Exception) {
+                println("Local fallback failed: ${localException.message}")
+                Result.failure(localException)
+            }
+        }
+    }*/
+
+    @RequiresApi(Build.VERSION_CODES.O)
+    suspend fun refreshAppointments(): Result<Boolean> {
+        return try {
+            val remoteAppointments = endpoint.getAppointmentsByPatientId()
+            _appointments.value = remoteAppointments
+
+            val localAppointments = localDB.appointmentDao().getAllAppointments()
+            val remoteMap = remoteAppointments.associateBy { it.id }
+            val localMap = localAppointments.associateBy { it.id }
+
+            val toInsertOrUpdate = remoteAppointments.filter { remote ->
+                val local = localMap[remote.id]
+                local == null || local.status != remote.status.toString() // comparer le contenu
+            }
+
+            val toDelete = localAppointments.filter { local ->
+                !remoteMap.containsKey(local.id)
+            }
+
+            localDB.appointmentDao().deleteAppointments(toDelete.map { it.id })
+            localDB.appointmentDao().insertAppointments(toInsertOrUpdate.map { it.toEntity() })
+
+            Result.success(true)
+        } catch (e: Exception) {
+            println("Remote fetch failed: ${e.message}, using local data")
+            return try {
+                val localData = localDB.appointmentDao().getAllAppointments().map { it.toModel() }
                 _appointments.value = localData
                 Result.success(true)
             } catch (localException: Exception) {

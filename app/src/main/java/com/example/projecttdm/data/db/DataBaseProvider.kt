@@ -5,13 +5,19 @@ import androidx.room.Database
 import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.projecttdm.data.dao.AppointmentDao
+import com.example.projecttdm.data.dao.DoctorDao
+import com.example.projecttdm.data.dao.QRCodeDao
 import com.example.projecttdm.data.entity.AppointmentEntity
+import com.example.projecttdm.data.entity.DoctorEntity
+import com.example.projecttdm.data.entity.QRCodeDataEntity
 
-@Database(entities = [AppointmentEntity::class], version = 1)
+@Database(entities = [AppointmentEntity::class, QRCodeDataEntity::class ,DoctorEntity::class], version = 2)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appointmentDao(): AppointmentDao
-}
+    abstract fun qrCodeDataDao(): QRCodeDao
+    abstract fun doctorDao(): DoctorDao
 
+}
 
 
 object DatabaseProvider {
