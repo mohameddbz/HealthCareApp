@@ -30,6 +30,7 @@ fun FavoriteDoctorsScreen(
     onBackClick: () -> Unit,
     viewModel: FavoriteDoctorsViewModel = viewModel(factory = FavoriteDoctorsViewModelFactory())
 ) {
+
     val favoriteDoctors by viewModel.favoriteDoctors.observeAsState(emptyList())
     val isLoading by viewModel.isLoading.observeAsState(false)
     val error by viewModel.error.observeAsState(null)

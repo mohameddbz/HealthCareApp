@@ -15,6 +15,7 @@ import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 class FavoriteDoctorsViewModel : ViewModel() {
 
     // Initialize repository directly from RepositoryHolder
