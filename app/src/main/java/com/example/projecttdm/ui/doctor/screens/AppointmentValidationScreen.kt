@@ -34,7 +34,6 @@ import java.util.*
 // Couleurs de l'application
 val LightBlue = Color(0xFFBBDEFB)
 val DarkBlue = Color(0xFF0D47A1)
-val AccentBlue = Color(0xFF64B5F6)
 
 data class CalendarDay(
     val date: Date,
