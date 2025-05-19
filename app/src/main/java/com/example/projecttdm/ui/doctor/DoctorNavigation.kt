@@ -18,6 +18,7 @@ import com.example.projecttdm.ui.doctor.screens.CalendarApp
 import com.example.projecttdm.ui.doctor.screens.CalendarScreen
 import com.example.projecttdm.ui.doctor.screens.AppointmentOfWeekScreen
 import com.example.projecttdm.ui.doctor.screens.DoctorHomeScreen
+import com.example.projecttdm.ui.doctor.screens.DoctorScheduleScreen
 import com.example.projecttdm.ui.doctor.screens.QrScannerScreen
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
@@ -86,32 +87,62 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
             composable(
                 route = "${PatientRoutes.PatientSummary.route}/{appointmentid}",
                 arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
-            ) {backStackEntry ->
+            ) { backStackEntry ->
                 val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
                 AppointmentReviewScreen(
-                    appointmentId =appointmentid,
+                    appointmentId = appointmentid,
                     navController = navController,
                     onBackPressed = { navController.popBackStack() },
                     onNextPressed = {
                         navController.navigate(PatientRoutes.PinVerification.route)
-                    }, viewModel = appointmentViewModel,
-                    canAddPrescription = true
+                    },
+                    viewModel = appointmentViewModel,
+                    canAddPrescription = true,
+                    onAddPrescriptionClick = { appointId, patientId ->
+                        // Example: navigate to a screen to add a prescription with these IDs
+                        navController.navigate("${PatientRoutes.PrescriptionCreate.route}/${patientId}/${appointId}")
+                    }
                 )
             }
 
 
-            composable(PatientRoutes.PrescriptionCreate.route){
+
+            composable(
+                route = "${PatientRoutes.PrescriptionCreate.route}/{patientId}/{appointmentId}",
+                arguments = listOf(
+                    navArgument("patientId") { type = NavType.StringType },
+                    navArgument("appointmentId") { type = NavType.StringType }
+                )
+            ){  backStackEntry ->
+                val patientId = backStackEntry.arguments?.getString("patientId") ?: ""
+                val appointmentId = backStackEntry.arguments?.getString("appointmentId") ?: ""
                 val prescriptionViewModel = PrescriptionViewModel()
+
                 PrescriptionCreateScreen(
-                    onNavigateBack = {navController.popBackStack()},
-                    prescriptionViewModel
+                    patientId = patientId,
+                    doctorId = "1",
+                    appointmentId = appointmentId,
+                    onNavigateBack = { navController.popBackStack() },
+                    viewModel = prescriptionViewModel
                 )
             }
 
-            composable("${DoctorRoutes.AppointmentOfWeek.route}/{doctorId}") { backStackEntry ->
-            val doctorId = backStackEntry.arguments?.getString("doctorId") ?: "1"  // Default to "1"
+            composable(
+                route = "${DoctorRoutes.DOCTOR_SCHEDULE.route}/{doctorId}",
+                arguments = listOf(
+                    navArgument("doctorId") { type = NavType.IntType }
+                )
+            ) { backStackEntry ->
+                val doctorId = backStackEntry.arguments?.getInt("doctorId") ?: -1
+                DoctorScheduleScreen(
+                    doctorId = doctorId,
+                    onNavigateBack = { navController.popBackStack() },
+                )
+            }
+
+
+            composable(DoctorRoutes.AppointmentOfWeek.route) {
             AppointmentOfWeekScreen(
-                doctorId = doctorId,
                 onBrowseDoctors = {
                     navController.navigate(DoctorRoutes.HomeScreen.route)
                 },

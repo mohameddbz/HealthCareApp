@@ -14,9 +14,8 @@ interface DoctorEndPoint {
     @GET("doctors/{id}")
     suspend fun getDoctorById(@Path("id") doctorId: String): Doctor
 
-    @GET("doctors/{id}/appointments/{date}")
+    @GET("doctors/appointments/{date}")
     suspend fun getAppointmentsByDate(
-        @Path("id") doctorId: String,
         @Path("date") date: String
     ): AppointmentWeekApiResponse
 }

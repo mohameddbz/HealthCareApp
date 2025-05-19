@@ -1,5 +1,7 @@
 package com.example.projecttdm.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Doctor
@@ -14,8 +16,9 @@ import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.catch
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.launch
-
+@RequiresApi(Build.VERSION_CODES.O)
 class DoctorListViewModel() : ViewModel() {
+
     private val doctorRepository = RepositoryHolder.doctorRepository
     private val specialtyRepository = RepositoryHolder.specialtyRepository
 

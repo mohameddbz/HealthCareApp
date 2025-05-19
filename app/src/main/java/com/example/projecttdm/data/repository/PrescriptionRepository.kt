@@ -36,7 +36,6 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
 
     suspend fun createPrescription(
         patientId: String,
-        doctorId: String,
         medications: List<Medications>,
         instructions: String,
         expiryDate: String,
@@ -44,12 +43,13 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
     ): PrescriptionResponse {
         val request = PrescriptionRequest(
             patientId = patientId,
-            doctorId = doctorId,
             medications = medications,
             instructions = instructions,
             expiryDate = expiryDate,
             appointmentId = appointmentId  // Ajout du champ appointmentId
         )
+
+        println("-=-=-=-=-=-=-= ${patientId}")
         return endpoint.createPrescription(request)
     }
 
@@ -64,7 +64,7 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
     ): PrescriptionResponse {
         val request = PrescriptionRequest(
             patientId = patientId,
-            doctorId = doctorId,
+//            doctorId = doctorId,
             medications = medications,
             instructions = instructions,
             expiryDate = expiryDate,

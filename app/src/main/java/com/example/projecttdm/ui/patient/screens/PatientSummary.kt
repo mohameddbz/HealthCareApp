@@ -57,9 +57,10 @@ fun AppointmentReviewScreen(
     viewModel: AppointmentViewModel = viewModel(),
     onBackPressed: () -> Unit = {},
     onNextPressed: () -> Unit = {},
-    canAddPrescription: Boolean = false,  // New parameter to control button visibility
-    onAddPrescriptionClick: () -> Unit = {}  // Callback for button click
-) {
+    canAddPrescription: Boolean = false,  // Controls button visibility
+    onAddPrescriptionClick: (appointId: String, patientId: String) -> Unit = { _, _ -> }
+)
+ {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.appointmentState.collectAsState()
     val scrollState = rememberScrollState()
@@ -95,36 +96,37 @@ fun AppointmentReviewScreen(
         },
         bottomBar = {
             // Only show the button if canAddPrescription is true
-            if (canAddPrescription) {
-                BottomAppBar(
-                    modifier = Modifier.fillMaxWidth(),
-                    containerColor = MaterialTheme.colorScheme.surface,
-                    contentPadding = PaddingValues(16.dp),
-                    content = {
-                        Button(
-                            onClick = { onAddPrescriptionClick() },
-                            modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(16.dp),
-                            colors = ButtonDefaults.buttonColors(
-                                containerColor = MaterialTheme.colorScheme.primary
-                            )
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.MedicalServices,
-                                contentDescription = "Add Prescription",
-                                modifier = Modifier.size(24.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Add Prescription",
-                                style = MaterialTheme.typography.bodyLarge.copy(
-                                    fontWeight = FontWeight.Bold
+                if (canAddPrescription && uiState is UiState.Success) {
+                    val data = (uiState as UiState.Success<AppointmentReviewData>).data  // Safe because you confirmed it's Success
+                    BottomAppBar(
+                        modifier = Modifier.fillMaxWidth(),
+                        containerColor = MaterialTheme.colorScheme.surface,
+                        contentPadding = PaddingValues(16.dp),
+                        content = {
+                            Button(
+                                onClick = { onAddPrescriptionClick(data.appointment.id, data.appointment.patientId) },
+                                modifier = Modifier.fillMaxWidth(),
+                                contentPadding = PaddingValues(16.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
                                 )
-                            )
+                            ) {
+                                Icon(
+                                    imageVector = Icons.Default.MedicalServices,
+                                    contentDescription = "Add Prescription",
+                                    modifier = Modifier.size(24.dp)
+                                )
+                                Spacer(modifier = Modifier.width(8.dp))
+                                Text(
+                                    text = "Add Prescription",
+                                    style = MaterialTheme.typography.bodyLarge.copy(
+                                        fontWeight = FontWeight.Bold
+                                    )
+                                )
+                            }
                         }
-                    }
-                )
-            }
+                    )
+                }
         }
     ) { paddingValues ->
         Surface(

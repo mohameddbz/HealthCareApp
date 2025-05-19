@@ -8,7 +8,7 @@ data class AppointmentWeekResponse(
     val patient_id: String,
     val status: String,
     val reason: String?,
-    val qr_data: String?,
+//    val qr_data: String?,
     val slot_info: SlotInfo?,
     val patient_info: PatientInfo?,
     val doctor_info: DoctorInfo?

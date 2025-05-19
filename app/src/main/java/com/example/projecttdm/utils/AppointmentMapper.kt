@@ -73,7 +73,7 @@ object AppointmentMapper {
             patient_id = patientId,
             status = status.toString(),
             reason = reason,
-            qr_data = qrData,
+//            qr_data = qrData,
             slot_info = slotInfo,
             patient_info = patientInfo,
             doctor_info = doctorInfo

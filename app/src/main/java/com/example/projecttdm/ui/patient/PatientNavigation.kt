@@ -126,13 +126,13 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
 
-        composable(PatientRoutes.PrescriptionCreate.route){
-            val prescriptionViewModel = PrescriptionViewModel()
-            PrescriptionCreateScreen(
-                onNavigateBack = {navController.popBackStack()},
-                prescriptionViewModel
-            )
-        }
+//        composable(PatientRoutes.PrescriptionCreate.route){
+//            val prescriptionViewModel = PrescriptionViewModel()
+//            PrescriptionCreateScreen(
+//                onNavigateBack = {navController.popBackStack()},
+//                prescriptionViewModel
+//            )
+//        }
         composable(PatientRoutes.Success.route) {
             SuccessPopup(
                 titleText = "Congratulations!",
