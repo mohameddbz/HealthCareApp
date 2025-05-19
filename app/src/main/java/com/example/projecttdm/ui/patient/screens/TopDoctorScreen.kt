@@ -1,5 +1,7 @@
 package com.example.projecttdm.ui.patient.screens
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.items
@@ -8,6 +10,7 @@ import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.Search
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
+import androidx.compose.runtime.livedata.observeAsState
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
@@ -23,7 +26,10 @@ import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.DoctorCard
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
+import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
+import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModelFactory
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun TopDoctorScreen(
@@ -39,11 +45,11 @@ fun TopDoctorScreen(
         doctorListViewModel.setupFiltering()
     }
 
+    val favoriteViewModel: FavoriteDoctorsViewModel = viewModel(factory = FavoriteDoctorsViewModelFactory())
     val doctorsState by doctorListViewModel.doctorsState.collectAsState()
     val filteredDoctors by doctorListViewModel.filteredDoctors.collectAsState()
     val specialties by doctorListViewModel.allSpecialties.collectAsState()
     val selectedSpecialty by doctorListViewModel.selectedSpecialty.collectAsState()
-
 
     Scaffold(
         topBar = {
@@ -80,26 +86,47 @@ fun TopDoctorScreen(
 
             when (val state = doctorsState) {
                 is UiState.Loading -> LoadingView()
-                is UiState.Success -> DoctorList(filteredDoctors, onDoctorClick)
-                is UiState.Error -> ErrorView(message = state.message) {
-                    doctorListViewModel.refreshDoctors()
+                is UiState.Success -> DoctorList(filteredDoctors, onDoctorClick, favoriteViewModel)
+                is UiState.Error -> {
+                    Box(
+                        modifier = Modifier.fillMaxSize(),
+                        contentAlignment = Alignment.Center
+                    ) {
+                        Text(
+                            text = "Error: ${state.message}",
+                            style = MaterialTheme.typography.bodyLarge,
+                            color = MaterialTheme.colorScheme.error
+                        )
+                    }
                 }
                 is UiState.Init -> {
                     Text("Initial state. Please wait...", modifier = Modifier.padding(16.dp))
                 }
-
-                is UiState.Error -> TODO()
-                UiState.Init -> TODO()
-                UiState.Loading -> TODO()
-                is UiState.Success -> TODO()
             }
         }
     }
 }
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun DoctorList(doctors: List<Doctor>, onDoctorClick: (String) -> Unit) {
+fun DoctorList(
+    doctors: List<Doctor>,
+    onDoctorClick: (String) -> Unit,
+    favoriteViewModel: FavoriteDoctorsViewModel
+) {
+    val favoriteDoctors by favoriteViewModel.favoriteDoctors.observeAsState(emptyList())
+    val isLoading by favoriteViewModel.isLoading.observeAsState(false)
+    val error by favoriteViewModel.error.observeAsState()
+
+    // Handle error state
+    error?.let { errorMessage ->
+        LaunchedEffect(errorMessage) {
+            // You can show a snackbar or toast here
+            // For now, just clear the error after showing it
+            favoriteViewModel.clearError()
+        }
+    }
+
     LazyColumn(
         modifier = Modifier
             .fillMaxSize()
@@ -107,10 +134,14 @@ fun DoctorList(doctors: List<Doctor>, onDoctorClick: (String) -> Unit) {
         verticalArrangement = Arrangement.spacedBy(8.dp)
     ) {
         items(doctors, key = { it.id }) { doctor ->
+            val isFavorite = favoriteDoctors.any { it.doctor_id == doctor.id.toInt() }
+
             DoctorCard(
                 doctor = doctor,
-                isFavorite = false, // Update when favorite logic is implemented
-                onFavoriteClick = { /* handle favorite */ },
+                isFavorite = isFavorite,
+                onFavoriteClick = {
+                    favoriteViewModel.toggleFavorite(doctor.id.toInt())
+                },
                 onDoctorClick = { onDoctorClick(doctor.id) }
             )
         }
