@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.patient.components.Appointment
 
+import android.graphics.BitmapFactory
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.BorderStroke
@@ -20,6 +21,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.AccountCircle
 import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.outlined.AccessTime
 import androidx.compose.material.icons.outlined.CalendarToday
@@ -39,10 +41,12 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.remember
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
@@ -152,26 +156,32 @@ fun PendingCard(
                             .size(64.dp)
                             .background(MaterialTheme.colorScheme.surfaceVariant),
                         contentAlignment = Alignment.Center
-
                     ) {
-                        when {
-                            doctor?.imageResId != null -> {
+                        if (doctor?.imageUrl != null) {
+                            val byteArray = doctor.imageUrl.data.map { it.toByte() }.toByteArray()
+
+                            val imageBitmap = remember(byteArray) {
+                                BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)?.asImageBitmap()
+                            }
+
+                            imageBitmap?.let {
                                 Image(
-                                    painter = painterResource(id = doctor.imageResId),
+                                    bitmap = it,
                                     contentDescription = "Doctor ${doctor.name}",
-                                    contentScale = ContentScale.Fit,
+                                    contentScale = ContentScale.Crop,
                                     modifier = Modifier.fillMaxSize()
                                 )
                             }
-
-                            else -> {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Default profile icon",
-                                    tint = Color.Black,
-                                    modifier = Modifier.size(36.dp)
-                                )
-                            }
+                        } else {
+                            // Afficher une icône par défaut si imageUrl est null
+                            Icon(
+                                imageVector = Icons.Default.AccountCircle, // ou un autre icône
+                                contentDescription = "Default doctor icon",
+                                tint = Color.Gray,
+                                modifier = Modifier
+                                    .size(64.dp)
+                                    .fillMaxSize()
+                            )
                         }
                     }
 
