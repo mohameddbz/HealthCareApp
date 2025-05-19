@@ -11,6 +11,7 @@ import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
 import com.example.projecttdm.data.endpoint.ReviewEndPoint
 import com.example.projecttdm.data.endpoint.SpecialtyEndPoint
 import com.example.projecttdm.data.endpoint.UserEndPoint
+import com.yourapp.data.endpoint.DoctorScheduleApi
 
 
 @RequiresApi(Build.VERSION_CODES.O)
@@ -39,6 +40,9 @@ object RepositoryHolder {
     }
     val bookAppointmentRepository by lazy {
         BookAppointmentRepository(ApiClient.create(BookAppointmentEndPoint::class.java))
+    }
+    val doctorScheduleRepository by lazy {
+        DoctorScheduleRepository(ApiClient.create(DoctorScheduleApi::class.java))
     }
 
 

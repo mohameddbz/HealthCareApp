@@ -8,8 +8,6 @@ sealed class DoctorRoutes(val route: String) {
     object SuccessConfirm : DoctorRoutes("succes_confirm")
     object SuccesRefuse : DoctorRoutes("succes_refuse")
     object QrScanner : DoctorRoutes("qr_scanner")
-    object AppointmentOfWeek : DoctorRoutes("AppointmentOfWeek") {
-        const val routeWithArgs = "AppointmentOfWeek/{doctorId}"
-        fun createRoute(doctorId: String) = "AppointmentOfWeek/$doctorId"
-    }
+    object AppointmentOfWeek : DoctorRoutes("AppointmentOfWeek")
+    object DOCTOR_SCHEDULE : DoctorRoutes("DOCTOR_SCHEDULE")
 }

@@ -32,7 +32,7 @@ import com.google.mlkit.vision.common.InputImage
 @Composable
 fun QrScannerScreen(
     viewModel: QrViewModel,
-    navController: NavController
+    navController: NavController,
 ) {
     val context = LocalContext.current
     val lifecycleOwner = LocalLifecycleOwner.current
@@ -127,7 +127,7 @@ fun QrScannerScreen(
                     .background(Color.Black.copy(alpha = 0.7f))
                     .padding(12.dp)
             ) {
-                Text("ID: ${data.id}", color = Color.White)
+                Text("ID: ${data}", color = Color.White)
                 Text("Content: ${data.content}", color = Color.White)
                 Text("Timestamp: ${data.timestamp}", color = Color.White)
             }
@@ -135,7 +135,7 @@ fun QrScannerScreen(
             // 🩺 "Add Prescription" Button
             Button (
                 onClick = {
-                    // TODO: Handle your prescription logic here
+
                 },
                 modifier = Modifier
                     .align(Alignment.BottomCenter)

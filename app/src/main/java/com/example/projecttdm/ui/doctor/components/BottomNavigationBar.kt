@@ -19,7 +19,6 @@ import androidx.navigation.NavDestination.Companion.hierarchy
 import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.projecttdm.ui.doctor.DoctorRoutes
-import com.example.projecttdm.ui.patient.PatientRoutes
 
 @Composable
 fun BottomNavigationBar(navController: NavController) {
@@ -65,8 +64,8 @@ sealed class BottomNavItem(val route: String, val icon: ImageVector, val title: 
     object Home : BottomNavItem(DoctorRoutes.HomeScreen.route, Icons.Default.Home, "Accueil")
     object Favorites : BottomNavItem(DoctorRoutes.AppointmentValidationScreen.route, Icons.Default.Favorite, "Favoris")
     object Camera : BottomNavItem(DoctorRoutes.QrScanner.route, Icons.Default.CameraAlt, "Camera")
-    object Profile : BottomNavItem(PatientRoutes.PrescriptionCreate.route, Icons.Default.Person, "Profil")
-    object Settings : BottomNavItem(DoctorRoutes.AppointmentOfWeek.createRoute("1"), Icons.Default.Settings, "Paramètres")
+    object Profile : BottomNavItem(DoctorRoutes.QrScanner.route, Icons.Default.Person, "Profil")
+    object Settings : BottomNavItem(DoctorRoutes.AppointmentOfWeek.route, Icons.Default.Settings, "Paramètres")
 }
 
 // Add items to the nav bar (camera in the center)

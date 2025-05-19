@@ -25,7 +25,6 @@ import java.time.format.DateTimeFormatter
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AppointmentOfWeekScreen(
-    doctorId: String,
     onBrowseDoctors: () -> Unit,
     onAppointmentClick: (String) -> Unit,
     initialSelectedDate: LocalDate = LocalDate.now()
@@ -37,7 +36,7 @@ fun AppointmentOfWeekScreen(
 
     LaunchedEffect(selectedDate) {
         val formattedDate = selectedDate.format(DateTimeFormatter.ISO_DATE)
-        viewModel.loadAppointmentsByDate(doctorId, formattedDate)
+        viewModel.loadAppointmentsByDate(formattedDate)
     }
 
     val state by viewModel.appointments.collectAsState()

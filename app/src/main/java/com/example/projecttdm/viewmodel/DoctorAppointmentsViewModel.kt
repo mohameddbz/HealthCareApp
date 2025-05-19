@@ -25,9 +25,9 @@ class DoctorAppointmentsViewModel : ViewModel() {
     private val doctorRepository = RepositoryHolder.doctorRepository
 
     @RequiresApi(Build.VERSION_CODES.O)
-    fun loadAppointmentsByDate(doctorId: String, date: String) {
+    fun loadAppointmentsByDate(date: String) {
         viewModelScope.launch {
-            doctorRepository.getAppointmentsByDate(doctorId, date).collect {
+            doctorRepository.getAppointmentsByDate(date).collect {
                 _appointments.value = it
             }
         }

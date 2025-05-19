@@ -5,11 +5,7 @@ import android.os.Build
 import android.widget.Toast
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.background
-import androidx.compose.foundation.border
-import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
-import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
@@ -26,7 +22,6 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.unit.dp
-import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
@@ -36,15 +31,54 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun PrescriptionCreateScreen(
+    patientId: String,
+    doctorId: String,
+    appointmentId: String,
     onNavigateBack: () -> Unit,
     viewModel: PrescriptionViewModel = viewModel()
 ) {
-    val patientId by viewModel.patientId.collectAsState()
-    val doctorId by viewModel.doctorId.collectAsState()
-    val appointmentId by viewModel.appointmentId.collectAsState()
+    val context = LocalContext.current
+
+    // Ensure parameters are properly passed through
+    // Set initial values synchronously to avoid race conditions
+    SideEffect {
+        viewModel.resetFields() // Start clean
+
+        if (patientId.isNotBlank()) {
+            viewModel.onPatientIdChanged(patientId)
+        }
+
+        if (doctorId.isNotBlank()) {
+            viewModel.onDoctorIdChanged(doctorId)
+        }
+
+        if (appointmentId.isNotBlank()) {
+            viewModel.onAppointmentIdChanged(appointmentId)
+        }
+    }
+
+    // Also set values when parameters change (if screen is reused)
+    LaunchedEffect(patientId, doctorId, appointmentId) {
+        if (patientId.isNotBlank()) {
+            viewModel.onPatientIdChanged(patientId)
+        }
+
+        if (doctorId.isNotBlank()) {
+            viewModel.onDoctorIdChanged(doctorId)
+        }
+
+        if (appointmentId.isNotBlank()) {
+            viewModel.onAppointmentIdChanged(appointmentId)
+        }
+
+        // Debug printout to verify values are set
+        println("LaunchedEffect: patientId=$patientId, doctorId=$doctorId, appointmentId=$appointmentId")
+    }
+
     val instructions by viewModel.instructions.collectAsState()
     val expiryDate by viewModel.expiryDate.collectAsState()
     val medications by viewModel.medications.collectAsState()
+    val medicationError by viewModel.medicationError.collectAsState()
 
     val medicationName by viewModel.medicationName.collectAsState()
     val medicationDosage by viewModel.medicationDosage.collectAsState()
@@ -53,12 +87,26 @@ fun PrescriptionCreateScreen(
 
     val prescriptionState by viewModel.prescriptionState.collectAsState()
     val scrollState = rememberScrollState()
-    val context = LocalContext.current
+
+    // Observe patient, doctor and appointment IDs for debugging
+    val currentPatientId by viewModel.patientId.collectAsState()
+    val currentDoctorId by viewModel.doctorId.collectAsState()
+    val currentAppointmentId by viewModel.appointmentId.collectAsState()
+
+    // Debug values in a side effect
+    SideEffect {
+        println("Current state in Composable:")
+        println("- patientId: $currentPatientId")
+        println("- doctorId: $currentDoctorId")
+        println("- appointmentId: $currentAppointmentId")
+    }
 
     LaunchedEffect(prescriptionState) {
         if (prescriptionState is UiState.Success) {
-            // La prescription a été créée avec succès, on peut naviguer vers une autre page
+            Toast.makeText(context, "Prescription créée avec succès", Toast.LENGTH_SHORT).show()
             onNavigateBack()
+        } else if (prescriptionState is UiState.Error) {
+            Toast.makeText(context, (prescriptionState as UiState.Error).message, Toast.LENGTH_LONG).show()
         }
     }
 
@@ -78,11 +126,28 @@ fun PrescriptionCreateScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues)
-                .verticalScroll(scrollState) // Ajout du scroll vertical pour toute la page
+                .verticalScroll(scrollState)
                 .padding(16.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
-            // Informations patient et médecin
+            // Debug info card (remove in production)
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surfaceVariant)
+            ) {
+                Column(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(16.dp)
+                ) {
+                    Text("Informations de Débogue", fontWeight = FontWeight.Bold)
+                    Text("ID Patient: $currentPatientId")
+                    Text("ID Médecin: $currentDoctorId")
+                    Text("ID Rendez-vous: $currentAppointmentId")
+                }
+            }
+
+            // Date d'expiration
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -94,28 +159,6 @@ fun PrescriptionCreateScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text("Informations de base", fontWeight = FontWeight.Bold)
-
-                    OutlinedTextField(
-                        value = patientId,
-                        onValueChange = { viewModel.onPatientIdChanged(it) },
-                        label = { Text("ID du patient") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                        value = doctorId,
-                        onValueChange = { viewModel.onDoctorIdChanged(it) },
-                        label = { Text("ID du médecin") },
-                        modifier = Modifier.fillMaxWidth()
-                    )
-
-                    OutlinedTextField(
-                            value = appointmentId,
-                            onValueChange = { viewModel.onAppointmentIdChanged(it) },
-                            label = { Text("ID du Appointment") },
-                            modifier = Modifier.fillMaxWidth()
-                        )
-
 
                     // Champ de date d'expiration avec sélecteur de date
                     Row(
@@ -163,6 +206,15 @@ fun PrescriptionCreateScreen(
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
                     Text("Médicaments", fontWeight = FontWeight.Bold)
+
+                    // Affichage de l'erreur du médicament
+                    medicationError?.let { error ->
+                        Text(
+                            text = error,
+                            color = Color.Red,
+                            modifier = Modifier.padding(vertical = 4.dp)
+                        )
+                    }
 
                     // Formulaire pour ajouter un médicament
                     OutlinedTextField(
@@ -290,28 +342,21 @@ fun PrescriptionCreateScreen(
 
             // Bouton de création
             Button(
-                onClick = { viewModel.createPrescription() },
+                onClick = {
+                    println("Creating prescription with: patientId=${viewModel.patientId.value}, doctorId=${viewModel.doctorId.value}, appointmentId=${viewModel.appointmentId.value}")
+                    viewModel.createPrescription()
+                },
                 modifier = Modifier
                     .fillMaxWidth()
                     .padding(vertical = 8.dp),
                 enabled = prescriptionState !is UiState.Loading
             ) {
-                when (prescriptionState) {
-                    is UiState.Init -> {
-                        // Ne rien afficher ou un écran vide
-                    }
-                    is UiState.Loading -> {
-                        CircularProgressIndicator(
-                            color = MaterialTheme.colorScheme.onPrimary,
-                            modifier = Modifier.size(20.dp)
-                        )
-                        Spacer(modifier = Modifier.width(8.dp))
-                    }
-                    is UiState.Success -> {
-                        Toast.makeText(context,"mchat 9owa",Toast.LENGTH_SHORT).show()
-                            }
-
-                    is UiState.Error -> Toast.makeText(context,"mhbtch tmchi",Toast.LENGTH_SHORT).show()
+                if (prescriptionState is UiState.Loading) {
+                    CircularProgressIndicator(
+                        color = MaterialTheme.colorScheme.onPrimary,
+                        modifier = Modifier.size(20.dp)
+                    )
+                    Spacer(modifier = Modifier.width(8.dp))
                 }
 
                 Text("Créer la prescription")
