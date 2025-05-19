@@ -13,9 +13,8 @@ import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import androidx.navigation.navArgument
 import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
-import com.example.projecttdm.ui.doctor.components.BottomNavigationBar
+import com.example.projecttdm.ui.doctor.components.AnimatedBottomNavigationBar
 import com.example.projecttdm.ui.doctor.screens.CalendarApp
-import com.example.projecttdm.ui.doctor.screens.CalendarScreen
 import com.example.projecttdm.ui.doctor.screens.AppointmentOfWeekScreen
 import com.example.projecttdm.ui.doctor.screens.DoctorHomeScreen
 import com.example.projecttdm.ui.doctor.screens.DoctorScheduleScreen
@@ -35,7 +34,10 @@ import com.example.projecttdm.viewmodel.QrViewModel
 fun DoctorNavigation(navController: NavHostController = rememberNavController()) {
 
     Scaffold (
-        bottomBar = { BottomNavigationBar(navController) }
+        bottomBar = {
+            AnimatedBottomNavigationBar(navController)
+        }
+
     ){   innerPadding ->
 
         val appointmentViewModel: AppointmentViewModel = viewModel()
@@ -151,6 +153,5 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                 }
             )
         }}}}
-
 
 
