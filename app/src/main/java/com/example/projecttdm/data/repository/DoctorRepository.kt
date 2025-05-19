@@ -22,6 +22,23 @@ class DoctorRepository (private val endpoint: DoctorEndPoint) {
 
 
     fun getDoctors(): List<Doctor> = DoctorData.listDcctors
+<<<<<<< Updated upstream
+=======
+    @RequiresApi(Build.VERSION_CODES.O)
+
+    fun getAppointmentsByDate(
+        date: String
+    ): Flow<UiState<List<AppointmentWeekResponse>>> = flow {
+        emit(UiState.Loading)
+        try {
+            val response = endpoint.getAppointmentsByDate(date)
+            emit(UiState.Success(response.data)) // on ne garde que la liste d'appels
+        } catch (e: Exception) {
+            emit(UiState.Error(e.message ?: "Erreur lors du chargement des rendez-vous"))
+        }
+    }.flowOn(Dispatchers.IO)
+
+>>>>>>> Stashed changes
 
 
     //fun getTopDoctors(): List<Doctor> = DoctorData.listDcctors

@@ -120,7 +120,7 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
                         },
                         actions = {
                             IconButton(onClick = {
-                            /* navController.navigate(PatientRoutes.NotificationScreen.route) */
+                                navController.navigate("${DoctorRoutes.DOCTOR_SCHEDULE.route}/1")
                                 doctorHomeViewModel.getTodaysAppointment()
                             }) {
                                 Icon(

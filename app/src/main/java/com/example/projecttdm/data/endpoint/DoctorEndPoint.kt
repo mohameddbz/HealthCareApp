@@ -10,4 +10,12 @@ interface DoctorEndPoint {
 
     @GET("doctors/{id}")
     suspend fun getDoctorById(@Path("id") doctorId: String): Doctor
+<<<<<<< Updated upstream
+=======
+
+    @GET("doctors/appointments/{date}")
+    suspend fun getAppointmentsByDate(
+        @Path("date") date: String
+    ): AppointmentWeekApiResponse
+>>>>>>> Stashed changes
 }

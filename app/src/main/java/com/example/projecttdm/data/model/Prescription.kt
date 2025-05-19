@@ -32,7 +32,7 @@ data class Medications(
 
 data class PrescriptionRequest(
     val patientId: String,
-    val doctorId: String,
+//    val doctorId: String,
     val medications: List<Medications>,
     val appointmentId: String ,  // Ajout du champ appointmentId optionnel
     val instructions: String,
