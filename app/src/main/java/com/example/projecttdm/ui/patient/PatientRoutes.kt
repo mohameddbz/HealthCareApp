@@ -30,4 +30,5 @@ sealed class PatientRoutes(val route: String) {
     }
     object FavoriteDoctors : PatientRoutes("favorite_doctors")
     object PrescriptionCreate : PatientRoutes("prescriptionCreate")
+    object  Profile : PatientRoutes("Profile")
 }

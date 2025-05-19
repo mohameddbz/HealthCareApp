@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.patient
 
+import ProfileScreen
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.material.icons.Icons
@@ -50,6 +51,7 @@ import com.example.projecttdm.viewmodel.HomeViewModel
 import com.example.projecttdm.viewmodel.NotificationViewModel
 import com.example.projecttdm.viewmodel.PrescriptionContentViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
+import com.example.projecttdm.viewmodel.ProfileViewModel
 import com.example.projecttdm.viewmodel.ReasonViewModel
 import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 
@@ -313,6 +315,10 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             )
         }
 
+        composable(PatientRoutes.Profile.route) {
+            ProfileScreen()
+        }
+
     }
 }
 
@@ -348,6 +354,11 @@ val navigationItems = listOf(
         title = "Prescriptions",
         icon = Icons.Default.MedicalServices,
         route = PatientRoutes.topDoctors.route
+    ),
+    NavigationItem(
+        title = "Profile",
+        icon = Icons.Default.Person,
+        route = PatientRoutes.Profile.route
     ),
 )
 

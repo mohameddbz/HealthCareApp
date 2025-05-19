@@ -41,6 +41,4 @@ object RepositoryHolder {
         BookAppointmentRepository(ApiClient.create(BookAppointmentEndPoint::class.java))
     }
 
-
-
 }
