@@ -33,7 +33,7 @@ fun QRCodeData.toEntity(appointmentId: String): QRCodeDataEntity {
         appointmentId = appointmentId,
         content = this.content,
         timestamp = this.timestamp,
-        image = this.image
+        image = this.image.toString()
     )
 }
 

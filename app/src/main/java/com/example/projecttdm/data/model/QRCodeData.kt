@@ -8,9 +8,9 @@ import com.google.gson.annotations.SerializedName
  */
 
 data class QRCodeData(
-    @SerializedName("appointmentId")
+//    @SerializedName("appointmentId")
     val id: String,
     val content: String,
     val timestamp: Long,
-    val image: String // base64 image
+    val image: String? = null
 )
