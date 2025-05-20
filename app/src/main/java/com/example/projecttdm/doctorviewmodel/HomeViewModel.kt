@@ -26,7 +26,7 @@ import java.time.LocalTime
 
 
 
-
+@RequiresApi(Build.VERSION_CODES.O)
 class DoctorHomeViewModel : ViewModel() {
     private val userRepository = RepositoryHolder.UserRepository
     private val appointementRepo  = RepositoryHolder.appointmentRepository

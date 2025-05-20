@@ -24,6 +24,8 @@ import com.example.projecttdm.data.model.Doctor
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.patient.components.CategoryFilter
 import com.example.projecttdm.ui.patient.components.DoctorCard
+import com.example.projecttdm.ui.patient.components.DoctorProfile.DoctorList
+import com.example.projecttdm.ui.patient.components.DoctorProfile.LoadingView
 import com.example.projecttdm.viewmodel.DoctorListViewModel
 import com.example.projecttdm.viewmodel.DoctorSearchViewModel
 import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
@@ -107,53 +109,3 @@ fun TopDoctorScreen(
     }
 }
 
-@RequiresApi(Build.VERSION_CODES.O)
-@Composable
-fun DoctorList(
-    doctors: List<Doctor>,
-    onDoctorClick: (String) -> Unit,
-    favoriteViewModel: FavoriteDoctorsViewModel
-) {
-    val favoriteDoctors by favoriteViewModel.favoriteDoctors.observeAsState(emptyList())
-    val isLoading by favoriteViewModel.isLoading.observeAsState(false)
-    val error by favoriteViewModel.error.observeAsState()
-
-    // Handle error state
-    error?.let { errorMessage ->
-        LaunchedEffect(errorMessage) {
-            // You can show a snackbar or toast here
-            // For now, just clear the error after showing it
-            favoriteViewModel.clearError()
-        }
-    }
-
-    LazyColumn(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(horizontal = 16.dp),
-        verticalArrangement = Arrangement.spacedBy(8.dp)
-    ) {
-        items(doctors, key = { it.id }) { doctor ->
-            val isFavorite = favoriteDoctors.any { it.doctor_id == doctor.id.toInt() }
-
-            DoctorCard(
-                doctor = doctor,
-                isFavorite = isFavorite,
-                onFavoriteClick = {
-                    favoriteViewModel.toggleFavorite(doctor.id.toInt())
-                },
-                onDoctorClick = { onDoctorClick(doctor.id) }
-            )
-        }
-    }
-}
-
-@Composable
-fun LoadingView() {
-    Box(
-        modifier = Modifier.fillMaxSize(),
-        contentAlignment = Alignment.Center
-    ) {
-        CircularProgressIndicator()
-    }
-}

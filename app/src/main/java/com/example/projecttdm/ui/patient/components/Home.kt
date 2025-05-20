@@ -214,6 +214,7 @@ val specialities = listOf(
     DoctorSpeciality(R.drawable.more, "More")
 )
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun DoctorSpecialitySection(windowSize: WindowSize,homeViewModel: HomeViewModel) {
     val context  = LocalContext.current;
@@ -474,7 +475,7 @@ fun UpcomingAppointmentBanner(
                         .padding(16.dp),
                     contentAlignment = Alignment.Center
                 ) {
-                    Text(text = message, color = Color.Red)
+                    Text(text = "Aucun rendez-vous prévu", color = Color.Red)
                 }
             }
 

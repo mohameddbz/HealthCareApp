@@ -64,6 +64,7 @@ class HomeViewModel : ViewModel() {
             appointmentRepository.getUpcomingAppointment().collect { state ->
                 _appointmentState.value = state
             }
+            println("-----------------------${appointmentState}")
         }
     }
 

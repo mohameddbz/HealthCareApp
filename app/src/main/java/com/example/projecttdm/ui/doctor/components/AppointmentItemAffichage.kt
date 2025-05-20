@@ -37,7 +37,7 @@ import com.example.projecttdm.data.model.AppointmentWeekResponse
 @Composable
 fun AppointmentItemAffichage(
     appointment: AppointmentWeekResponse,
-    onAppointmentClick: () -> Unit
+    onAppointmentClick: (String) -> Unit
 ) {
     val slot = appointment.slot_info
     val patient = appointment.patient_info
@@ -45,7 +45,7 @@ fun AppointmentItemAffichage(
     Card(
         modifier = Modifier
             .fillMaxWidth()
-            .clickable { onAppointmentClick() },
+            .clickable { onAppointmentClick(appointment.appointment_id) },
         elevation = CardDefaults.cardElevation(defaultElevation = 2.dp),
         shape = RoundedCornerShape(12.dp)
     ) {

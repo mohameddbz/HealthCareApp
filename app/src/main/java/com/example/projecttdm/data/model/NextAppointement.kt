@@ -37,5 +37,5 @@ data class NextAppointementResponse (
 data class NextAppointementsResponse(
     val success: Boolean,
     val message: String ="",
-    val nextAppointments : List<NextAppointment>
+    val appointments : List<NextAppointment>
 )

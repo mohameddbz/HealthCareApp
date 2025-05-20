@@ -300,31 +300,8 @@ fun PendingCard(
                         modifier = Modifier
                             .fillMaxWidth()
                             .padding(horizontal = 24.dp),
-                        horizontalArrangement = Arrangement.spacedBy(
-                            16.dp,
-                            Alignment.CenterHorizontally
-                        )
+
                     ) {
-                        OutlinedButton(
-                            onClick = onRescheduleClick,
-                            shape = RoundedCornerShape(20.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                containerColor = MaterialTheme.colorScheme.primary,
-                                contentColor = Color.White,
-                            ),
-                            border = BorderStroke(1.dp, Color(0xFF3F51B5)),
-                            modifier = Modifier
-                                .weight(1f)
-                                .height(36.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Outlined.Edit,
-                                contentDescription = null,
-                                modifier = Modifier.size(16.dp)
-                            )
-                            Spacer(modifier = Modifier.width(4.dp))
-                            Text("Reschedule", fontSize = 13.sp)
-                        }
 
                         Button(
                             onClick = {onCancelClick(appointment.id)},
@@ -335,7 +312,7 @@ fun PendingCard(
                             ),
                             border = BorderStroke(1.dp, Color(0xFFE53935).copy(alpha = 0.5f)),
                             modifier = Modifier
-                                .weight(1f)
+                                .weight(5f)
                                 .height(36.dp)
                         ) {
                             Icon(

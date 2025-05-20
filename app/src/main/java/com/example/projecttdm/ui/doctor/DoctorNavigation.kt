@@ -149,7 +149,7 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                     navController.navigate(DoctorRoutes.HomeScreen.route)
                 },
                 onAppointmentClick = { appointmentId ->
-                    // Handle appointment click
+                    navController.navigate("${PatientRoutes.PatientSummary.route}/${appointmentId}")
                 }
             )
         }}}}

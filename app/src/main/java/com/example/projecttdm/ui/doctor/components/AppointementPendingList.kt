@@ -79,7 +79,7 @@ fun AppointmentsPendigList(
             }
 
             if (appointments != null) {
-                if (appointments.nextAppointments.isNullOrEmpty()) {
+                if (appointments.appointments.isNullOrEmpty()) {
                     item {
                         Box(
                             modifier = Modifier
@@ -95,7 +95,7 @@ fun AppointmentsPendigList(
                         }
                     }
                 } else {
-                    items(appointments.nextAppointments) { appointment ->
+                    items(appointments.appointments) { appointment ->
                         AppointmentCard(
                             appointment = appointment,
                             onCancel = {

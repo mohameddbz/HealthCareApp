@@ -164,19 +164,22 @@ fun AppointmentScreen(
                     }
                 }
             ) {
-                AppointmentStatus.values().forEach { status ->
-                    Tab(
-                        selected = status == selectedTab,
-                        onClick = { viewModel.selectTab(status) },
-                        text = {
-                            Text(
-                                text = status.name.lowercase().capitalizeFirst(),
-                                color = if (status == selectedTab) MaterialTheme.colorScheme.primary else Color.Gray,
-                                fontWeight = if (status == selectedTab) FontWeight.Bold else FontWeight.Normal
-                            )
-                        }
-                    )
-                }
+                AppointmentStatus.values()
+                    .filter { it != AppointmentStatus.RESCHEDULED }
+                    .forEach { status ->
+                        Tab(
+                            selected = status == selectedTab,
+                            onClick = { viewModel.selectTab(status) },
+                            text = {
+                                Text(
+                                    text = status.name.lowercase().capitalizeFirst(),
+                                    color = if (status == selectedTab) MaterialTheme.colorScheme.primary else Color.Gray,
+                                    fontWeight = if (status == selectedTab) FontWeight.Bold else FontWeight.Normal
+                                )
+                            }
+                        )
+                    }
+
             }
 
             if (appointments.isEmpty() && !isLoading) {

@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.doctor.components
 
+import android.graphics.BitmapFactory
 import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.Spring
 import androidx.compose.animation.core.animateDpAsState
@@ -18,6 +19,7 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.Person
 import androidx.compose.material.icons.rounded.KeyboardArrowDown
 import androidx.compose.material.icons.rounded.KeyboardArrowRight
 import androidx.compose.material.icons.rounded.LocalHospital
@@ -43,12 +45,14 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.draw.shadow
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.asImageBitmap
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import com.example.projecttdm.data.model.ImageBlob
 import com.example.projecttdm.ui.doctor.screens.CardBackgroundColor
 import com.example.projecttdm.ui.doctor.screens.GrayTextColor
 import com.example.projecttdm.ui.doctor.screens.LightBackgroundColor
@@ -58,7 +62,7 @@ import com.example.projecttdm.ui.doctor.screens.PrimaryColor
 
 
 @Composable
-fun AppointmentItem(name: String, time: String, type: String, imageRes: Int) {
+fun AppointmentItem(name: String, time: String, type: String, imageRes: ImageBlob?) {
     var expanded by remember { mutableStateOf(false) }
     val elevation by animateDpAsState(
         targetValue = if (expanded) 8.dp else 2.dp,
@@ -96,13 +100,38 @@ fun AppointmentItem(name: String, time: String, type: String, imageRes: Int) {
                         shape = CircleShape,
                         colors = CardDefaults.cardColors(containerColor = Color.White)
                     ) {
-                        Image(
-                            painter = painterResource(id = imageRes),
-                            contentDescription = "Patient Profile",
-                            contentScale = ContentScale.Crop,
-                            modifier = Modifier.fillMaxSize()
-                        )
+                        imageRes?.let { imageBlob ->
+                            val byteArray = imageBlob.data.map { it.toByte() }.toByteArray()
+
+                            val imageBitmap = remember(byteArray) {
+                                BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)?.asImageBitmap()
+                            }
+
+                            imageBitmap?.let {
+                                Image(
+                                    bitmap = it,
+                                    contentDescription = "Patient ${name}",
+                                    contentScale = ContentScale.Crop,
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            } ?: run {
+                                // Optional: fallback image if imageBitmap is null
+                                Icon(
+                                    imageVector = Icons.Default.Person,
+                                    contentDescription = "Default Avatar",
+                                    modifier = Modifier.fillMaxSize()
+                                )
+                            }
+                        } ?: run {
+                            // Optional: fallback when imageBlob is null
+                            Icon(
+                                imageVector = Icons.Default.Person,
+                                contentDescription = "No Image",
+                                modifier = Modifier.fillMaxSize()
+                            )
+                        }
                     }
+
 
                     Spacer(modifier = Modifier.width(12.dp))
 
@@ -218,7 +247,7 @@ fun AppointmentItem(name: String, time: String, type: String, imageRes: Int) {
 
                             Spacer(modifier = Modifier.width(4.dp))
 
-                            Text("Reprogrammer")
+                            Text("Reprogramer")
                         }
                     }
                 }

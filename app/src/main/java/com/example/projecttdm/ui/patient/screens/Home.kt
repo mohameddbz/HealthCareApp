@@ -25,6 +25,8 @@ import com.example.projecttdm.ui.common.components.DeconnectionButton
 import com.example.projecttdm.ui.common.components.UserProfileImage
 import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.*
+import com.example.projecttdm.ui.patient.components.DoctorProfile.DoctorList
+import com.example.projecttdm.viewmodel.FavoriteDoctorsViewModel
 import com.example.projecttdm.viewmodel.HomeViewModel
 
 class WindowSize(val width: WindowType, val height: WindowType)
@@ -53,7 +55,8 @@ fun calculateWindowSize(): WindowSize {
 fun HomeScreen(
     navController: NavHostController,
     homeViewModel: HomeViewModel,
-    onSearchClick: () -> Unit,
+    onDoctorClick: (String) -> Unit,
+    favoriteViewModel:FavoriteDoctorsViewModel
 ) {
     val windowSize = calculateWindowSize()
     val doctorsState by homeViewModel.doctorsState.collectAsState()
@@ -158,8 +161,6 @@ fun HomeScreen(
 
             item { Spacer(modifier = Modifier.height(16.dp)) }
 
-
-
             // Top Doctors Section
             item {
                 Row(
@@ -203,7 +204,18 @@ fun HomeScreen(
                 is UiState.Success -> {
                     val doctors = (doctorsState as UiState.Success<List<Doctor>>).data
                     items(doctors) { doctor ->
-                        DoctorItem(doctor, {})
+                        val isFavorite = remember(favoriteViewModel.favoriteDoctors) {
+                            favoriteViewModel.favoriteDoctors.value?.any { it.doctor_id == doctor.id.toInt() } ?: false
+                        }
+
+                        DoctorCard(
+                            doctor = doctor,
+                            isFavorite = isFavorite,
+                            onFavoriteClick = {
+                                favoriteViewModel.toggleFavorite(doctor.id.toInt())
+                            },
+                            onDoctorClick = { onDoctorClick(doctor.id) }
+                        )
                     }
                 }
 
@@ -211,7 +223,7 @@ fun HomeScreen(
                     item {
                         val errorMessage = (doctorsState as UiState.Error).message
                         ErrorView(message = errorMessage) {
-
+                            // Retry action
                         }
                     }
                 }

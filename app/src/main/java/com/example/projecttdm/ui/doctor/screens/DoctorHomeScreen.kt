@@ -2,6 +2,8 @@ package com.example.projecttdm.ui.doctor.screens
 
 
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.animation.AnimatedVisibility
 import com.example.projecttdm.ui.doctor.components.AppointmentItem
 import androidx.compose.animation.fadeIn
@@ -39,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.data.model.NextAppointementsResponse
 import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
 import com.example.projecttdm.state.UiState
 import com.example.projecttdm.ui.common.components.DeconnectionButton
@@ -59,6 +62,7 @@ val CardBackgroundColor = Color.White
 val GrayTextColor = Color(0xFF5F6368)
 val HighlightColor = Color(0xFFEA4335)  // Rouge Google
 
+@RequiresApi(Build.VERSION_CODES.O)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),navController: NavHostController) {
@@ -264,26 +268,27 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
                       CircularProgressIndicator()
                   }
                   is UiState.Success -> {
-                      val appointmentDays = (todayAppointment as UiState.Success).data
-                      Text(
-                          "HELLO WORLD WE ARE FINE "
-                      )
-                      // Liste des rendez-vous
-                      /*     items(appointmentSamples) { appointment ->
-                               AppointmentItem(
-                                   name = appointment.name,
-                                   time = appointment.time,
-                                   type = appointment.type,
-                                   imageRes = appointment.imageRes
-                               )
-                           } */
+                      val appointmentDays = (todayAppointment as UiState.Success<NextAppointementsResponse>).data.appointments?: emptyList()
+
+                      Column {
+                          appointmentDays.forEach { appointment ->
+                              AppointmentItem(
+                                  name = appointment.fullname,
+                                  time = appointment.start_time,
+                                  type = appointment.reason,
+                                  imageRes = appointment.imageUrl
+                              )
+                          }
+                      }
+
                   }
+
                   is UiState.Error -> {
                     /*  val errorMessage = (todayAppointment as UiState.Error).message
                       Text("Erreur : $errorMessage", color = Color.Red) */
                       val message = (todayAppointment as UiState.Error).message
                       // Afficher un message d'erreur
-                      Text(text = message)
+                      Text(text = "Aucun rendez-vous pour aujourd'hui.", color = Color.Gray)
                   }
 
               }

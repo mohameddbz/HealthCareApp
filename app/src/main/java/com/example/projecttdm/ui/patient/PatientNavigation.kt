@@ -77,9 +77,13 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(PatientRoutes.HomeScreen.route) {
+            val favoriteViewModel : FavoriteDoctorsViewModel = viewModel()
             HomeScreen(
                 navController, homeViewModel,
-                onSearchClick = { navController.navigate(PatientRoutes.searchDoctor.route) },
+                onDoctorClick = { doctorId ->
+                    navController.navigate("${PatientRoutes.doctorProfile.route}/$doctorId")
+                },
+                favoriteViewModel =favoriteViewModel ,
             )
         }
 

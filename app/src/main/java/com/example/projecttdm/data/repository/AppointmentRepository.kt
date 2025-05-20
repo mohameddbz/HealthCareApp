@@ -248,7 +248,8 @@ class AppointmentRepository(private  val endpoint: AppointmentEndPoint ,private 
         emit(UiState.Loading)
         try {
             val appointment = endpoint.getfirstUpcomingAppointment()
-            if (appointment.status == AppointmentStatus.PENDING) {
+            println("dasdasdad55555555555555555 ${appointment}")
+            if (appointment.status == AppointmentStatus.CONFIRMED) {
                 emit(UiState.Success(appointment))
             } else {
                 emit(UiState.Error("No upcoming pending appointments found"))
