@@ -22,6 +22,9 @@ object RepositoryHolder {
     val UserRepository by lazy {
         UserRepository(ApiClient.create(UserEndPoint::class.java))
     }
+    val profileRepository by lazy {
+        ProfileRepository(ApiClient.create(UserEndPoint::class.java))
+    }
     val prescriptionRepository by lazy {
         PrescriptionRepository(ApiClient.create(PrescriptionEndPoint::class.java))
     }

@@ -1,5 +1,6 @@
 package com.example.projecttdm.viewmodel
 
+import android.content.Context
 import android.net.Uri
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -8,14 +9,17 @@ import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.UserProfileResponse
 import com.example.projecttdm.data.repository.ProfileRepository
+import com.example.projecttdm.data.repository.RepositoryHolder
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 import java.io.File
 import java.text.SimpleDateFormat
 import java.util.Date
 import java.util.Locale
 
-class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() {
-
+class ProfileViewModel() : ViewModel() {
+    private val repository= RepositoryHolder.profileRepository
     // État du profil
     var profileState by mutableStateOf<UserProfileResponse?>(null)
         private set
@@ -118,13 +122,42 @@ class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() 
         selectedImageUri = uri
     }
 
-    fun saveProfile(imageFile: File?) {
+    // Ajoutez cette fonction dans votre ViewModel
+    private suspend fun uriToFile(context: Context, uri: Uri): File? {
+        return withContext(Dispatchers.IO) {
+            try {
+                val contentResolver = context.contentResolver
+                val file = File.createTempFile(
+                    "profile_img_${System.currentTimeMillis()}",
+                    ".jpg",
+                    context.cacheDir
+                )
+
+                contentResolver.openInputStream(uri)?.use { input ->
+                    file.outputStream().use { output ->
+                        input.copyTo(output)
+                    }
+                }
+
+                file
+            } catch (e: Exception) {
+                null
+            }
+        }
+    }
+
+    // Modifiez saveProfile pour utiliser cette conversion
+    fun saveProfile(context: Context) {
         viewModelScope.launch {
             isLoading = true
             errorMessage = null
 
             try {
                 profileState?.let { profile ->
+                    val imageFile = selectedImageUri?.let { uri ->
+                        uriToFile(context, uri)
+                    }
+
                     val result = repository.updateProfile(
                         firstName = profile.first_name,
                         lastName = profile.last_name,
@@ -141,13 +174,14 @@ class ProfileViewModel(private val repository: ProfileRepository) : ViewModel() 
                         selectedImageUri = null
                         isEditing = false
                     }.onFailure { error ->
-                        errorMessage = "Erreur lors de la mise à jour du profil: ${error.message}"
+                        errorMessage = "Erreur lors de la mise à jour: ${error.message}"
                     }
                 }
             } catch (e: Exception) {
-                errorMessage = "Erreur lors de la mise à jour du profil: ${e.message}"
+                errorMessage = "Erreur: ${e.message}"
             } finally {
                 isLoading = false
+                isEditing=false
             }
         }
     }

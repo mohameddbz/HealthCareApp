@@ -52,7 +52,10 @@ class ProfileRepository(private val profileApiService: UserEndPoint) {
                 val requestFile = it.asRequestBody("image/*".toMediaTypeOrNull())
                 MultipartBody.Part.createFormData("image", it.name, requestFile)
             }
-
+            println("Prénom=$firstName, Nom=$lastNameBody, Email=$emailBody, Téléphone=$phoneBody, DateNaissance=$dateBirthdayBody, Sexe=$sexeBody, image=$imagePart")
+            println("Image file exists? ${imageFile?.exists()}")
+            println("Image path: ${imageFile?.absolutePath}")
+            println("Image size: ${imageFile?.length()} bytes")
             // Effectuer l'appel API
             val response = profileApiService.updateProfile(
                 firstNameBody,

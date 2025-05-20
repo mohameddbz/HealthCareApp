@@ -1,5 +1,6 @@
 package com.example.projecttdm.data.endpoint
 
+import com.example.projecttdm.data.model.ProfileUpdateRequest
 import com.example.projecttdm.data.model.User
 import com.example.projecttdm.data.model.UserProfileResponse
 import okhttp3.MultipartBody
@@ -9,6 +10,7 @@ import retrofit2.http.Multipart
 import retrofit2.http.PUT
 import retrofit2.http.Part
 import retrofit2.Response
+import retrofit2.http.Body
 
 interface UserEndPoint {
 
@@ -29,5 +31,7 @@ interface UserEndPoint {
         @Part("sexe") sexe: RequestBody?,
         @Part image: MultipartBody.Part?
     ): Response<UserProfileResponse>
+
+
 
 }

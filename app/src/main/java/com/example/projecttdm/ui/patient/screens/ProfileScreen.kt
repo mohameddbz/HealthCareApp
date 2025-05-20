@@ -86,7 +86,19 @@ fun ProfileScreen(
     // Afficher un message d'erreur si nécessaire
     errorMessage?.let {
         LaunchedEffect(it) {
-            // Vous pourriez afficher un Snackbar ou une alerte ici
+            println(it)
+//            if (!errorMessage.isNullOrEmpty()) {
+//                Box(
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentAlignment = Alignment.Center
+//                ) {
+//                    Text(
+//                        text = errorMessage!!,
+//                        color = Color.Red,
+//                        style = MaterialTheme.typography.bodyMedium
+//                    )
+//                }
+//            }
         }
     }
 
@@ -107,7 +119,7 @@ fun ProfileScreen(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("Update profile...")
+            Text("profile not found...")
         }
         return
     }
@@ -191,13 +203,16 @@ fun ProfileScreen(
 
                         // Camera icon for image upload - toujours visible
                         if (isEditing){
+                            // Modifiez l'appel au click
                             IconButton(
-                                onClick = { imagePickerLauncher.launch("image/*") },
+                                onClick = {
+                                    imagePickerLauncher.launch("image/*")
+                                },
                                 modifier = Modifier
                                     .size(20.dp)
                                     .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
                                     .align(Alignment.BottomEnd)
-                            ) {
+                            )  {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
                                     contentDescription = "Changer la photo",
@@ -255,7 +270,7 @@ fun ProfileScreen(
                     )
 
                     // Date de naissance avec picker
-                    val birthDateText = viewModel.formatDateForDisplay(profile.PATIENT.date_birthday)
+                    val birthDateText = viewModel.formatDateForDisplay(profile.PATIENT.date_birthday.toString())
 
                     Row(
                         modifier = Modifier
@@ -288,7 +303,7 @@ fun ProfileScreen(
                         Spacer(modifier = Modifier.weight(1f))
                         Icon(
                             imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Sélectionner",
+                            contentDescription = "Select",
                             tint = Color.Gray,
                             modifier = Modifier.size(20.dp)
                         )
@@ -370,7 +385,7 @@ fun ProfileScreen(
                     Button(
                         onClick = {
                             if (isEditing) {
-                                viewModel.saveProfile()
+                                viewModel.saveProfile(context)
                             } else {
                                 viewModel.toggleEditMode()
                             }
