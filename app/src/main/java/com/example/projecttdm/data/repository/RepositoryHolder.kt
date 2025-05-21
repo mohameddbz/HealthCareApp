@@ -12,6 +12,7 @@ import com.example.projecttdm.data.endpoint.AuthEndPoint
 import com.example.projecttdm.data.endpoint.BookAppointmentEndPoint
 import com.example.projecttdm.data.endpoint.DoctorEndPoint
 import com.example.projecttdm.data.endpoint.FavoriteEndPoint
+import com.example.projecttdm.data.endpoint.NotificationEndPoint
 import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
 import com.example.projecttdm.data.endpoint.ReviewEndPoint
 import com.example.projecttdm.data.endpoint.SpecialtyEndPoint
@@ -41,6 +42,9 @@ object RepositoryHolder {
     val UserRepository by lazy {
         UserRepository(ApiClient.create(UserEndPoint::class.java))
     }
+    val profileRepository by lazy {
+        ProfileRepository(ApiClient.create(UserEndPoint::class.java))
+    }
     val prescriptionRepository by lazy {
         PrescriptionRepository(ApiClient.create(PrescriptionEndPoint::class.java), localDB = database)
     }
@@ -64,6 +68,9 @@ object RepositoryHolder {
     }
     val favoriteRepository: FavoriteRepository by lazy {
         FavoriteRepository(ApiClient.create(FavoriteEndPoint::class.java))
+    }
+    val notificationRepository: NotificationRepository by lazy {
+        NotificationRepository(ApiClient.create(NotificationEndPoint::class.java))
     }
 
 

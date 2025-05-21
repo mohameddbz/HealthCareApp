@@ -72,3 +72,38 @@ fun UserProfileImage(imageBlob: ImageBlob?) {
 
     }
 }
+
+@Composable
+fun ProfileImage(imageBlob: ImageBlob?, modifier: Modifier = Modifier) {
+    var bitmap by remember { mutableStateOf<Bitmap?>(null) }
+
+    LaunchedEffect(imageBlob) {
+        if (imageBlob != null) {
+            bitmap = withContext(Dispatchers.IO) {
+                try {
+                    val byteArray = imageBlob.data.map { it.toByte() }.toByteArray()
+                    BitmapFactory.decodeByteArray(byteArray, 0, byteArray.size)
+                } catch (e: Exception) {
+                    e.printStackTrace()
+                    null
+                }
+            }
+        }
+    }
+
+    if (bitmap != null) {
+        Image(
+            bitmap = bitmap!!.asImageBitmap(),
+            contentDescription = "Profile Picture",
+            contentScale = ContentScale.Crop, // crop to fill the circle cleanly
+            modifier = modifier
+        )
+    } else {
+        Image(
+            painter = painterResource(id = R.drawable.default_profil),
+            contentDescription = "Default Profile Picture",
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+        )
+    }
+}

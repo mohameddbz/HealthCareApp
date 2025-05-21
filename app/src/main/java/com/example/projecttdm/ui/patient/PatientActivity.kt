@@ -32,82 +32,13 @@ class PatientActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
         super.onCreate(savedInstanceState)
 
-        // Activer edge-to-edge mais nous allons le gérer nous-mêmes
         setContent {
-            val navController: NavHostController = rememberNavController()
-            val navBackStackEntry = navController.currentBackStackEntryAsState()
-            val currentRoute = navBackStackEntry.value?.destination?.route
-
-            ProjectTDMTheme{
-                Scaffold(
-                    bottomBar = {
-                        // Liste des routes qui doivent afficher la BottomNavigation
-                        val showBottomBarRoutes = listOf(PatientRoutes.doctorProfile.route)
-
-                        if (currentRoute !in showBottomBarRoutes) {
-                            BottomNavigationBar(navController)
-                        }
-                    },
-                    contentColor = Gray01
-                ) { paddingValues ->
-                    PatientNavigation(
-                        navController = navController,
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                }
+            ProjectTDMTheme {
+                // Use the unified navigation structure
+                PatientNavigation()
             }
         }
     }
-
-
-
-
-
 }
 
 
-
-
-@Composable
-fun BottomNavigationBar (navController : NavHostController){
-    val selectedNavigationIndex = rememberSaveable {
-        mutableIntStateOf(0)
-    }
-
-    NavigationBar(
-        containerColor = Color.White,
-        modifier = Modifier.fillMaxWidth()
-    ) {
-        navigationItems.forEachIndexed { index, item ->
-            NavigationBarItem(
-                selected = selectedNavigationIndex.intValue == index,
-                onClick = {
-                    if (navController.currentDestination?.route != item.route) {
-                        selectedNavigationIndex.intValue = index
-                        navController.navigate(item.route) {
-                            launchSingleTop = true
-                        }
-                    }
-                },
-                icon = {
-                    Icon(imageVector = item.icon, contentDescription = item.title)
-                },
-                label = {
-                    Text(
-                        item.title,
-                        color = if (index == selectedNavigationIndex.intValue)
-                            Color.Black
-                        else Color.Gray,
-                        maxLines = 1,
-                        overflow = TextOverflow.Ellipsis
-                    )
-                },
-                colors = NavigationBarItemDefaults.colors(
-                    selectedIconColor = MaterialTheme.colorScheme.surface,
-                    indicatorColor = MaterialTheme.colorScheme.primary
-                )
-
-            )
-        }
-    }
-}

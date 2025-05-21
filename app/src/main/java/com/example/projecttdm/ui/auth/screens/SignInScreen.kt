@@ -60,7 +60,7 @@ fun SignInScreen(navController: NavHostController,authViewModel : AuthViewModel)
     ) {
         // Logo Image
         Image(
-            painter = painterResource(id = R.drawable.logo), // Replace with your logo resource
+            painter = painterResource(id = R.drawable.name), // Replace with your logo resource
             contentDescription = "App Logo",
             modifier = Modifier.size(170.dp) // Adjust size as needed
         )

@@ -48,7 +48,7 @@ fun SplashScreen(onFinish: () -> Unit) {
             modifier = Modifier.fillMaxSize()
         ) {
             Image(
-                painter = painterResource(id = R.drawable.logo),
+                painter = painterResource(id = R.drawable.name),
                 contentDescription = "App Logo",
                 modifier = Modifier
                     .size(logoSize)
