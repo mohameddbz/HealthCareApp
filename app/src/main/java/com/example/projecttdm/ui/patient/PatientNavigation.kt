@@ -178,11 +178,11 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 )
             }
 
-            composable(PatientRoutes.NotificationScreen.route) {
-                val notificationViewModel : NotificationViewModel = NotificationViewModel()
-                notificationViewModel.getNotifications()
-                NotificationsScreen(notificationViewModel, navController)
-            }
+        composable(PatientRoutes.NotificationScreen.route) {
+            val notificationViewModel : NotificationViewModel = NotificationViewModel()
+            notificationViewModel.loadNotifications()
+            NotificationsScreen(notificationViewModel,navController)
+        }
 
             composable(PatientRoutes.topDoctors.route) {
                 TopDoctorScreen(
