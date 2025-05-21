@@ -39,22 +39,7 @@ class PatientActivity : ComponentActivity() {
             val currentRoute = navBackStackEntry.value?.destination?.route
 
             ProjectTDMTheme{
-                Scaffold(
-                    bottomBar = {
-                        // Liste des routes qui doivent afficher la BottomNavigation
-                        val showBottomBarRoutes = listOf(PatientRoutes.doctorProfile.route)
-
-                        if (currentRoute !in showBottomBarRoutes) {
-                            BottomNavigationBar(navController)
-                        }
-                    },
-                    contentColor = Gray01
-                ) { paddingValues ->
-                    PatientNavigation(
-                        navController = navController,
-                        modifier = Modifier.padding(paddingValues)
-                    )
-                }
+                PatientNavigation()
             }
         }
     }
