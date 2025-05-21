@@ -76,7 +76,7 @@ fun PendingCard(
     onClick: (String) -> Unit,
     appointment: Appointment,
     doctor: Doctor?,
-    onCardClick: (String) -> Unit,
+    onCardClick: (String,String) -> Unit,
     onCancelClick: (String) -> Unit,
     onRescheduleClick: () -> Unit
 ) {
@@ -360,7 +360,7 @@ fun PendingCard(
                         }
 
                         Button(
-                            onClick = {onCardClick(appointment.id)},
+                            onClick = {onCardClick(appointment.id,appointment.patientId)},
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

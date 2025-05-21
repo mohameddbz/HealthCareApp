@@ -103,7 +103,7 @@ fun PrescriptionCreateScreen(
 
     LaunchedEffect(prescriptionState) {
         if (prescriptionState is UiState.Success) {
-            Toast.makeText(context, "Prescription créée avec succès", Toast.LENGTH_SHORT).show()
+            Toast.makeText(context, "Prescription created successfully", Toast.LENGTH_SHORT).show()
             onNavigateBack()
         } else if (prescriptionState is UiState.Error) {
             Toast.makeText(context, (prescriptionState as UiState.Error).message, Toast.LENGTH_LONG).show()
@@ -113,10 +113,10 @@ fun PrescriptionCreateScreen(
     Scaffold(
         topBar = {
             TopAppBar(
-                title = { Text("Nouvelle Prescription") },
+                title = { Text("New Prescription") },
                 navigationIcon = {
                     IconButton(onClick = onNavigateBack) {
-                        Icon(Icons.Default.Close, contentDescription = "Fermer")
+                        Icon(Icons.Default.Close, contentDescription = "Close")
                     }
                 }
             )
@@ -140,14 +140,14 @@ fun PrescriptionCreateScreen(
                         .fillMaxWidth()
                         .padding(16.dp)
                 ) {
-                    Text("Informations de Débogue", fontWeight = FontWeight.Bold)
-                    Text("ID Patient: $currentPatientId")
-                    Text("ID Médecin: $currentDoctorId")
-                    Text("ID Rendez-vous: $currentAppointmentId")
+                    Text("Debug Information", fontWeight = FontWeight.Bold)
+                    Text("Patient ID: $currentPatientId")
+                    Text("Doctor ID: $currentDoctorId")
+                    Text("Appointment ID: $currentAppointmentId")
                 }
             }
 
-            // Date d'expiration
+            // Expiry date
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -158,9 +158,9 @@ fun PrescriptionCreateScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Informations de base", fontWeight = FontWeight.Bold)
+                    Text("Basic Information", fontWeight = FontWeight.Bold)
 
-                    // Champ de date d'expiration avec sélecteur de date
+                    // Expiry date field with date picker
                     Row(
                         modifier = Modifier.fillMaxWidth(),
                         verticalAlignment = Alignment.CenterVertically
@@ -168,7 +168,7 @@ fun PrescriptionCreateScreen(
                         OutlinedTextField(
                             value = expiryDate,
                             onValueChange = { viewModel.onExpiryDateChanged(it) },
-                            label = { Text("Date d'expiration") },
+                            label = { Text("Expiry Date") },
                             modifier = Modifier.weight(1f),
                             readOnly = true
                         )
@@ -188,13 +188,13 @@ fun PrescriptionCreateScreen(
                                 year, month, day
                             ).show()
                         }) {
-                            Icon(Icons.Default.DateRange, contentDescription = "Sélectionner date")
+                            Icon(Icons.Default.DateRange, contentDescription = "Select date")
                         }
                     }
                 }
             }
 
-            // Section des médicaments
+            // Medications section
             Card(
                 modifier = Modifier.fillMaxWidth(),
                 elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
@@ -205,9 +205,9 @@ fun PrescriptionCreateScreen(
                         .padding(16.dp),
                     verticalArrangement = Arrangement.spacedBy(8.dp)
                 ) {
-                    Text("Médicaments", fontWeight = FontWeight.Bold)
+                    Text("Medications", fontWeight = FontWeight.Bold)
 
-                    // Affichage de l'erreur du médicament
+                    // Display medication error
                     medicationError?.let { error ->
                         Text(
                             text = error,
@@ -216,11 +216,11 @@ fun PrescriptionCreateScreen(
                         )
                     }
 
-                    // Formulaire pour ajouter un médicament
+                    // Form to add medication
                     OutlinedTextField(
                         value = medicationName,
                         onValueChange = { viewModel.onMedicationNameChanged(it) },
-                        label = { Text("Nom du médicament") },
+                        label = { Text("Medication Name") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -234,14 +234,14 @@ fun PrescriptionCreateScreen(
                     OutlinedTextField(
                         value = medicationFrequency,
                         onValueChange = { viewModel.onMedicationFrequencyChanged(it) },
-                        label = { Text("Fréquence") },
+                        label = { Text("Frequency") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
                     OutlinedTextField(
                         value = medicationDuration,
                         onValueChange = { viewModel.onMedicationDurationChanged(it) },
-                        label = { Text("Durée") },
+                        label = { Text("Duration") },
                         modifier = Modifier.fillMaxWidth()
                     )
 
@@ -249,16 +249,16 @@ fun PrescriptionCreateScreen(
                         onClick = { viewModel.addMedication() },
                         modifier = Modifier.align(Alignment.End)
                     ) {
-                        Icon(Icons.Default.Add, contentDescription = "Ajouter")
+                        Icon(Icons.Default.Add, contentDescription = "Add")
                         Spacer(modifier = Modifier.width(4.dp))
-                        Text("Ajouter médicament")
+                        Text("Add Medication")
                     }
 
                     Spacer(modifier = Modifier.height(8.dp))
 
-                    // Liste des médicaments ajoutés en hauteur fixe avec scroll interne
+                    // List of added medications
                     if (medications.isNotEmpty()) {
-                        Text("Médicaments prescrits:", fontWeight = FontWeight.Medium)
+                        Text("Prescribed Medications:", fontWeight = FontWeight.Medium)
                         Column(
                             modifier = Modifier
                                 .fillMaxWidth()
@@ -287,14 +287,14 @@ fun PrescriptionCreateScreen(
                                         ) {
                                             Text(medication.name, fontWeight = FontWeight.Bold)
                                             Text("Dosage: ${medication.dosage}")
-                                            Text("Fréquence: ${medication.frequency}")
-                                            Text("Durée: ${medication.duration}")
+                                            Text("Frequency: ${medication.frequency}")
+                                            Text("Duration: ${medication.duration}")
                                         }
 
                                         IconButton(onClick = { viewModel.removeMedication(index) }) {
                                             Icon(
                                                 Icons.Default.Delete,
-                                                contentDescription = "Supprimer",
+                                                contentDescription = "Delete",
                                                 tint = Color.Red
                                             )
                                         }
@@ -322,7 +322,7 @@ fun PrescriptionCreateScreen(
                     OutlinedTextField(
                         value = instructions,
                         onValueChange = { viewModel.onInstructionsChanged(it) },
-                        label = { Text("Instructions pour le patient") },
+                        label = { Text("Instructions for patient") },
                         modifier = Modifier
                             .fillMaxWidth()
                             .heightIn(min = 100.dp),
@@ -331,7 +331,7 @@ fun PrescriptionCreateScreen(
                 }
             }
 
-            // Affichage des erreurs s'il y en a
+            // Display errors if there are any
             if (prescriptionState is UiState.Error) {
                 Text(
                     text = (prescriptionState as UiState.Error).message,
@@ -340,7 +340,7 @@ fun PrescriptionCreateScreen(
                 )
             }
 
-            // Bouton de création
+            // Create button
             Button(
                 onClick = {
                     println("Creating prescription with: patientId=${viewModel.patientId.value}, doctorId=${viewModel.doctorId.value}, appointmentId=${viewModel.appointmentId.value}")
@@ -359,10 +359,10 @@ fun PrescriptionCreateScreen(
                     Spacer(modifier = Modifier.width(8.dp))
                 }
 
-                Text("Créer la prescription")
+                Text("Create Prescription")
             }
 
-            // Ajouter un espace en bas pour être sûr que tout est visible
+            // Add space at the bottom to ensure everything is visible
             Spacer(modifier = Modifier.height(16.dp))
         }
     }

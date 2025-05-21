@@ -57,10 +57,10 @@ fun AppointmentReviewScreen(
     viewModel: AppointmentViewModel = viewModel(),
     onBackPressed: () -> Unit = {},
     onNextPressed: () -> Unit = {},
-    canAddPrescription: Boolean = false,  // Controls button visibility
-    onAddPrescriptionClick: (appointId: String, patientId: String) -> Unit = { _, _ -> }
-)
- {
+    canAddPrescription: Boolean = false,
+    // Fix: Make parameter order consistent (appointmentId first, then patientId)
+    onAddPrescriptionClick: (appointmentId: String, patientId: String) -> Unit = { _, _ -> }
+) {
     val scope = rememberCoroutineScope()
     val uiState by viewModel.appointmentState.collectAsState()
     val scrollState = rememberScrollState()
@@ -96,37 +96,40 @@ fun AppointmentReviewScreen(
         },
         bottomBar = {
             // Only show the button if canAddPrescription is true
-                if (canAddPrescription && uiState is UiState.Success) {
-                    val data = (uiState as UiState.Success<AppointmentReviewData>).data  // Safe because you confirmed it's Success
-                    BottomAppBar(
-                        modifier = Modifier.fillMaxWidth().padding(bottom = 80.dp),
-                        containerColor = MaterialTheme.colorScheme.surface,
-                        contentPadding = PaddingValues(16.dp),
-                        content = {
-                            Button(
-                                onClick = { onAddPrescriptionClick(data.appointment.id, data.appointment.patientId) },
-                                modifier = Modifier.fillMaxWidth(),
-                                contentPadding = PaddingValues(16.dp),
-                                colors = ButtonDefaults.buttonColors(
-                                    containerColor = MaterialTheme.colorScheme.primary
+            if (canAddPrescription && uiState is UiState.Success) {
+                val data = (uiState as UiState.Success<AppointmentReviewData>).data
+                BottomAppBar(
+                    modifier = Modifier
+                        .fillMaxWidth()
+                        .padding(bottom = 80.dp),
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    contentPadding = PaddingValues(16.dp),
+                    content = {
+                        Button(
+                            // Fix: Call with proper parameter order - appointment ID first, then patient ID
+                            onClick = { onAddPrescriptionClick(data.appointment.id, data.patient.id) },
+                            modifier = Modifier.fillMaxWidth(),
+                            contentPadding = PaddingValues(16.dp),
+                            colors = ButtonDefaults.buttonColors(
+                                containerColor = MaterialTheme.colorScheme.primary
+                            )
+                        ) {
+                            Icon(
+                                imageVector = Icons.Default.MedicalServices,
+                                contentDescription = "Add Prescription",
+                                modifier = Modifier.size(24.dp)
+                            )
+                            Spacer(modifier = Modifier.width(8.dp))
+                            Text(
+                                text = "Prescriptions",
+                                style = MaterialTheme.typography.bodyLarge.copy(
+                                    fontWeight = FontWeight.Bold
                                 )
-                            ) {
-                                Icon(
-                                    imageVector = Icons.Default.MedicalServices,
-                                    contentDescription = "Add Prescription",
-                                    modifier = Modifier.size(24.dp)
-                                )
-                                Spacer(modifier = Modifier.width(8.dp))
-                                Text(
-                                    text = "Add Prescription",
-                                    style = MaterialTheme.typography.bodyLarge.copy(
-                                        fontWeight = FontWeight.Bold
-                                    )
-                                )
-                            }
+                            )
                         }
-                    )
-                }
+                    }
+                )
+            }
         }
     ) { paddingValues ->
         Surface(

@@ -23,7 +23,10 @@ import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.components.BookAppointment.SuccessPopup
 import com.example.projecttdm.ui.patient.screens.AppointmentReviewScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.viewmodel.AppointmentViewModel
+import com.example.projecttdm.viewmodel.PrescriptionContentViewModel
 import com.example.projecttdm.viewmodel.PrescriptionViewModel
 import com.example.projecttdm.viewmodel.QrViewModel
 
@@ -33,32 +36,29 @@ import com.example.projecttdm.viewmodel.QrViewModel
 @Composable
 fun DoctorNavigation(navController: NavHostController = rememberNavController()) {
 
-    Scaffold (
+    Scaffold(
         bottomBar = {
             AnimatedBottomNavigationBar(navController)
         }
-
-    ){   innerPadding ->
+    ) { innerPadding ->
 
         val appointmentViewModel: AppointmentViewModel = viewModel()
         NavHost(
             navController = navController,
             startDestination = DoctorRoutes.HomeScreen.route,
         ) {
-            composable(DoctorRoutes.HomeScreen.route){
-                val homeViewModel : DoctorHomeViewModel = viewModel();
-                // DoctorHomePage(homeViewModel)
-                DoctorHomeScreen(doctorHomeViewModel = homeViewModel , navController)
+            composable(DoctorRoutes.HomeScreen.route) {
+                val homeViewModel: DoctorHomeViewModel = viewModel()
+                DoctorHomeScreen(doctorHomeViewModel = homeViewModel, navController)
             }
-            composable(DoctorRoutes.AppointmentValidationScreen.route){
-                CalendarApp(
-                    onBackPressed = {navController.popBackStack()},
-                    onNext = {navController.navigate(DoctorRoutes.SuccessConfirm.route)},
-                    onRefuse = {navController.navigate(DoctorRoutes.SuccesRefuse.route)}
 
+            composable(DoctorRoutes.AppointmentValidationScreen.route) {
+                CalendarApp(
+                    onBackPressed = { navController.popBackStack() },
+                    onNext = { navController.navigate(DoctorRoutes.SuccessConfirm.route) },
+                    onRefuse = { navController.navigate(DoctorRoutes.SuccesRefuse.route) }
                 )
             }
-
 
             composable(DoctorRoutes.SuccessConfirm.route) {
                 SuccessPopup(
@@ -67,9 +67,10 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                     buttonText = "OK",
                     onPrimaryAction = { navController.popBackStack() },
                     onDismiss = { /* dismiss */ },
-                    showSecondaryButton = false // 👈 hides the second button
+                    showSecondaryButton = false
                 )
             }
+
             composable(DoctorRoutes.SuccesRefuse.route) {
                 SuccessPopup(
                     titleText = "Refuse Appointment\nSuccess!",
@@ -77,22 +78,37 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                     buttonText = "OK",
                     onPrimaryAction = { navController.popBackStack() },
                     onDismiss = { /* dismiss */ },
-                    showSecondaryButton = false // 👈 hides the second button
+                    showSecondaryButton = false
                 )
             }
 
             composable(DoctorRoutes.QrScanner.route) {
-                val viewModel  : QrViewModel = viewModel();
-                QrScannerScreen(viewModel,navController)
+                val viewModel: QrViewModel = viewModel()
+                QrScannerScreen(viewModel, navController)
             }
 
             composable(
-                route = "${PatientRoutes.PatientSummary.route}/{appointmentid}",
-                arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+                route = "${PatientRoutes.Prescription.route}/{prescriptionId}",
+                arguments = listOf(navArgument("prescriptionId") { type = NavType.StringType }))
+            {
+                    backStackEntry ->
+                val prescriptionId = backStackEntry.arguments?.getString("prescriptionId")
+                val prescriptionViewModel: PrescriptionContentViewModel = viewModel()
+
+                PrescriptionScreenContent(
+                    prescriptionId = prescriptionId,
+                    viewModel = prescriptionViewModel,
+                )
+            }
+
+            // Fix: Using consistent path parameter names
+            composable(
+                route = "${PatientRoutes.PatientSummary.route}/{appointmentId}",
+                arguments = listOf(navArgument("appointmentId") { type = NavType.StringType })
             ) { backStackEntry ->
-                val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+                val appointmentId = backStackEntry.arguments?.getString("appointmentId") ?: ""
                 AppointmentReviewScreen(
-                    appointmentId = appointmentid,
+                    appointmentId = appointmentId,
                     navController = navController,
                     onBackPressed = { navController.popBackStack() },
                     onNextPressed = {
@@ -101,28 +117,53 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                     viewModel = appointmentViewModel,
                     canAddPrescription = true,
                     onAddPrescriptionClick = { appointId, patientId ->
-                        // Example: navigate to a screen to add a prescription with these IDs
-                        navController.navigate("${PatientRoutes.PrescriptionCreate.route}/${patientId}/${appointId}")
+                        // Fix: Ensure consistent parameter order
+                        navController.navigate("${PatientRoutes.PrescriptionList.route}/$appointId/$patientId")
                     }
                 )
             }
 
-
-
+            // Fix: Ensuring parameter order matches what components expect
             composable(
-                route = "${PatientRoutes.PrescriptionCreate.route}/{patientId}/{appointmentId}",
+                route = "${PatientRoutes.PrescriptionList.route}/{appointmentId}/{patientId}",
                 arguments = listOf(
-                    navArgument("patientId") { type = NavType.StringType },
-                    navArgument("appointmentId") { type = NavType.StringType }
+                    navArgument("appointmentId") { type = NavType.StringType },
+                    navArgument("patientId") { type = NavType.StringType }
                 )
-            ){  backStackEntry ->
-                val patientId = backStackEntry.arguments?.getString("patientId") ?: ""
+            ) { backStackEntry ->
                 val appointmentId = backStackEntry.arguments?.getString("appointmentId") ?: ""
+                val patientId = backStackEntry.arguments?.getString("patientId") ?: ""
+                val viewModel: PrescriptionViewModel = viewModel()
+                PrescriptionScreen(
+                    oncickAdd = { appointId, patientId ->
+                        // Fix: Navigate with consistent parameter order
+                        navController.navigate("${PatientRoutes.PrescriptionCreate.route}/$appointId/$patientId")
+                    },
+                    onclick = { prescriptionId ->
+                        navController.navigate("${PatientRoutes.Prescription.route}/$prescriptionId")
+                    },
+                    viewModel = viewModel,
+                    appointId = appointmentId,
+                    patientId = patientId,
+                    showAddButton = true
+                )
+            }
+
+            // Fix: Consistent parameter order
+            composable(
+                route = "${PatientRoutes.PrescriptionCreate.route}/{appointmentId}/{patientId}",
+                arguments = listOf(
+                    navArgument("appointmentId") { type = NavType.StringType },
+                    navArgument("patientId") { type = NavType.StringType }
+                )
+            ) { backStackEntry ->
+                val appointmentId = backStackEntry.arguments?.getString("appointmentId") ?: ""
+                val patientId = backStackEntry.arguments?.getString("patientId") ?: ""
                 val prescriptionViewModel = PrescriptionViewModel()
 
                 PrescriptionCreateScreen(
                     patientId = patientId,
-                    doctorId = "1",
+                    doctorId = "1", // Still hardcoded but that's fine for now
                     appointmentId = appointmentId,
                     onNavigateBack = { navController.popBackStack() },
                     viewModel = prescriptionViewModel
@@ -142,16 +183,16 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                 )
             }
 
-
             composable(DoctorRoutes.AppointmentOfWeek.route) {
-            AppointmentOfWeekScreen(
-                onBrowseDoctors = {
-                    navController.navigate(DoctorRoutes.HomeScreen.route)
-                },
-                onAppointmentClick = { appointmentId ->
-                    navController.navigate("${PatientRoutes.PatientSummary.route}/${appointmentId}")
-                }
-            )
-        }}}}
-
-
+                AppointmentOfWeekScreen(
+                    onBrowseDoctors = {
+                        navController.navigate(DoctorRoutes.HomeScreen.route)
+                    },
+                    onAppointmentClick = { appointmentId ->
+                        navController.navigate("${PatientRoutes.PatientSummary.route}/$appointmentId")
+                    }
+                )
+            }
+        }
+    }
+}

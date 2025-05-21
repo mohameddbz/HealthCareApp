@@ -287,20 +287,26 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(
-            route = "${PatientRoutes.PrescriptionList.route}/{appointmentid}",
-            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
-        ) {backStackEntry ->
-            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
-            val viewmodel : PrescriptionViewModel = viewModel()
+            route = "${PatientRoutes.PrescriptionList.route}/{appointmentId}/{patientId}",
+            arguments = listOf(
+                navArgument("appointmentId") { type = NavType.StringType },
+                navArgument("patientId") { type = NavType.StringType }
+            )
+        ) { backStackEntry ->
+            val appointmentId = backStackEntry.arguments?.getString("appointmentId") ?: ""
+            val patientId = backStackEntry.arguments?.getString("patientId") ?: ""
+            val viewModel: PrescriptionViewModel = viewModel()
             PrescriptionScreen(
-                navigateToPrescriptionDetail = { prescriptionId ->
-                    navController.navigate(PatientRoutes.Prescription.createRoute(prescriptionId.toString()))
+                oncickAdd = { appointId, patientId ->
+                    // Fix: Navigate with consistent parameter order
+                    navController.navigate("${PatientRoutes.PrescriptionCreate.route}/$appointId/$patientId")
                 },
                 onclick = { prescriptionId ->
-                    navController.navigate(PatientRoutes.Prescription.createRoute(prescriptionId))
+                    navController.navigate("${PatientRoutes.Prescription.route}/$prescriptionId")
                 },
-                viewModel = viewmodel,
-                appointId = appointmentid,
+                viewModel = viewModel,
+                appointId = appointmentId,
+                patientId = patientId
             )
         }
 
