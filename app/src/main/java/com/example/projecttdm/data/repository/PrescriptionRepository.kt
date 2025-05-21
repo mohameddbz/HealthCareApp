@@ -150,10 +150,11 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
         }
     }
 
-    suspend fun getPrescriptions(patientId: String): Flow<Result<List<PrescriptionDoc>>> = flow {
+    suspend fun getPrescriptions(patientId: String): Flow<Result<PrescriptionResult>> = flow {
         try {
             val response = endpoint.getPrescriptions(patientId)
             if (response.success) {
+                // Extract the prescriptions list from the nested data structure
                 emit(Result.success(response.data))
             } else {
                 emit(Result.failure(Exception(response.message)))

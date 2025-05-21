@@ -10,7 +10,14 @@ data class Prescription(
 data class PrescriptionRes(
     val success: Boolean,
     val message: String,
-    val data: List<PrescriptionDoc>
+    val data: PrescriptionResult
+)
+
+data class PrescriptionResult(
+    val patientName: String,
+    val patientAge: Int,
+    val appointmentTime: String,
+    val prescriptions: List<PrescriptionDoc>
 )
 
 data class PrescriptionDoc(
@@ -21,11 +28,22 @@ data class PrescriptionDoc(
     val created_at: String,
     val expiry_date: String
 )
+
+// 2. Fix the PrescriptionsUiState sealed class
+
 sealed class PrescriptionsUiState {
-    data object Loading : PrescriptionsUiState()
-    data class Success(val prescriptions: List<PrescriptionDoc>) : PrescriptionsUiState()
+    object Loading : PrescriptionsUiState()
+
+    data class Success(
+        val patientName: String,
+        val patientAge: Int,
+        val appointmentTime: String,
+        val prescriptions: List<PrescriptionDoc>
+    ) : PrescriptionsUiState()
+
     data class Error(val message: String) : PrescriptionsUiState()
 }
+
 
 // 1. Modèle de données pour la prescription
 

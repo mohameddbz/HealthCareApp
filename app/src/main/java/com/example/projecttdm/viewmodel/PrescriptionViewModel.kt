@@ -308,7 +308,6 @@ class PrescriptionViewModel : ViewModel() {
     private val _prescriptionsState = MutableStateFlow<PrescriptionsUiState>(PrescriptionsUiState.Loading)
     val prescriptionsState: StateFlow<PrescriptionsUiState> = _prescriptionsState.asStateFlow()
 
-
     // Liste des prescriptions
     private val _prescriptions = MutableStateFlow<UiState<List<Prescriptions>>>(UiState.Init)
     val prescriptions: StateFlow<UiState<List<Prescriptions>>> = _prescriptions.asStateFlow()
@@ -606,10 +605,21 @@ class PrescriptionViewModel : ViewModel() {
             _prescriptionsState.value = PrescriptionsUiState.Loading
             prescriptionRepository.getPrescriptions(patientId).collect { result ->
                 _prescriptionsState.value = result.fold(
-                    onSuccess = { PrescriptionsUiState.Success(it) },
-                    onFailure = { PrescriptionsUiState.Error(it.message ?: "Unknown error") }
+                    onSuccess = { resultData ->
+                        PrescriptionsUiState.Success(
+                            patientName = resultData.patientName,
+                            patientAge = resultData.patientAge,
+                            appointmentTime = resultData.appointmentTime,
+                            prescriptions = resultData.prescriptions
+                        )
+                    },
+                    onFailure = { throwable ->
+                        PrescriptionsUiState.Error(throwable.message ?: "Unknown error")
+                    }
                 )
             }
         }
     }
+
+
 }

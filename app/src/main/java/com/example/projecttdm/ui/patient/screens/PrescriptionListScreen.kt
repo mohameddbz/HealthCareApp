@@ -35,12 +35,9 @@ fun PrescriptionScreen(
     navigateToPrescriptionDetail: (Int) -> Unit,
     onclick: (String) -> Unit,
     viewModel: PrescriptionViewModel = viewModel(),
-    appointId: String,
-    patientName: String = "Thanina Amirat",
-    patientAge: Int = 21,
-    appointmentTime: String = "11:00 - 11:30"
+    appointId: String
 ) {
-    LaunchedEffect(key1 = true) {
+    LaunchedEffect(Unit) {
         viewModel.fetchPrescriptions(appointId)
     }
 
@@ -58,46 +55,7 @@ fun PrescriptionScreen(
             modifier = Modifier.padding(bottom = 16.dp)
         )
 
-        // Patient info card
-        PatientInfoCard(
-            patientName = patientName,
-            patientAge = patientAge,
-            appointmentTime = appointmentTime
-        )
-
-        Spacer(modifier = Modifier.height(16.dp))
-
-        // Add prescription button
-//        Row(
-//            verticalAlignment = Alignment.CenterVertically,
-//            modifier = Modifier.padding(vertical = 8.dp)
-//        ) {
-//            Text(
-//                text = "Add a prescription",
-//                fontSize = 16.sp,
-//                modifier = Modifier.weight(1f)
-//            )
-//
-//            IconButton(
-//                onClick = { navigateToAddPrescription() },
-//                modifier = Modifier
-//                    .size(40.dp)
-//                    .background(
-//                        color = MaterialTheme.colorScheme.primary,
-//                        shape = CircleShape
-//                    )
-//            ) {
-//                Icon(
-//                    imageVector = Icons.Default.Add,
-//                    contentDescription = "Add prescription",
-//                    tint = Color.White
-//                )
-//            }
-//        }
-
-        Spacer(modifier = Modifier.height(8.dp))
-
-        when (prescriptionsState) {
+        when (val state = prescriptionsState) {
             is PrescriptionsUiState.Loading -> {
                 Box(
                     contentAlignment = Alignment.Center,
@@ -106,9 +64,18 @@ fun PrescriptionScreen(
                     CircularProgressIndicator()
                 }
             }
+
             is PrescriptionsUiState.Success -> {
-                val prescriptions = (prescriptionsState as PrescriptionsUiState.Success).prescriptions
-                if (prescriptions.isEmpty()) {
+                // Display patient info from real data
+                PatientInfoCard(
+                    patientName = state.patientName,
+                    patientAge = state.patientAge,
+                    appointmentTime = state.appointmentTime
+                )
+
+                Spacer(modifier = Modifier.height(16.dp))
+
+                if (state.prescriptions.isEmpty()) {
                     Box(
                         contentAlignment = Alignment.Center,
                         modifier = Modifier.fillMaxSize()
@@ -119,31 +86,27 @@ fun PrescriptionScreen(
                     LazyColumn(
                         verticalArrangement = Arrangement.spacedBy(8.dp)
                     ) {
-                        items(prescriptions) { prescription ->
+                        items(state.prescriptions) { prescription ->
                             PrescriptionItem(
                                 prescription = prescription,
-                                onClick = {onclick(prescription.prescription_id.toString())}
+                                onClick = { onclick(prescription.prescription_id.toString()) }
                             )
                         }
                     }
                 }
             }
+
             is PrescriptionsUiState.Error -> {
-                val errorMessage = (prescriptionsState as PrescriptionsUiState.Error).message
                 Box(
                     contentAlignment = Alignment.Center,
                     modifier = Modifier.fillMaxSize()
                 ) {
                     Text(
-                        text = "Error: $errorMessage",
+                        text = "Error: ${state.message}",
                         color = MaterialTheme.colorScheme.error
                     )
                 }
             }
-
-            is PrescriptionsUiState.Error -> TODO()
-            PrescriptionsUiState.Loading -> TODO()
-            is PrescriptionsUiState.Success -> TODO()
         }
     }
 }

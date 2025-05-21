@@ -379,6 +379,7 @@ fun PendingCard(
 
             }
             if (appointment.status == AppointmentStatus.CONFIRMED
+                || appointment.status == AppointmentStatus.COMPLETED
                 || appointment.status == AppointmentStatus.PENDING) {
                 IconButton(
                     onClick = { onClick(appointment.id) },
