@@ -1,26 +1,63 @@
 package com.example.projecttdm.viewmodel
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.lifecycle.LiveData
 import androidx.lifecycle.MutableLiveData
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Notification
-import com.example.projecttdm.data.repository.NotificationRepository
-import kotlinx.coroutines.flow.MutableStateFlow
-import kotlinx.coroutines.flow.StateFlow
-import kotlinx.coroutines.flow.asStateFlow
+import com.example.projecttdm.data.model.NotificationResponse
+import com.example.projecttdm.data.repository.RepositoryHolder
+import com.example.projecttdm.state.UiState
+import kotlinx.coroutines.flow.collect
 import kotlinx.coroutines.launch
 
+@RequiresApi(Build.VERSION_CODES.O)
 class NotificationViewModel : ViewModel() {
-    private val notificationRepository : NotificationRepository =  NotificationRepository() ;
 
-    private val _notificationData = MutableStateFlow<List<Notification>>(emptyList())
-    val notificationData : StateFlow<List<Notification>> = _notificationData.asStateFlow()
+    private val notificationRepository = RepositoryHolder.notificationRepository
 
-    fun getNotifications() {
+    private val _notifications = MutableLiveData<List<NotificationResponse>>(emptyList())
+    val notifications: LiveData<List<NotificationResponse>> = _notifications
+
+    private val _isLoading = MutableLiveData<Boolean>(false)
+    val isLoading: LiveData<Boolean> = _isLoading
+
+    private val _error = MutableLiveData<String?>(null)
+    val error: LiveData<String?> = _error
+
+    init {
+        loadNotifications()
+    }
+
+    fun loadNotifications() {
         viewModelScope.launch {
-            val notificationsResults = notificationRepository.getNotificationsOfUser()
-            _notificationData.value = notificationsResults
+            notificationRepository.getNotifications().collect { state ->
+                when (state) {
+                    is UiState.Loading -> {
+                        _isLoading.value = true
+                        _error.value = null
+                    }
+
+                    is UiState.Success -> {
+                        _isLoading.value = false
+                        _notifications.value = state.data
+                    }
+
+                    is UiState.Error -> {
+                        _isLoading.value = false
+                        _error.value = state.message
+                        _notifications.value = emptyList()
+                    }
+
+                    UiState.Init -> {}
+                }
+            }
         }
+    }
+
+    fun clearError() {
+        _error.value = null
     }
 }

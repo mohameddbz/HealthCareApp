@@ -21,7 +21,7 @@ import java.time.LocalTime
 object ApiClient {
 
 //    private const val BASE_URL = "https://doctor-app-backend-b63m.onrender.com/api/"
-private const val BASE_URL = "http://192.168.220.131:5000/api/"
+private const val BASE_URL = "http://192.168.239.191:5000/api/"
   //  private const val BASE_URL = "http://192.168.100.50:5000/api/"
 //private const val BASE_URL = "http://172.20.10.3:5000/api/"
    //private const val BASE_URL = "http://172.20.10.8:5000/api/"

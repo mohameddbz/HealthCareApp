@@ -1,10 +1,11 @@
 package com.example.projecttdm.ui.common.components
 
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.*
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
@@ -16,12 +17,19 @@ import androidx.compose.ui.text.style.TextOverflow
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.example.projecttdm.R
-import com.example.projecttdm.data.model.Notification
+import com.example.projecttdm.data.model.NotificationResponse
 import com.example.projecttdm.theme.Baloo
 import com.example.projecttdm.theme.NotificationColors
+import java.time.ZonedDateTime
+import java.time.format.DateTimeFormatter
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NotificationItem(notification: Notification) {
+fun NotificationItem(notification: NotificationResponse) {
+    val parsedDateTime = ZonedDateTime.parse(notification.created_at)
+    val date = parsedDateTime.toLocalDate().toString()
+    val time = parsedDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
+
     Surface(
         modifier = Modifier
             .fillMaxWidth()
@@ -30,9 +38,7 @@ fun NotificationItem(notification: Notification) {
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 1.dp
     ) {
-        Column(
-            modifier = Modifier.padding(16.dp)
-        ) {
+        Column(modifier = Modifier.padding(16.dp)) {
             Row(
                 modifier = Modifier.fillMaxWidth(),
                 verticalAlignment = Alignment.Top
@@ -62,7 +68,7 @@ fun NotificationItem(notification: Notification) {
                         verticalAlignment = Alignment.CenterVertically
                     ) {
                         Text(
-                            text = "${notification.date} | ${notification.heure}",
+                            text = "$date | $time",
                             color = MaterialTheme.colorScheme.onTertiaryContainer,
                             fontFamily = Baloo,
                             fontWeight = FontWeight.Normal,

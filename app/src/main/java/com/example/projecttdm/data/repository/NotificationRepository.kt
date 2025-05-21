@@ -1,11 +1,23 @@
 package com.example.projecttdm.data.repository
 
-import com.example.projecttdm.data.local.StaticData
-import com.example.projecttdm.data.model.Notification
-import com.example.projecttdm.data.model.User
+import com.example.projecttdm.data.endpoint.NotificationEndPoint
+import com.example.projecttdm.data.model.NotificationResponse
+import com.example.projecttdm.state.UiState
+import kotlinx.coroutines.Dispatchers
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
+import kotlinx.coroutines.flow.flowOn
 
-class NotificationRepository {
+class NotificationRepository(private val endpoint: NotificationEndPoint) {
 
-  suspend  fun getNotificationsOfUser(): List<Notification> = StaticData.notifications
-
+ 
+  fun getNotifications(): Flow<UiState<List<NotificationResponse>>> = flow {
+    emit(UiState.Loading)
+    try {
+      val response = endpoint.getNotifications()
+      emit(UiState.Success(response.data))
+    } catch (e: Exception) {
+      emit(UiState.Error(e.message ?: "Error fetching notifications"))
+    }
+  }.flowOn(Dispatchers.IO)
 }
