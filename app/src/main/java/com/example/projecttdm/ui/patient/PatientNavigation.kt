@@ -38,6 +38,7 @@ import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
+import com.example.projecttdm.ui.patient.screens.ProfileScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
 import com.example.projecttdm.ui.patient.screens.RescheduleReasonScreen
 import com.example.projecttdm.ui.patient.screens.SearchScreen
@@ -355,6 +356,9 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                     prescriptionId = prescriptionId,
                     viewModel = prescriptionViewModel,
                 )
+            }
+            composable(PatientRoutes.Profile.route) {
+                ProfileScreen()
             }
         }
     }

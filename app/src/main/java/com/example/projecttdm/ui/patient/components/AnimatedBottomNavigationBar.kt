@@ -137,9 +137,9 @@ fun AnimatedBottomNavigationBar(navController: NavHostController) {
             route = PatientRoutes.NotificationScreen.route
         ),
         PatientNavItem(
-            title = "Prescriptions",
+            title = "Profile",
             icon = Icons.Default.MedicalServices,
-            route = PatientRoutes.PrescriptionList.route
+            route = PatientRoutes.Profile.route
         )
     )
 
