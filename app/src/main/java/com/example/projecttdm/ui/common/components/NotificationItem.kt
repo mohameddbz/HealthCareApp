@@ -4,6 +4,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
+import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material3.*
@@ -25,7 +26,10 @@ import java.time.format.DateTimeFormatter
 
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
-fun NotificationItem(notification: NotificationResponse) {
+fun NotificationItem(
+    notification: NotificationResponse,
+    onClick: () -> Unit
+) {
     val parsedDateTime = ZonedDateTime.parse(notification.created_at)
     val date = parsedDateTime.toLocalDate().toString()
     val time = parsedDateTime.toLocalTime().format(DateTimeFormatter.ofPattern("HH:mm"))
@@ -33,7 +37,8 @@ fun NotificationItem(notification: NotificationResponse) {
     Surface(
         modifier = Modifier
             .fillMaxWidth()
-            .padding(horizontal = 16.dp, vertical = 8.dp),
+            .padding(horizontal = 16.dp, vertical = 8.dp)
+            .clickable { onClick() },  // Make clickable
         color = MaterialTheme.colorScheme.tertiaryContainer,
         shape = MaterialTheme.shapes.medium,
         tonalElevation = 1.dp
@@ -104,6 +109,7 @@ fun NotificationItem(notification: NotificationResponse) {
         }
     }
 }
+
 
 @Composable
 private fun NotificationIcon(title: String) {

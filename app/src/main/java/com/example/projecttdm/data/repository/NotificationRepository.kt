@@ -10,7 +10,7 @@ import kotlinx.coroutines.flow.flowOn
 
 class NotificationRepository(private val endpoint: NotificationEndPoint) {
 
- 
+
   fun getNotifications(): Flow<UiState<List<NotificationResponse>>> = flow {
     emit(UiState.Loading)
     try {
@@ -18,6 +18,15 @@ class NotificationRepository(private val endpoint: NotificationEndPoint) {
       emit(UiState.Success(response.data))
     } catch (e: Exception) {
       emit(UiState.Error(e.message ?: "Error fetching notifications"))
+    }
+  }.flowOn(Dispatchers.IO)
+  fun markNotificationAsRead(notificationId: Int): Flow<UiState<Unit>> = flow {
+    emit(UiState.Loading)
+    try {
+      endpoint.markNotificationAsRead(notificationId)
+      emit(UiState.Success(Unit)) // No data expected back, just success
+    } catch (e: Exception) {
+      emit(UiState.Error(e.message ?: "Error marking notification as read"))
     }
   }.flowOn(Dispatchers.IO)
 }

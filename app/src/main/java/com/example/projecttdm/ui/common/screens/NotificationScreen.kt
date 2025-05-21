@@ -53,15 +53,15 @@ fun NotificationsScreen(viewModel: NotificationViewModel, navController: NavHost
             )
         }
     ) { paddingValues ->
-        Box(modifier = Modifier
-            .padding(paddingValues)
-            .fillMaxSize()
+        Box(
+            modifier = Modifier
+                .padding(paddingValues)
+                .fillMaxSize()
         ) {
             when {
                 isLoading -> {
                     CircularProgressIndicator(modifier = Modifier.align(Alignment.Center))
                 }
-
                 error != null -> {
                     Column(
                         modifier = Modifier.align(Alignment.Center),
@@ -78,7 +78,6 @@ fun NotificationsScreen(viewModel: NotificationViewModel, navController: NavHost
                         }
                     }
                 }
-
                 notifications.isEmpty() -> {
                     Text(
                         text = "No notifications found",
@@ -86,14 +85,16 @@ fun NotificationsScreen(viewModel: NotificationViewModel, navController: NavHost
                         style = MaterialTheme.typography.bodyMedium
                     )
                 }
-
                 else -> {
                     LazyColumn(
                         contentPadding = PaddingValues(vertical = 8.dp),
                         modifier = Modifier.fillMaxSize()
                     ) {
                         items(notifications) { notification ->
-                            NotificationItem(notification)
+                            NotificationItem(notification = notification, onClick = {
+                                // Mark notification as read when clicked
+                                viewModel.markAsRead(notification.notification_id)
+                            })
                         }
                     }
                 }
@@ -101,3 +102,4 @@ fun NotificationsScreen(viewModel: NotificationViewModel, navController: NavHost
         }
     }
 }
+
