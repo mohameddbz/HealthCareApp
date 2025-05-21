@@ -56,7 +56,9 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import androidx.compose.ui.zIndex
 import androidx.navigation.NavController
+import androidx.navigation.NavGraph.Companion.findStartDestination
 import androidx.navigation.NavHostController
+import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.currentBackStackEntryAsState
 import com.example.projecttdm.ui.patient.PatientRoutes
 
@@ -114,7 +116,10 @@ data class PatientNavItem(
 )
 
 @Composable
-fun AnimatedBottomNavigationBar(navController: NavHostController) {
+fun AnimatedBottomNavigationBar(
+    navController: NavHostController,
+    modifier: Modifier = Modifier
+) {
     val items = listOf(
         PatientNavItem(
             title = "Home",
@@ -205,68 +210,58 @@ fun AnimatedBottomNavigationBar(navController: NavHostController) {
     )
 
     Box(
-        modifier = Modifier
-            .fillMaxSize()
+        modifier = modifier
+            .fillMaxWidth()
+            .height(totalHeight)
     ) {
-        Box(
+        BoxWithConstraints(
             modifier = Modifier
                 .align(Alignment.BottomCenter)
                 .fillMaxWidth()
-                .height(totalHeight)
+                .height(barHeight + bottomPadding)
+                .zIndex(0f)
         ) {
-            BoxWithConstraints(
+            val widthPx = with(LocalDensity.current) { maxWidth.toPx() }
+            val animatedCutoutOffsetPx = animatedCutoutFraction * widthPx
+            Box(
                 modifier = Modifier
-                    .align(Alignment.BottomCenter)
-                    .fillMaxWidth()
-                    .height(barHeight + bottomPadding)
-                    .zIndex(0f)
-            ) {
-                val widthPx = with(LocalDensity.current) { maxWidth.toPx() }
-                val animatedCutoutOffsetPx = animatedCutoutFraction * widthPx
-                Box(
-                    modifier = Modifier
-                        .fillMaxSize()
-                        .clip(
-                            BottomBarShape(
-                                cutoutRadius = cutoutRadius,
-                                cornerRadius = cornerRadius,
-                                bottomPadding = 0.dp,
-                                cutoutHorizontalOffset = animatedCutoutOffsetPx
-                            )
+                    .fillMaxSize()
+                    .clip(
+                        BottomBarShape(
+                            cutoutRadius = cutoutRadius,
+                            cornerRadius = cornerRadius,
+                            bottomPadding = 0.dp,
+                            cutoutHorizontalOffset = animatedCutoutOffsetPx
                         )
-                        .background(MaterialTheme.colorScheme.tertiaryContainer)
-                )
-            }
-            Row(
-                modifier = Modifier
-                    .fillMaxWidth()
-                    .align(Alignment.BottomCenter)
-                    .height(barHeight)
-                    .padding(bottom = 0.dp),
-                horizontalArrangement = Arrangement.SpaceAround,
-                verticalAlignment = Alignment.Top
-            ) {
-                items.forEachIndexed { index, item ->
-                    NavItem(
-                        icon = item.icon,
-                        label = item.title,
-                        isSelected = selectedItem == index,
-                        cutoutRadius = cutoutRadius,
-                        onClick = {
-                            navController.navigate(item.route) {
-                                // Avoid multiple copies of the same destination
-                                launchSingleTop = true
-                                // Restore state when navigating back
-                                restoreState = true
-                                // Pop up to the start destination of the graph to
-                                // avoid building up a large stack of destinations
-                                popUpTo(PatientRoutes.HomeScreen.route) {
-                                    saveState = true
-                                }
+                    )
+                    .background(MaterialTheme.colorScheme.tertiaryContainer)
+            )
+        }
+        Row(
+            modifier = Modifier
+                .fillMaxWidth()
+                .align(Alignment.BottomCenter)
+                .height(barHeight)
+                .padding(bottom = 0.dp),
+            horizontalArrangement = Arrangement.SpaceAround,
+            verticalAlignment = Alignment.Top
+        ) {
+            items.forEachIndexed { index, item ->
+                NavItem(
+                    icon = item.icon,
+                    label = item.title,
+                    isSelected = selectedItem == index,
+                    cutoutRadius = cutoutRadius,
+                    onClick = {
+                        navController.navigate(item.route) {
+                            launchSingleTop = true
+                            restoreState = true
+                            popUpTo(navController.graph.findStartDestination().id) {
+                                saveState = true
                             }
                         }
-                    )
-                }
+                    }
+                )
             }
         }
     }
@@ -350,4 +345,33 @@ fun RowScope.NavItem(
 fun currentRoute(navController: NavHostController): String? {
     val navBackStackEntry by navController.currentBackStackEntryAsState()
     return navBackStackEntry?.destination?.route
+}
+@Composable
+fun MainScreenWithBottomNav(navController: NavHostController) {
+    Box(modifier = Modifier.fillMaxSize()) {
+        // Your main content screens - they will have bottom padding to avoid overlap
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(bottom = 125.dp) // Reserve space for bottom navigation (85dp + 40dp)
+        ) {
+            // Your NavHost or screen content goes here
+            // This content will not overlap with the bottom navigation
+            NavHost(
+                navController = navController,
+                startDestination = PatientRoutes.HomeScreen.route
+            ) {
+                // Your screen destinations
+            }
+        }
+
+        // Bottom Navigation - positioned at the bottom
+        Box(
+            modifier = Modifier
+                .align(Alignment.BottomCenter)
+                .offset(y = (-40).dp) // Move up by 40dp from bottom
+        ) {
+            AnimatedBottomNavigationBar(navController = navController)
+        }
+    }
 }

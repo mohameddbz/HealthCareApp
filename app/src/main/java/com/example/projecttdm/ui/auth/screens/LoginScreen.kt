@@ -3,7 +3,6 @@ package com.example.projecttdm.ui.auth.screens
 import android.app.Activity
 import android.content.Context
 import android.content.Intent
-import android.widget.Toast
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -53,7 +52,6 @@ import com.example.projecttdm.ui.auth.Util.OrDivider
 import com.example.projecttdm.ui.common.components.showError
 import com.example.projecttdm.ui.doctor.DoctorActivity
 import com.example.projecttdm.ui.patient.PatientActivity
-import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.viewmodel.AuthViewModel
 import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.withContext
@@ -77,7 +75,7 @@ fun LoginScreen(navController:NavHostController,authViewModel : AuthViewModel) {
     ) {
         // Logo Image
         Image(
-            painter = painterResource(id = R.drawable.logo), // Replace with your logo resource
+            painter = painterResource(id = R.drawable.name), // Replace with your logo resource
             contentDescription = "App Logo",
             modifier = Modifier.size(170.dp) // Adjust size as needed
         )

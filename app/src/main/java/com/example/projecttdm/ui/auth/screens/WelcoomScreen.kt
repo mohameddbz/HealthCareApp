@@ -36,7 +36,7 @@ fun WelcomeScreen(navController: NavHostController) {
     ) {
         // Logo
         Image(
-            painter = painterResource(id = R.drawable.logo),
+            painter = painterResource(id = R.drawable.name),
             contentDescription = "Medics Logo",
             modifier = Modifier.size(150.dp)
         )

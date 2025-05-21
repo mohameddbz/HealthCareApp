@@ -95,34 +95,16 @@ fun AppointmentScreen(
                     title = {
                         Text(
                             text = "My Appointment",
-                            fontWeight = FontWeight.Bold,
-                            style = MaterialTheme.typography.titleLarge
+                            style = MaterialTheme.typography.titleLarge.copy(fontWeight = FontWeight.Bold),
+                            modifier = Modifier.padding(15.dp,0.dp,0.dp,0.dp)
                         )
                     },
                     navigationIcon = {
-                        IconButton(onClick = {}) {
-                            Image(
-                                painter = painterResource(id = R.drawable.logo),
-                                contentDescription = "App Logo",
-                                modifier = Modifier.size(40.dp)
-                            )
-                        }
+                        Icon(Icons.Default.ArrowBack, contentDescription = "Back")
                     },
                     actions = {
                         IconButton(onClick = { showSearchBar = !showSearchBar }) {
-                            Icon(
-                                imageVector = Icons.Default.Search,
-                                contentDescription = "Search",
-                                tint = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
-                        }
-                        IconButton(onClick = { /* More options if needed */ }) {
-                            Text(
-                                text = "⋯",
-                                fontSize = 24.sp,
-                                fontWeight = FontWeight.Bold,
-                                color = MaterialTheme.colorScheme.onPrimaryContainer
-                            )
+                            Icon(Icons.Default.Search, contentDescription = "Search")
                         }
                     }
                 )

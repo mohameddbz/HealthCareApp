@@ -235,7 +235,7 @@ fun HomeScreen(
             }
 
             item { Spacer(modifier = Modifier.height(8.dp)) }
-            item { DeconnectionButton() }
+            //item { DeconnectionButton() }
         }
     }
 }

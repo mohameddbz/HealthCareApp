@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.projecttdm.ui.common.components.DeconnectionButton
 import com.example.projecttdm.ui.common.components.ProfileImage
 import com.example.projecttdm.ui.common.components.UserProfileImage
 import com.example.projecttdm.viewmodel.ProfileViewModel
@@ -370,7 +371,7 @@ fun ProfileScreen(
 
                     // Action Buttons
                     Row(
-                        modifier = Modifier.fillMaxWidth().padding(0.dp,0.dp,0.dp,70.dp),
+                        modifier = Modifier.fillMaxWidth(),
                         horizontalArrangement = if (isEditing) Arrangement.SpaceBetween else Arrangement.Center
                     ) {
                         if (isEditing) {
@@ -421,31 +422,31 @@ fun ProfileScreen(
                     // Logout button (only shown when not editing)
                     if (!isEditing) {
                         Spacer(modifier = Modifier.height(16.dp))
-
-                        OutlinedButton(
-                            onClick = { viewModel.logout() },
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .height(50.dp),
-                            colors = ButtonDefaults.outlinedButtonColors(
-                                contentColor = Color.Red
-                            ),
-                            border = BorderStroke(1.dp, Color.Red),
-                            shape = RoundedCornerShape(8.dp)
-                        ) {
-                            Icon(
-                                imageVector = Icons.Default.Logout,
-                                contentDescription = "Logout",
-                                tint = Color.Red,
-                                modifier = Modifier.size(20.dp)
-                            )
-                            Spacer(modifier = Modifier.width(8.dp))
-                            Text(
-                                text = "Log out",
-                                fontSize = 16.sp,
-                                color = Color.Red
-                            )
-                        }
+                        DeconnectionButton()
+//                        OutlinedButton(
+//                            onClick = { viewModel.logout() },
+//                            modifier = Modifier
+//                                .fillMaxWidth()
+//                                .height(50.dp),
+//                            colors = ButtonDefaults.outlinedButtonColors(
+//                                contentColor = Color.Red
+//                            ),
+//                            border = BorderStroke(1.dp, Color.Red),
+//                            shape = RoundedCornerShape(8.dp)
+//                        ) {
+//                            Icon(
+//                                imageVector = Icons.Default.Logout,
+//                                contentDescription = "Logout",
+//                                tint = Color.Red,
+//                                modifier = Modifier.size(20.dp)
+//                            )
+//                            Spacer(modifier = Modifier.width(8.dp))
+//                            Text(
+//                                text = "Log out",
+//                                fontSize = 16.sp,
+//                                color = Color.Red
+//                            )
+//                        }
                     }
                 }
             }
