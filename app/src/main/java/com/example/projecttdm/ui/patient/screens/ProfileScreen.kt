@@ -32,6 +32,8 @@ import androidx.compose.ui.unit.sp
 import androidx.lifecycle.viewmodel.compose.viewModel
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
+import com.example.projecttdm.ui.common.components.ProfileImage
+import com.example.projecttdm.ui.common.components.UserProfileImage
 import com.example.projecttdm.viewmodel.ProfileViewModel
 import java.text.SimpleDateFormat
 import java.util.*
@@ -40,12 +42,14 @@ import java.util.*
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
 fun ProfileScreen(
-    viewModel: ProfileViewModel = viewModel()
+    viewModel: ProfileViewModel = viewModel(),
+    onNavigateToSettings: () -> Unit = {}
 ) {
     val profile = viewModel.profileState
     val isEditing = viewModel.isEditing
     val isLoading = viewModel.isLoading
     val errorMessage = viewModel.errorMessage
+    val selectedImageUri = viewModel.selectedImageUri
     val context = LocalContext.current
     val scrollState = rememberScrollState()
 
@@ -58,11 +62,11 @@ fun ProfileScreen(
         contract = ActivityResultContracts.GetContent()
     ) { uri: Uri? ->
         uri?.let {
-            viewModel.updateProfileImage(it.toString())
+            viewModel.updateProfileImage(context,it.toString())
         }
     }
 
-    // Afficher le sélecteur de date si nécessaire
+    // Show date picker if needed
     if (showDatePicker && isEditing) {
         DatePickerDialog(
             onDismissRequest = { showDatePicker = false },
@@ -88,26 +92,15 @@ fun ProfileScreen(
         }
     }
 
-    // Afficher un message d'erreur si nécessaire
+    // Show error message if needed
     errorMessage?.let {
         LaunchedEffect(it) {
-            println(it)
-//            if (!errorMessage.isNullOrEmpty()) {
-//                Box(
-//                    modifier = Modifier.fillMaxSize(),
-//                    contentAlignment = Alignment.Center
-//                ) {
-//                    Text(
-//                        text = errorMessage!!,
-//                        color = Color.Red,
-//                        style = MaterialTheme.typography.bodyMedium
-//                    )
-//                }
-//            }
+            // Show snackbar or toast with error message
+            println("Error: $it")
         }
     }
 
-    // Afficher un indicateur de chargement si nécessaire
+    // Show loading indicator if needed
     if (isLoading) {
         Box(
             modifier = Modifier.fillMaxSize(),
@@ -118,18 +111,18 @@ fun ProfileScreen(
         return
     }
 
-    // Si le profil n'est pas chargé, afficher un message
+    // If profile is not loaded, show a message
     if (profile == null) {
         Box(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Text("profile not found...")
+            Text("Profile not found...")
         }
         return
     }
 
-    // Box englobant tout l'écran
+    // Main content
     Box(
         modifier = Modifier
             .fillMaxSize()
@@ -139,31 +132,43 @@ fun ProfileScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(16.dp)
-                .background(MaterialTheme.colorScheme.background)
                 .verticalScroll(scrollState),
             horizontalAlignment = Alignment.CenterHorizontally
         ) {
-            Card(
+            // App bar
+            Row(
                 modifier = Modifier
                     .fillMaxWidth()
-                    .background(MaterialTheme.colorScheme.background),
-                shape = RoundedCornerShape(8.dp)
+                    .padding(bottom = 16.dp),
+                horizontalArrangement = Arrangement.SpaceBetween,
+                verticalAlignment = Alignment.CenterVertically
+            ) {
+                Text(
+                    text = "My Profile",
+                    fontSize = 24.sp,
+                    fontWeight = FontWeight.Bold
+                )
+
+                IconButton(onClick = onNavigateToSettings) {
+                    Icon(
+                        imageVector = Icons.Default.Settings,
+                        contentDescription = "Settings"
+                    )
+                }
+            }
+
+            // Profile card
+            Card(
+                modifier = Modifier.fillMaxWidth(),
+                shape = RoundedCornerShape(12.dp),
+                elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
             ) {
                 Column(
                     modifier = Modifier
                         .fillMaxWidth()
-                        .background(MaterialTheme.colorScheme.background)
                         .padding(16.dp),
                     horizontalAlignment = Alignment.CenterHorizontally
                 ) {
-                    // Header
-                    Text(
-                        text = "My profile",
-                        fontSize = 24.sp,
-                        fontWeight = FontWeight.Bold,
-                        modifier = Modifier.padding(bottom = 16.dp),
-                    )
-
                     // Profile Image
                     Box(
                         modifier = Modifier
@@ -174,53 +179,72 @@ fun ProfileScreen(
                         // Profile image or placeholder
                         Box(
                             modifier = Modifier
-                                .size(140.dp)
+                                .size(120.dp)
                                 .clip(CircleShape)
                                 .background(Color.LightGray)
-                                .align(Alignment.Center)
+                                .border(2.dp, MaterialTheme.colorScheme.primary, CircleShape)
                                 .clickable(enabled = isEditing) {
                                     if (isEditing) {
                                         imagePickerLauncher.launch("image/*")
                                     }
                                 }
                         ) {
-                            if (profile.image != null) {
-                                AsyncImage(
-                                    model = ImageRequest.Builder(context)
-                                        .data(profile.image)
-                                        .crossfade(true)
-                                        .build(),
-                                    contentDescription = "Photo de profil",
-                                    contentScale = ContentScale.Crop,
-                                    modifier = Modifier.fillMaxSize()
-                                )
-                            } else {
-                                Icon(
-                                    imageVector = Icons.Default.Person,
-                                    contentDescription = "Icône de profil",
-                                    modifier = Modifier
-                                        .size(65.dp)
-                                        .align(Alignment.Center),
-                                    tint = Color.Gray
-                                )
+                            // Show selected image if available, otherwise show profile image or placeholder
+                            when {
+                                selectedImageUri != null -> {
+                                    AsyncImage(
+                                        model = ImageRequest.Builder(context)
+                                            .data(selectedImageUri)
+                                            .crossfade(true)
+                                            .build(),
+                                        contentDescription = "Selected profile photo",
+                                        contentScale = ContentScale.Crop,
+                                        modifier = Modifier.fillMaxSize()
+                                    )
+                                }
+                                profile.image != null -> {
+//                                    AsyncImage(
+//                                        model = ImageRequest.Builder(context)
+//                                            .data(profile.image)
+//                                            .crossfade(true)
+//                                            .build(),
+//                                        contentDescription = "Profile photo",
+//                                        contentScale = ContentScale.Crop,
+//                                        modifier = Modifier.fillMaxSize()
+//                                    )
+                                    ProfileImage(
+                                        imageBlob = profile.image, // or your image object
+                                        modifier = Modifier
+                                            .fillMaxSize()
+                                            .clip(CircleShape)
+                                    )
+                                }
+                                else -> {
+                                    Icon(
+                                        imageVector = Icons.Default.Person,
+                                        contentDescription = "Profile icon",
+                                        modifier = Modifier
+                                            .size(60.dp)
+                                            .align(Alignment.Center),
+                                        tint = Color.Gray
+                                    )
+                                }
                             }
                         }
 
-                        // Camera icon for image upload - toujours visible
-                        if (isEditing){
-                            // Modifiez l'appel au click
-                            IconButton(
-                                onClick = {
-                                    imagePickerLauncher.launch("image/*")
-                                },
+                        // Edit image button
+                        if (isEditing) {
+                            FloatingActionButton(
+                                onClick = { imagePickerLauncher.launch("image/*") },
                                 modifier = Modifier
-                                    .size(20.dp)
-                                    .background(MaterialTheme.colorScheme.primary, shape = CircleShape)
-                                    .align(Alignment.BottomEnd)
-                            )  {
+                                    .size(36.dp)
+                                    .align(Alignment.BottomEnd),
+                                containerColor = MaterialTheme.colorScheme.primary,
+                                shape = CircleShape
+                            ) {
                                 Icon(
                                     imageVector = Icons.Default.Edit,
-                                    contentDescription = "Changer la photo",
+                                    contentDescription = "Change photo",
                                     tint = Color.White,
                                     modifier = Modifier.size(20.dp)
                                 )
@@ -228,20 +252,41 @@ fun ProfileScreen(
                         }
                     }
 
+                    Spacer(modifier = Modifier.height(12.dp))
 
-                    Spacer(modifier = Modifier.height(8.dp))
+                    // Display name when not in edit mode
                     if (!isEditing) {
                         Text(
-                            text = profile.first_name+" "+profile.last_name,
-                            fontSize = 16.sp,
-                            color = MaterialTheme.colorScheme.onTertiaryContainer,
-                            modifier = Modifier.padding(vertical = 8.dp)
+                            text = "${profile.first_name} ${profile.last_name}",
+                            fontSize = 20.sp,
+                            fontWeight = FontWeight.Bold,
+                            color = MaterialTheme.colorScheme.onBackground
+                        )
+
+                        Text(
+                            text = profile.email,
+                            fontSize = 14.sp,
+                            color = MaterialTheme.colorScheme.onSurfaceVariant,
+                            modifier = Modifier.padding(bottom = 16.dp)
                         )
                     }
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                    Spacer(modifier = Modifier.height(24.dp))
 
-                    // Profile Fields - Tous les champs sont modifiables en mode édition
+                    // Section title
+                    Text(
+                        text = "Personal Information",
+                        fontSize = 18.sp,
+                        fontWeight = FontWeight.Medium,
+                        color = MaterialTheme.colorScheme.onBackground,
+                        modifier = Modifier
+                            .align(Alignment.Start)
+                            .padding(bottom = 8.dp)
+                    )
+
+                    Divider(modifier = Modifier.padding(bottom = 16.dp))
+
+                    // Profile Fields
                     EditableProfileField(
                         icon = Icons.Default.Person,
                         value = profile.first_name,
@@ -254,7 +299,7 @@ fun ProfileScreen(
                         icon = Icons.Default.Person,
                         value = profile.last_name,
                         onValueChange = { viewModel.updateLastName(it) },
-                        placeholder = "last name",
+                        placeholder = "Last name",
                         isEditing = isEditing
                     )
 
@@ -262,7 +307,7 @@ fun ProfileScreen(
                         icon = Icons.Default.Phone,
                         value = profile.phone,
                         onValueChange = { viewModel.updatePhone(it) },
-                        placeholder = "phone",
+                        placeholder = "Phone number",
                         isEditing = isEditing
                     )
 
@@ -270,148 +315,113 @@ fun ProfileScreen(
                         icon = Icons.Default.Email,
                         value = profile.email,
                         onValueChange = { viewModel.updateEmail(it) },
-                        placeholder = "Email",
+                        placeholder = "Email address",
                         isEditing = isEditing
                     )
 
-                    // Date de naissance avec picker
-                    val birthDateText = viewModel.formatDateForDisplay(profile.PATIENT.date_birthday.toString())
+                    // Date of birth with picker
+                    val birthDateText = viewModel.formatDateForDisplay(profile.PATIENT.date_birthday)
 
-                    Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .clickable {
-                                if (isEditing) {
-                                    showDatePicker = true
-                                }
-                            }
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                    ProfileField(
+                        icon = Icons.Default.DateRange,
+                        label = "Date of Birth",
+                        value = birthDateText,
+                        onClick = { if (isEditing) showDatePicker = true },
+                        isClickable = isEditing,
+                        showArrow = isEditing
+                    )
+
+                    // Gender field with dropdown
+                    var expanded by remember { mutableStateOf(false) }
+                    val genderDisplay = if (profile.PATIENT.sexe == "male") "Male" else "Female"
+
+                    ProfileField(
+                        icon = if (profile.PATIENT.sexe == "male") Icons.Default.Male else Icons.Default.Female,
+                        label = "Gender",
+                        value = genderDisplay,
+                        onClick = { if (isEditing) expanded = true },
+                        isClickable = isEditing,
+                        showArrow = isEditing
+                    )
+
+                    // Dropdown menu for gender selection
+                    DropdownMenu(
+                        expanded = expanded && isEditing,
+                        onDismissRequest = { expanded = false },
+                        modifier = Modifier.width(200.dp)
                     ) {
-                        Icon(
-                            imageVector = Icons.Default.DateRange,
-                            contentDescription = "Date de naissance",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
+                        DropdownMenuItem(
+                            text = { Text("Male") },
+                            onClick = {
+                                viewModel.updateSexe("male")
+                                expanded = false
+                            }
                         )
-                        Spacer(modifier = Modifier.width(16.dp))
-                        Text(
-                            text = birthDateText,
-                            color = MaterialTheme.colorScheme.onBackground
-                        )
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Select",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
+                        DropdownMenuItem(
+                            text = { Text("Female") },
+                            onClick = {
+                                viewModel.updateSexe("female")
+                                expanded = false
+                            }
                         )
                     }
 
-                    // Sexe field
-                    var expanded by remember { mutableStateOf(false) }
+                    Spacer(modifier = Modifier.height(32.dp))
 
+                    // Action Buttons
                     Row(
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .padding(vertical = 8.dp)
-                            .border(
-                                width = 1.dp,
-                                color = Color.LightGray,
-                                shape = RoundedCornerShape(8.dp)
-                            )
-                            .clickable {
-                                if(isEditing){
-                                    expanded = true
-                                }
-                            }
-                            .padding(16.dp),
-                        verticalAlignment = Alignment.CenterVertically
+                        modifier = Modifier.fillMaxWidth().padding(0.dp,0.dp,0.dp,70.dp),
+                        horizontalArrangement = if (isEditing) Arrangement.SpaceBetween else Arrangement.Center
                     ) {
-                        Icon(
-                            imageVector = if (profile.PATIENT.sexe == "male") Icons.Default.Male else Icons.Default.Female,
-                            contentDescription = "Sexe",
-                            tint = MaterialTheme.colorScheme.primary,
-                            modifier = Modifier.size(24.dp)
-                        )
-                        Spacer(modifier = Modifier.width(16.dp))
-
                         if (isEditing) {
-                            val options = listOf("male", "female")
+                            // Cancel button when editing
+                            OutlinedButton(
+                                onClick = { viewModel.toggleEditMode() },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                shape = RoundedCornerShape(8.dp),
+                                border = BorderStroke(1.dp, MaterialTheme.colorScheme.primary)
+                            ) {
+                                Text("Cancel")
+                            }
 
-                            Box {
-                                Text(
-                                    text = if (profile.PATIENT.sexe == "male") "Male" else "Female",
-                                    modifier = Modifier.fillMaxWidth()
-                                        .clickable { expanded = true }
-                                )
+                            Spacer(modifier = Modifier.width(16.dp))
 
-                                DropdownMenu(
-                                    expanded = expanded,
-                                    onDismissRequest = { expanded = false }
-                                ) {
-                                    options.forEach { option ->
-                                        DropdownMenuItem(
-                                            text = {
-                                                Text(if (option == "male") "Male" else "Female")
-                                            },
-                                            onClick = {
-                                                viewModel.updateSexe(option)
-                                                expanded = false
-                                            }
-                                        )
-                                    }
-                                }
+                            // Save button when editing
+                            Button(
+                                onClick = { viewModel.saveProfile(context) },
+                                modifier = Modifier
+                                    .weight(1f)
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Save Changes")
                             }
                         } else {
-                            Text(
-                                text = if (profile.PATIENT.sexe == "male") "Male" else "Female"
-                            )
-                        }
-
-                        Spacer(modifier = Modifier.weight(1f))
-                        Icon(
-                            imageVector = Icons.Default.KeyboardArrowDown,
-                            contentDescription = "Sélectionner",
-                            tint = Color.Gray,
-                            modifier = Modifier.size(20.dp)
-                        )
-                    }
-
-                    Spacer(modifier = Modifier.height(24.dp))
-
-                    // Buttons
-                    Button(
-                        onClick = {
-                            if (isEditing) {
-                                viewModel.saveProfile(context)
-                            } else {
-                                viewModel.toggleEditMode()
+                            // Edit button when not editing
+                            Button(
+                                onClick = { viewModel.toggleEditMode() },
+                                modifier = Modifier
+                                    .fillMaxWidth()
+                                    .height(50.dp),
+                                colors = ButtonDefaults.buttonColors(
+                                    containerColor = MaterialTheme.colorScheme.primary
+                                ),
+                                shape = RoundedCornerShape(8.dp)
+                            ) {
+                                Text("Edit Profile")
                             }
-                        },
-                        modifier = Modifier
-                            .fillMaxWidth()
-                            .height(50.dp),
-                        colors = ButtonDefaults.buttonColors(
-                            containerColor = MaterialTheme.colorScheme.primary
-                        ),
-                        shape = RoundedCornerShape(8.dp)
-                    ) {
-                        Text(
-                            text = if (isEditing) "Update" else "Edit Profile",
-                            fontSize = 16.sp,
-                            color = Color.White // Pour que le texte ressorte sur le fond primaire
-                        )
+                        }
                     }
 
-                    Spacer(modifier = Modifier.height(8.dp))
-                    if (!isEditing){
+                    // Logout button (only shown when not editing)
+                    if (!isEditing) {
+                        Spacer(modifier = Modifier.height(16.dp))
+
                         OutlinedButton(
                             onClick = { viewModel.logout() },
                             modifier = Modifier
@@ -425,7 +435,7 @@ fun ProfileScreen(
                         ) {
                             Icon(
                                 imageVector = Icons.Default.Logout,
-                                contentDescription = "Déconnexion",
+                                contentDescription = "Logout",
                                 tint = Color.Red,
                                 modifier = Modifier.size(20.dp)
                             )
@@ -437,7 +447,6 @@ fun ProfileScreen(
                             )
                         }
                     }
-
                 }
             }
         }
@@ -450,8 +459,7 @@ fun EditableProfileField(
     value: String,
     onValueChange: (String) -> Unit,
     placeholder: String,
-    isEditing: Boolean,
-    showArrow: Boolean = false
+    isEditing: Boolean
 ) {
     Row(
         modifier = Modifier
@@ -478,6 +486,7 @@ fun EditableProfileField(
                 value = value,
                 textStyle = TextStyle(
                     color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp
                 ),
                 onValueChange = onValueChange,
                 singleLine = true,
@@ -487,7 +496,8 @@ fun EditableProfileField(
                         if (value.isEmpty()) {
                             Text(
                                 text = placeholder,
-                                color =  MaterialTheme.colorScheme.onBackground
+                                color = Color.Gray,
+                                fontSize = 16.sp
                             )
                         }
                         innerTextField()
@@ -495,17 +505,69 @@ fun EditableProfileField(
                 }
             )
         } else {
+            Column(modifier = Modifier.weight(1f)) {
+                Text(
+                    text = placeholder,
+                    color = Color.Gray,
+                    fontSize = 14.sp
+                )
+                Text(
+                    text = if (value.isNotEmpty()) value else "Not specified",
+                    color = MaterialTheme.colorScheme.onBackground,
+                    fontSize = 16.sp
+                )
+            }
+        }
+    }
+}
+
+@Composable
+fun ProfileField(
+    icon: androidx.compose.ui.graphics.vector.ImageVector,
+    label: String,
+    value: String,
+    onClick: () -> Unit,
+    isClickable: Boolean,
+    showArrow: Boolean = false
+) {
+    Row(
+        modifier = Modifier
+            .fillMaxWidth()
+            .padding(vertical = 8.dp)
+            .border(
+                width = 1.dp,
+                color = Color.LightGray,
+                shape = RoundedCornerShape(8.dp)
+            )
+            .clickable(enabled = isClickable) { onClick() }
+            .padding(16.dp),
+        verticalAlignment = Alignment.CenterVertically
+    ) {
+        Icon(
+            imageVector = icon,
+            contentDescription = label,
+            tint = MaterialTheme.colorScheme.primary,
+            modifier = Modifier.size(24.dp)
+        )
+        Spacer(modifier = Modifier.width(16.dp))
+
+        Column(modifier = Modifier.weight(1f)) {
             Text(
-                text = value.ifEmpty { placeholder },
-                color =  MaterialTheme.colorScheme.onBackground,
-                modifier = Modifier.weight(1f)
+                text = label,
+                color = Color.Gray,
+                fontSize = 14.sp
+            )
+            Text(
+                text = value.ifEmpty { "Not specified" },
+                color = MaterialTheme.colorScheme.onBackground,
+                fontSize = 16.sp
             )
         }
 
         if (showArrow) {
             Icon(
                 imageVector = Icons.Default.KeyboardArrowDown,
-                contentDescription = "Sélectionner",
+                contentDescription = "Select",
                 tint = Color.Gray,
                 modifier = Modifier.size(20.dp)
             )

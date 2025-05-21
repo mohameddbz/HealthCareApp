@@ -12,10 +12,19 @@ data class User(
 
  */
 // Créer une classe pour représenter l'objet BLOB
+//data class ImageBlob(
+//    val type: String,
+//    val data: List<Int>  // Ou ByteArray si vous utilisez un adaptateur personnalisé
+//)
+
 data class ImageBlob(
     val type: String,
-    val data: List<Int>  // Ou ByteArray si vous utilisez un adaptateur personnalisé
-)
+    val data: List<Int>  // Represents binary data as a list of integers
+) {
+    override fun toString(): String {
+        return "ImageBlob(type=$type, dataSize=${data.size})"
+    }
+}
 
 data class User(
     val user_id: Int,
