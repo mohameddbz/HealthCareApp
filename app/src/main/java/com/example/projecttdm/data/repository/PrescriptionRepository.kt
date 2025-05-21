@@ -8,16 +8,23 @@ import android.net.Uri
 import android.view.View
 import androidx.core.content.FileProvider
 import com.example.projecttdm.R
+import com.example.projecttdm.data.db.AppDatabase
 import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
+import com.example.projecttdm.data.entity.PrescriptionEntity
+import com.example.projecttdm.data.entity.SyncPrescriptionsRequest
+import com.example.projecttdm.data.entity.SyncPrescriptionsResponse
 import com.example.projecttdm.data.model.*
+import com.example.projecttdm.utils.NetworkUtils
+import com.google.gson.Gson
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.flow
+import retrofit2.Response
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
 import java.util.*
 
-class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
+class PrescriptionRepository(private val endpoint: PrescriptionEndPoint, private val localDB: AppDatabase) {
 
 
         suspend fun getAllPrescriptions(): List<Prescriptions> {
@@ -36,7 +43,7 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
             return endpoint.getPrescriptionsByPatient(patientId)
         }
 
-    suspend fun createPrescription(
+  /*  suspend fun createPrescription(
         patientId: String,
         medications: List<Medications>,
         instructions: String,
@@ -53,6 +60,49 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
 
         println("-=-=-=-=-=-=-= ${patientId}")
         return endpoint.createPrescription(request)
+    }
+
+   */
+
+    suspend fun createPrescription(
+        context: Context,
+        patientId: String,
+        medications: List<Medications>,
+        instructions: String,
+        expiryDate: String,
+        appointmentId: String
+    ): PrescriptionResponse {
+        val request = PrescriptionRequest(
+            patientId = patientId,
+            medications = medications,
+            instructions = instructions,
+            expiryDate = expiryDate,
+            appointmentId = appointmentId
+        )
+
+        return if (NetworkUtils.isNetworkAvailable(context)) {
+            // Envoie au serveur distant
+            endpoint.createPrescription(request)
+        } else {
+            // Sérialisation des médicaments
+            val medicationsJson = Gson().toJson(medications)
+
+            localDB.presctriptionDao().insertPrescription(
+                PrescriptionEntity(
+                    patientId = patientId,
+                    appointmentId = appointmentId,
+                    instructions = instructions,
+                    expiryDate = expiryDate,
+                    medicationsJson = medicationsJson
+                )
+            )
+
+            PrescriptionResponse(
+                success = false,
+                message = "Prescription enregistrée localement. Elle sera synchronisée plus tard.",
+                prescription = null
+            )
+        }
     }
 
     suspend fun updatePrescription(
@@ -162,5 +212,9 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
         } catch (e: Exception) {
             emit(Result.failure(e))
         }
+    }
+
+    suspend fun syncPrescriptions(syncPrescriptionsRequest: SyncPrescriptionsRequest):Response<SyncPrescriptionsResponse> {
+      return endpoint.syncPrescriptions(syncPrescriptionsRequest)
     }
 }

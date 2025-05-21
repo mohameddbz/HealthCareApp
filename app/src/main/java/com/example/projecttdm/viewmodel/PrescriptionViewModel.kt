@@ -280,6 +280,7 @@
 // PrescriptionViewModel.kt - Fix
 package com.example.projecttdm.viewmodel
 
+import android.content.Context
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.lifecycle.ViewModel
@@ -486,7 +487,7 @@ class PrescriptionViewModel : ViewModel() {
     }
 
     // Créer une nouvelle prescription
-    fun createPrescription() {
+    fun createPrescription(context: Context) {
         // Debug: Afficher les valeurs actuelles
         println("DEBUG - Current values before prescription creation:")
         println("Patient ID: ${patientId.value}")
@@ -503,10 +504,12 @@ class PrescriptionViewModel : ViewModel() {
             return
         }
 
+
         viewModelScope.launch {
             _prescriptionState.value = UiState.Loading
             try {
                 val response = prescriptionRepository.createPrescription(
+                    context = context,
                     patientId = patientId.value,
                     medications = _medications.value,
                     instructions = instructions.value,

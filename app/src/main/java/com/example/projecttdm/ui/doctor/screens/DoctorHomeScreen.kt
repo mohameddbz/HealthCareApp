@@ -41,6 +41,7 @@ import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavController
 import androidx.navigation.NavHostController
 import com.example.projecttdm.R
+import com.example.projecttdm.data.db.SyncButton
 import com.example.projecttdm.data.model.NextAppointementsResponse
 import com.example.projecttdm.doctorviewmodel.DoctorHomeViewModel
 import com.example.projecttdm.state.UiState
@@ -295,11 +296,15 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
 
           }
 
+              item{
+                  SyncButton()
+              }
 
             // Espace en bas pour éviter que le dernier élément soit caché par la barre de navigation
             item {
                 Spacer(modifier = Modifier.height(64.dp))
             }
+
         }
     }
 }

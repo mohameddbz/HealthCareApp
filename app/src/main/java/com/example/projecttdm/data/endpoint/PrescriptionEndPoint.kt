@@ -1,11 +1,14 @@
 package com.example.projecttdm.data.endpoint
 
 
+import com.example.projecttdm.data.entity.SyncPrescriptionsRequest
+import com.example.projecttdm.data.entity.SyncPrescriptionsResponse
 import com.example.projecttdm.data.model.FullPrescription
 import com.example.projecttdm.data.model.PrescriptionRequest
 import com.example.projecttdm.data.model.PrescriptionRes
 import com.example.projecttdm.data.model.PrescriptionResponse
 import com.example.projecttdm.data.model.Prescriptions
+import retrofit2.Response
 import retrofit2.http.Body
 import retrofit2.http.DELETE
 import retrofit2.http.GET
@@ -40,4 +43,9 @@ interface PrescriptionEndPoint {
 
     @GET("prescriptions/appointments/{id}")
     suspend fun getPrescriptions(@Path("id") id: String): PrescriptionRes
+
+    @POST("prescriptions/sync-prescriptions")
+    suspend fun syncPrescriptions(
+        @Body body: SyncPrescriptionsRequest
+    ): Response<SyncPrescriptionsResponse>
 }

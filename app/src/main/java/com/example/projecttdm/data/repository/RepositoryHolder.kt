@@ -5,6 +5,7 @@ import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.room.Room
 import com.example.projecttdm.data.db.AppDatabase
+import com.example.projecttdm.data.db.DatabaseProvider
 import com.example.projecttdm.data.endpoint.ApiClient
 import com.example.projecttdm.data.endpoint.AppointmentEndPoint
 import com.example.projecttdm.data.endpoint.AuthEndPoint
@@ -25,12 +26,13 @@ object RepositoryHolder {
     private lateinit var database: AppDatabase
 
     fun init(context: Context) {
-        database = Room.databaseBuilder(
+       /* database = Room.databaseBuilder(
             context.applicationContext,
             AppDatabase::class.java,
             "tdm_db"
         ).fallbackToDestructiveMigration()
-            .build()
+            .build() */
+       database =  DatabaseProvider.getDatabase(context)
     }
 
     val authRepository by lazy {
@@ -40,7 +42,7 @@ object RepositoryHolder {
         UserRepository(ApiClient.create(UserEndPoint::class.java))
     }
     val prescriptionRepository by lazy {
-        PrescriptionRepository(ApiClient.create(PrescriptionEndPoint::class.java))
+        PrescriptionRepository(ApiClient.create(PrescriptionEndPoint::class.java), localDB = database)
     }
     val specialtyRepository by lazy {
         SpecialtyRepository(ApiClient.create(SpecialtyEndPoint::class.java))

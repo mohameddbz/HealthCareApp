@@ -6,16 +6,19 @@ import androidx.room.Room
 import androidx.room.RoomDatabase
 import com.example.projecttdm.data.dao.AppointmentDao
 import com.example.projecttdm.data.dao.DoctorDao
+import com.example.projecttdm.data.dao.PrescriptionDao
 import com.example.projecttdm.data.dao.QRCodeDao
 import com.example.projecttdm.data.entity.AppointmentEntity
 import com.example.projecttdm.data.entity.DoctorEntity
+import com.example.projecttdm.data.entity.PrescriptionEntity
 import com.example.projecttdm.data.entity.QRCodeDataEntity
 
-@Database(entities = [AppointmentEntity::class, QRCodeDataEntity::class ,DoctorEntity::class], version = 2)
+@Database(entities = [AppointmentEntity::class, QRCodeDataEntity::class ,DoctorEntity::class , PrescriptionEntity::class], version = 3)
 abstract class AppDatabase : RoomDatabase() {
     abstract fun appointmentDao(): AppointmentDao
     abstract fun qrCodeDataDao(): QRCodeDao
     abstract fun doctorDao(): DoctorDao
+    abstract fun presctriptionDao(): PrescriptionDao
 
 }
 
@@ -29,7 +32,7 @@ object DatabaseProvider {
             val instance = Room.databaseBuilder(
                 context.applicationContext,
                 AppDatabase::class.java,
-                "my_database"
+                "tdm_db"
             ).build()
             INSTANCE = instance
             instance

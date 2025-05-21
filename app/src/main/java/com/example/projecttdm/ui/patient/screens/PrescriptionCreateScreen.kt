@@ -344,7 +344,7 @@ fun PrescriptionCreateScreen(
             Button(
                 onClick = {
                     println("Creating prescription with: patientId=${viewModel.patientId.value}, doctorId=${viewModel.doctorId.value}, appointmentId=${viewModel.appointmentId.value}")
-                    viewModel.createPrescription()
+                    viewModel.createPrescription(context)
                 },
                 modifier = Modifier
                     .fillMaxWidth()
