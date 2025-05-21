@@ -29,5 +29,6 @@ sealed class PatientRoutes(val route: String) {
         fun createRoute(prescriptionId: String) = "prescription-id/$prescriptionId"
     }
     object FavoriteDoctors : PatientRoutes("favorite_doctors")
+    object PrescriptionList : PatientRoutes("Prescription_list")
     object PrescriptionCreate : PatientRoutes("prescriptionCreate")
 }

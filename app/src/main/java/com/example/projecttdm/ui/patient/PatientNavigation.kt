@@ -35,6 +35,7 @@ import com.example.projecttdm.ui.patient.screens.HomeScreen
 import com.example.projecttdm.ui.patient.screens.PatientDetailsScreen
 import com.example.projecttdm.ui.patient.screens.PinVerificationScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionCreateScreen
+import com.example.projecttdm.ui.patient.screens.PrescriptionScreen
 import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.PrescriptionScreenContent
 import com.example.projecttdm.ui.patient.screens.RescheduleAppointmentScreen
@@ -286,6 +287,24 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(
+            route = "${PatientRoutes.PrescriptionList.route}/{appointmentid}",
+            arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
+        ) {backStackEntry ->
+            val appointmentid = backStackEntry.arguments?.getString("appointmentid") ?: ""
+            val viewmodel : PrescriptionViewModel = viewModel()
+            PrescriptionScreen(
+                navigateToPrescriptionDetail = { prescriptionId ->
+                    navController.navigate(PatientRoutes.Prescription.createRoute(prescriptionId.toString()))
+                },
+                onclick = { prescriptionId ->
+                    navController.navigate(PatientRoutes.Prescription.createRoute(prescriptionId))
+                },
+                viewModel = viewmodel,
+                appointId = appointmentid,
+            )
+        }
+
+        composable(
             route = "${PatientRoutes.CancelReason.route}/{appointmentid}",
             arguments = listOf(navArgument("appointmentid") { type = NavType.StringType })
         )
@@ -329,17 +348,17 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
         }
 
         composable(
-            route = PatientRoutes.Prescription.routeWithArgs,
+            route = "${PatientRoutes.Prescription.route}/{prescriptionId}",
             arguments = listOf(navArgument("prescriptionId") { type = NavType.StringType }))
         {
-            backStackEntry ->
+                backStackEntry ->
             val prescriptionId = backStackEntry.arguments?.getString("prescriptionId")
             val prescriptionViewModel: PrescriptionContentViewModel = viewModel()
 
             PrescriptionScreenContent(
                 prescriptionId = prescriptionId,
-                viewModel = prescriptionViewModel ,
-           )
+                viewModel = prescriptionViewModel,
+            )
         }
 
     }

@@ -7,7 +7,25 @@ data class Prescription(
     val date: String
 )
 
+data class PrescriptionRes(
+    val success: Boolean,
+    val message: String,
+    val data: List<PrescriptionDoc>
+)
 
+data class PrescriptionDoc(
+    val prescription_id: Int,
+    val patient_id: Int,
+    val doctor_id: Int,
+    val instructions: String,
+    val created_at: String,
+    val expiry_date: String
+)
+sealed class PrescriptionsUiState {
+    data object Loading : PrescriptionsUiState()
+    data class Success(val prescriptions: List<PrescriptionDoc>) : PrescriptionsUiState()
+    data class Error(val message: String) : PrescriptionsUiState()
+}
 
 // 1. Modèle de données pour la prescription
 

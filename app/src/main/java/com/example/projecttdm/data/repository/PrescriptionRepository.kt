@@ -10,6 +10,8 @@ import androidx.core.content.FileProvider
 import com.example.projecttdm.R
 import com.example.projecttdm.data.endpoint.PrescriptionEndPoint
 import com.example.projecttdm.data.model.*
+import kotlinx.coroutines.flow.Flow
+import kotlinx.coroutines.flow.flow
 import java.io.File
 import java.io.FileOutputStream
 import java.text.SimpleDateFormat
@@ -145,6 +147,19 @@ class PrescriptionRepository(private val endpoint: PrescriptionEndPoint) {
         } catch (e: Exception) {
             e.printStackTrace()
             null
+        }
+    }
+
+    suspend fun getPrescriptions(patientId: String): Flow<Result<List<PrescriptionDoc>>> = flow {
+        try {
+            val response = endpoint.getPrescriptions(patientId)
+            if (response.success) {
+                emit(Result.success(response.data))
+            } else {
+                emit(Result.failure(Exception(response.message)))
+            }
+        } catch (e: Exception) {
+            emit(Result.failure(e))
         }
     }
 }

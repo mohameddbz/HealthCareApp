@@ -65,6 +65,7 @@ import com.example.projecttdm.theme.canceledNotification
 import com.example.projecttdm.theme.successNotification
 import com.example.projecttdm.theme.textNotification
 import com.example.projecttdm.theme.yellowNotification
+import com.example.projecttdm.ui.patient.PatientRoutes
 import com.example.projecttdm.ui.patient.screens.capitalizeFirst
 import com.example.projecttdm.ui.patient.screens.formattedDate
 import com.example.projecttdm.ui.patient.screens.formattedTime
@@ -75,7 +76,7 @@ fun PendingCard(
     onClick: (String) -> Unit,
     appointment: Appointment,
     doctor: Doctor?,
-    onCardClick: () -> Unit,
+    onCardClick: (String) -> Unit,
     onCancelClick: (String) -> Unit,
     onRescheduleClick: () -> Unit
 ) {
@@ -359,7 +360,7 @@ fun PendingCard(
                         }
 
                         Button(
-                            onClick = {  },
+                            onClick = {onCardClick(appointment.id)},
                             shape = RoundedCornerShape(20.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary,

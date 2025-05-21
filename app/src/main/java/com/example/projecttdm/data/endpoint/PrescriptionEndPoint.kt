@@ -3,6 +3,7 @@ package com.example.projecttdm.data.endpoint
 
 import com.example.projecttdm.data.model.FullPrescription
 import com.example.projecttdm.data.model.PrescriptionRequest
+import com.example.projecttdm.data.model.PrescriptionRes
 import com.example.projecttdm.data.model.PrescriptionResponse
 import com.example.projecttdm.data.model.Prescriptions
 import retrofit2.http.Body
@@ -36,4 +37,7 @@ interface PrescriptionEndPoint {
 
     @DELETE("prescriptions/{id}")
     suspend fun deletePrescription(@Path("id") id: String): PrescriptionResponse
+
+    @GET("prescriptions/appointments/{id}")
+    suspend fun getPrescriptions(@Path("id") id: String): PrescriptionRes
 }

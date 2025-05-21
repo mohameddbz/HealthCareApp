@@ -287,6 +287,7 @@ import androidx.lifecycle.viewModelScope
 import com.example.projecttdm.data.model.Medications
 import com.example.projecttdm.data.model.PrescriptionResponse
 import com.example.projecttdm.data.model.Prescriptions
+import com.example.projecttdm.data.model.PrescriptionsUiState
 import com.example.projecttdm.data.repository.RepositoryHolder
 import com.example.projecttdm.state.UiState
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -302,6 +303,11 @@ class PrescriptionViewModel : ViewModel() {
     // État des opérations de prescription
     private val _prescriptionState = MutableStateFlow<UiState<PrescriptionResponse>>(UiState.Init)
     val prescriptionState: StateFlow<UiState<PrescriptionResponse>> = _prescriptionState.asStateFlow()
+
+
+    private val _prescriptionsState = MutableStateFlow<PrescriptionsUiState>(PrescriptionsUiState.Loading)
+    val prescriptionsState: StateFlow<PrescriptionsUiState> = _prescriptionsState.asStateFlow()
+
 
     // Liste des prescriptions
     private val _prescriptions = MutableStateFlow<UiState<List<Prescriptions>>>(UiState.Init)
@@ -592,5 +598,18 @@ class PrescriptionViewModel : ViewModel() {
         medicationDuration.value = ""
         _prescriptionState.value = UiState.Init
         _medicationError.value = null
+    }
+
+
+    fun fetchPrescriptions(patientId: String) {
+        viewModelScope.launch {
+            _prescriptionsState.value = PrescriptionsUiState.Loading
+            prescriptionRepository.getPrescriptions(patientId).collect { result ->
+                _prescriptionsState.value = result.fold(
+                    onSuccess = { PrescriptionsUiState.Success(it) },
+                    onFailure = { PrescriptionsUiState.Error(it.message ?: "Unknown error") }
+                )
+            }
+        }
     }
 }

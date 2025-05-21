@@ -99,7 +99,7 @@ fun AppointmentReviewScreen(
                 if (canAddPrescription && uiState is UiState.Success) {
                     val data = (uiState as UiState.Success<AppointmentReviewData>).data  // Safe because you confirmed it's Success
                     BottomAppBar(
-                        modifier = Modifier.fillMaxWidth(),
+                        modifier = Modifier.fillMaxWidth().padding(bottom = 80.dp),
                         containerColor = MaterialTheme.colorScheme.surface,
                         contentPadding = PaddingValues(16.dp),
                         content = {
