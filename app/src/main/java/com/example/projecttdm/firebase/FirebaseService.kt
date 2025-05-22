@@ -77,7 +77,7 @@ class FirebaseService : FirebaseMessagingService() {
     companion object {
         fun sendTokenToBackend(token: String, userId: String) {
             val retrofit = Retrofit.Builder()
-                .baseUrl("http://172.20.10.3:5000/api/")
+                .baseUrl("http://192.168.206.234:5000/api/")
                 .addConverterFactory(GsonConverterFactory.create())
                 .build()
 

@@ -1,6 +1,8 @@
 package com.example.projecttdm.ui.auth
 
 import android.app.Application
+import android.os.Build
+import androidx.annotation.RequiresApi
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.colorResource
@@ -20,6 +22,7 @@ import com.example.projecttdm.ui.auth.screens.SignInScreen
 import com.example.projecttdm.ui.auth.screens.WelcomeScreen
 import com.example.projecttdm.viewmodel.AuthViewModel
 
+@RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun AuthNavigation(navController: NavHostController = rememberNavController(),
                    onLoginSuccess: () -> Unit) {
