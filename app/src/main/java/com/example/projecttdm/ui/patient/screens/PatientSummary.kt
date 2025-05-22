@@ -100,16 +100,15 @@ fun AppointmentReviewScreen(
                 val data = (uiState as UiState.Success<AppointmentReviewData>).data
                 BottomAppBar(
                     modifier = Modifier
-                        .fillMaxWidth()
-                        .padding(bottom = 80.dp),
+                        .fillMaxWidth(),
                     containerColor = MaterialTheme.colorScheme.surface,
-                    contentPadding = PaddingValues(16.dp),
+
                     content = {
                         Button(
                             // Fix: Call with proper parameter order - appointment ID first, then patient ID
                             onClick = { onAddPrescriptionClick(data.appointment.id, data.patient.id) },
                             modifier = Modifier.fillMaxWidth(),
-                            contentPadding = PaddingValues(16.dp),
+                           // contentPadding = PaddingValues(16.dp),
                             colors = ButtonDefaults.buttonColors(
                                 containerColor = MaterialTheme.colorScheme.primary
                             )
@@ -136,6 +135,7 @@ fun AppointmentReviewScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .padding(paddingValues),
+              //  .padding( top = paddingValues.calculateTopPadding() , bottom = 0.dp),
             color = MaterialTheme.colorScheme.background
         ) {
             // Handle UI state
@@ -200,7 +200,7 @@ private fun AppointmentReviewContent(
         modifier = Modifier
             .fillMaxSize()
             .verticalScroll(scrollState)
-            .padding(16.dp),
+            .padding(horizontal = 16.dp , vertical = 0.dp),
         verticalArrangement = Arrangement.spacedBy(16.dp)
     ) {
         // Appointment Status Banner
@@ -221,7 +221,7 @@ private fun AppointmentReviewContent(
             problemDescription = data.patient.problemDescription
         )
 
-        Spacer(modifier = Modifier.height(16.dp))
+
     }
 }
 
@@ -606,7 +606,7 @@ fun AppointmentDetailsCard(appointmentReason: String, problemDescription: String
         )
     ) {
         Column(
-            modifier = Modifier.padding(16.dp),
+            modifier = Modifier.padding(horizontal =  16.dp , vertical = 0.dp),
             verticalArrangement = Arrangement.spacedBy(16.dp)
         ) {
             Text(

@@ -11,6 +11,7 @@ import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Add
+import androidx.compose.material.icons.filled.ArrowBack
 import androidx.compose.material.icons.filled.ArrowForward
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -39,15 +40,17 @@ import java.time.LocalDate
 import java.time.LocalDateTime
 import java.time.format.DateTimeFormatter
 
+@OptIn(ExperimentalMaterial3Api::class)
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PrescriptionScreen(
     oncickAdd: (appointId: String, patientId: String) -> Unit = { _, _ -> },
     onclick: (String) -> Unit,
+    onBack: () -> Unit, // <- nouveau paramètre pour le retour
     viewModel: PrescriptionViewModel = viewModel(),
     appointId: String,
     patientId: String,
-    showAddButton: Boolean = false // <- nouveau paramètre
+    showAddButton: Boolean = false
 ) {
     LaunchedEffect(Unit) {
         viewModel.fetchPrescriptions(appointId)
@@ -55,19 +58,38 @@ fun PrescriptionScreen(
 
     val prescriptionsState by viewModel.prescriptionsState.collectAsState()
 
-    Box(
-        modifier = Modifier
-            .fillMaxSize()
-            .padding(16.dp)
-    ) {
-        Column {
-            Text(
-                text = "Prescriptions",
-                fontSize = 22.sp,
-                fontWeight = FontWeight.Bold,
-                modifier = Modifier.padding(bottom = 16.dp)
+    Scaffold(
+        topBar = {
+            TopAppBar(
+                title = {
+                    Text(
+                        text = "Prescriptions",
+                        fontSize = 20.sp,
+                        fontWeight = FontWeight.Bold
+                    )
+                },
+                navigationIcon = {
+                    IconButton(onClick = onBack) {
+                        Icon(
+                            imageVector = Icons.Default.ArrowBack,
+                            contentDescription = "Back"
+                        )
+                    }
+                },
+                colors = TopAppBarDefaults.topAppBarColors(
+                    containerColor = MaterialTheme.colorScheme.surface,
+                    titleContentColor = MaterialTheme.colorScheme.onSurface,
+                    navigationIconContentColor = MaterialTheme.colorScheme.onSurface
+                )
             )
-
+        }
+    ) { paddingValues ->
+        Box(
+            modifier = Modifier
+                .fillMaxSize()
+                .padding(paddingValues)
+                .padding(16.dp)
+        ) {
             when (val state = prescriptionsState) {
                 is PrescriptionsUiState.Loading -> {
                     Box(
@@ -79,65 +101,67 @@ fun PrescriptionScreen(
                 }
 
                 is PrescriptionsUiState.Success -> {
-                    ImprovedPatientInfoCard(
-                        patientName = state.patientName,
-                        patientAge = state.patientAge,
-                        appointmentTime = state.appointmentTime
-                    )
+                    Column {
+                        ImprovedPatientInfoCard(
+                            patientName = state.patientName,
+                            patientAge = state.patientAge,
+                            appointmentTime = state.appointmentTime
+                        )
 
-                    Spacer(modifier = Modifier.height(16.dp))
+                        Spacer(modifier = Modifier.height(16.dp))
 
-                    // ✅ Afficher le bouton "Add" seulement si showAddButton est true
-                    if (showAddButton) {
-                        Row(
-                            verticalAlignment = Alignment.CenterVertically,
-                            modifier = Modifier
-                                .fillMaxWidth()
-                                .padding(bottom = 8.dp)
-                        ) {
-                            Text(
-                                text = "Add a prescription",
-                                fontWeight = FontWeight.SemiBold,
-                                fontSize = 16.sp
-                            )
-
-                            Spacer(modifier = Modifier.weight(1f))
-
-                            IconButton(
-                                onClick = { oncickAdd(appointId, patientId) },
+                        // ✅ Afficher le bouton "Add" seulement si showAddButton est true
+                        if (showAddButton) {
+                            Row(
+                                verticalAlignment = Alignment.CenterVertically,
                                 modifier = Modifier
-                                    .size(32.dp)
-                                    .background(
-                                        color = Color(0xFF3D7FFF),
-                                        shape = CircleShape
-                                    )
+                                    .fillMaxWidth()
+                                    .padding(bottom = 8.dp)
                             ) {
-                                Icon(
-                                    imageVector = Icons.Default.Add,
-                                    contentDescription = "Add",
-                                    tint = Color.White,
-                                    modifier = Modifier.size(18.dp)
+                                Text(
+                                    text = "Add a prescription",
+                                    fontWeight = FontWeight.SemiBold,
+                                    fontSize = 16.sp
                                 )
+
+                                Spacer(modifier = Modifier.weight(1f))
+
+                                IconButton(
+                                    onClick = { oncickAdd(appointId, patientId) },
+                                    modifier = Modifier
+                                        .size(32.dp)
+                                        .background(
+                                            color = Color(0xFF3D7FFF),
+                                            shape = CircleShape
+                                        )
+                                ) {
+                                    Icon(
+                                        imageVector = Icons.Default.Add,
+                                        contentDescription = "Add",
+                                        tint = Color.White,
+                                        modifier = Modifier.size(18.dp)
+                                    )
+                                }
                             }
                         }
-                    }
 
-                    if (state.prescriptions.isEmpty()) {
-                        Box(
-                            contentAlignment = Alignment.Center,
-                            modifier = Modifier.fillMaxSize()
-                        ) {
-                            Text("No prescriptions found")
-                        }
-                    } else {
-                        LazyColumn(
-                            verticalArrangement = Arrangement.spacedBy(8.dp)
-                        ) {
-                            items(state.prescriptions) { prescription ->
-                                ImprovedPrescriptionItem(
-                                    prescription = prescription,
-                                    onClick = { onclick(prescription.prescription_id.toString()) }
-                                )
+                        if (state.prescriptions.isEmpty()) {
+                            Box(
+                                contentAlignment = Alignment.Center,
+                                modifier = Modifier.fillMaxSize()
+                            ) {
+                                Text("No prescriptions found")
+                            }
+                        } else {
+                            LazyColumn(
+                                verticalArrangement = Arrangement.spacedBy(8.dp)
+                            ) {
+                                items(state.prescriptions) { prescription ->
+                                    ImprovedPrescriptionItem(
+                                        prescription = prescription,
+                                        onClick = { onclick(prescription.prescription_id.toString()) }
+                                    )
+                                }
                             }
                         }
                     }
@@ -158,9 +182,6 @@ fun PrescriptionScreen(
         }
     }
 }
-
-
-
 
 @Composable
 fun ImprovedPatientInfoCard(

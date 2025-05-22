@@ -301,9 +301,7 @@ fun DoctorHomeScreen(doctorHomeViewModel : DoctorHomeViewModel = viewModel(),nav
               }
 
             // Espace en bas pour éviter que le dernier élément soit caché par la barre de navigation
-            item {
-                Spacer(modifier = Modifier.height(64.dp))
-            }
+
 
         }
     }

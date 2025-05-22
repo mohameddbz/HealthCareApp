@@ -3,10 +3,12 @@ package com.example.projecttdm.ui.doctor
 import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
+import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.outlined.*
 import androidx.compose.material3.Scaffold
 import androidx.compose.runtime.Composable
+import androidx.compose.ui.Modifier
 import androidx.compose.ui.res.painterResource
 import androidx.lifecycle.viewmodel.compose.viewModel
 import androidx.navigation.NavHostController
@@ -78,6 +80,7 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
             route == DoctorRoutes.QrScanner.route ||
                     route?.startsWith(DoctorRoutes.QrScanner.route) == true ||
                     route?.contains("Prescription") == true ||
+                    route?.startsWith(PatientRoutes.PatientSummary.route) == true ||
                     route?.contains("PatientSummary") == true -> 2
 
             route == DoctorRoutes.AppointmentOfWeek.route ||
@@ -102,6 +105,7 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
 
         NavHost(
             navController = navController,
+            modifier = Modifier.padding(innerPadding),
             startDestination = DoctorRoutes.HomeScreen.route,
         ) {
             composable(DoctorRoutes.HomeScreen.route) {
@@ -210,7 +214,8 @@ fun DoctorNavigation(navController: NavHostController = rememberNavController())
                     viewModel = viewModel,
                     appointId = appointmentId,
                     patientId = patientId,
-                    showAddButton = true
+                    showAddButton = true,
+                    onBack = {navController.popBackStack()}
                 )
             }
 

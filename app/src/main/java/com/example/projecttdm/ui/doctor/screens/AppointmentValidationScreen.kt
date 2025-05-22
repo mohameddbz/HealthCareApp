@@ -199,7 +199,7 @@ fun CalendarApp(
         }
     ) { paddingValues ->
             CalendarScreen(
-                modifier = Modifier.fillMaxSize().padding(paddingValues),
+                modifier = Modifier.fillMaxSize(),
                 onDateSelected = { date ->
                     // Ici vous pouvez faire votre requête pour récupérer les rendez-vous
                     println("Date sélectionnée: ${SimpleDateFormat("dd/MM/yyyy", Locale.getDefault()).format(date)}")

@@ -4,7 +4,9 @@ import android.annotation.SuppressLint
 import android.os.Build
 import androidx.annotation.RequiresApi
 import androidx.compose.foundation.layout.Box
+import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.filled.Home
@@ -67,13 +69,15 @@ import com.example.projecttdm.viewmodel.RescheduleAppointmentViewModel
 @RequiresApi(Build.VERSION_CODES.O)
 @Composable
 fun PatientNavigation(navController: NavHostController = rememberNavController(), modifier: Modifier = Modifier) {
-    Box(modifier = Modifier.fillMaxSize()) {
         // Main content with padding for bottom navigation
-        Box(
+        Scaffold (
             modifier = Modifier
-                .fillMaxSize()
-                .padding(bottom = 85.dp) // Reserve space for bottom navigation
-        ) {
+                .fillMaxSize(),
+            bottomBar = {AnimatedBottomNavigationBar(
+                navController = navController,
+                modifier = Modifier
+            ) }
+        ) { innerPadding ->
             val appointmentViewModel: AppointmentViewModel = viewModel()
             val homeViewModel: HomeViewModel = viewModel()
             val doctorListViewModel: DoctorListViewModel = viewModel()
@@ -82,7 +86,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
             NavHost(
                 navController = navController,
                 startDestination = PatientRoutes.HomeScreen.route,
-                modifier = modifier
+                modifier = modifier.padding(innerPadding)
             ) {
                 // All your existing composable destinations
                 composable(PatientRoutes.RescheduleAppointment.route) {
@@ -281,7 +285,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                     AppointmentReviewScreen(
                         appointmentId = appointmentid,
                         navController = navController,
-                        onBackPressed = { navController.popBackStack() },
+                        onBackPressed = { navController.navigate(PatientRoutes.topDoctors.route) },
                         onNextPressed = {
                             navController.navigate(PatientRoutes.PinVerification.route)
                         },
@@ -308,7 +312,8 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                         },
                         viewModel = viewModel,
                         appointId = appointmentId,
-                        patientId = patientId
+                        patientId = patientId,
+                        onBack = {navController.popBackStack()}
                     )
                 }
 
@@ -371,11 +376,7 @@ fun PatientNavigation(navController: NavHostController = rememberNavController()
                 }
             }
         }
-
+       // Spacer(modifier = Modifier.height(70.dp))
         // Bottom Navigation - positioned at the bottom
-        AnimatedBottomNavigationBar(
-            navController = navController,
-            modifier = Modifier.align(Alignment.BottomCenter)
-        )
+
     }
-}

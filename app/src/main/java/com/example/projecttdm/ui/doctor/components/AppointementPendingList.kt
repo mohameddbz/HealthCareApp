@@ -1,5 +1,6 @@
 package com.example.projecttdm.ui.doctor.components
 
+import android.util.Log
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Spacer
@@ -37,8 +38,8 @@ fun AppointmentsPendigList(
     onRefuse : () -> Unit = {},
 
 ) {
+    Log.d("CALENDER",appointments.toString())
     val scrollState = rememberLazyListState()
-
     if (isLoading) {
         // Show loading indicator
         Box(

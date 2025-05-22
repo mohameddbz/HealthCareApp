@@ -26,10 +26,13 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.material.icons.Icons
+import androidx.compose.material.icons.filled.HealthAndSafety
 import androidx.compose.material.icons.filled.Home
 import androidx.compose.material.icons.filled.MedicalServices
 import androidx.compose.material.icons.filled.Notifications
 import androidx.compose.material.icons.filled.Person
+import androidx.compose.material.icons.filled.Person4
+import androidx.compose.material.icons.filled.Schedule
 import androidx.compose.material.icons.filled.Star
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -128,12 +131,12 @@ fun AnimatedBottomNavigationBar(
         ),
         PatientNavItem(
             title = "Appointment",
-            icon = Icons.Default.Person,
+            icon = Icons.Default.Schedule,
             route = PatientRoutes.Appointment.route
         ),
         PatientNavItem(
             title = "Doctors",
-            icon = Icons.Default.Star,
+            icon = Icons.Default.HealthAndSafety,
             route = PatientRoutes.topDoctors.route
         ),
         PatientNavItem(
@@ -143,7 +146,7 @@ fun AnimatedBottomNavigationBar(
         ),
         PatientNavItem(
             title = "Profile",
-            icon = Icons.Default.MedicalServices,
+            icon = Icons.Default.Person4,
             route = PatientRoutes.Profile.route
         )
     )
@@ -158,9 +161,9 @@ fun AnimatedBottomNavigationBar(
 
                 currentRoute == PatientRoutes.Appointment.route ||
                         currentRoute?.startsWith(PatientRoutes.Appointment.route) == true ||
-                        currentRoute?.contains("BookAppointment") == true ||
+                        currentRoute?.startsWith(PatientRoutes.Prescription.route)== true ||
                         currentRoute?.contains("PatientDetails") == true ||
-                        currentRoute?.contains("PatientSummary") == true ||
+                        currentRoute?.startsWith(PatientRoutes.PrescriptionList.route) == true ||
                         currentRoute?.contains("CancelReason") == true ||
                         currentRoute?.contains("CancelDialog") == true ||
                         currentRoute?.contains("RescheduleAppointment") == true ||
@@ -169,14 +172,18 @@ fun AnimatedBottomNavigationBar(
 
                 currentRoute == PatientRoutes.topDoctors.route ||
                         currentRoute?.startsWith(PatientRoutes.topDoctors.route) == true ||
+                        currentRoute?.startsWith(PatientRoutes.BookAppointment.route) == true ||
                         currentRoute?.contains("doctorProfile") == true ||
+                        currentRoute?.startsWith(PatientRoutes.PatientSummary.route) == true ||
+                        currentRoute?.startsWith(PatientRoutes.doctorProfile.route) == true ||
+                        currentRoute?.startsWith(PatientRoutes.PatientDetails.route) == true ||
                         currentRoute?.contains("searchDoctor") == true ||
                         currentRoute?.contains("FavoriteDoctors") == true -> 2
 
                 currentRoute == PatientRoutes.NotificationScreen.route ||
                         currentRoute?.startsWith(PatientRoutes.NotificationScreen.route) == true -> 3
 
-                currentRoute?.contains("Prescription") == true -> 4
+                currentRoute?.contains("Profile") == true -> 4
 
                 else -> 0
             }
